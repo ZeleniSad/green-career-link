@@ -13,7 +13,7 @@ export async function POST(request: NextRequest) {
     const inuse = await checkEmailInUse(payload.email);
 
     if (inuse) {
-      return NextResponse.json({ errors: { email: "Email is already in use." } }, { status: 400 });
+      return NextResponse.json({ errors: { email: "Email is already in use" } }, { status: 400 });
     }
 
     await handleRegister(payload as RegisterPayload);
