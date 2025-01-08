@@ -8,11 +8,6 @@ export enum FormStep {
 }
 
 export enum UserType {
-  Company = "Company",
-  Individual = "Individual",
-}
-
-export enum UserType {
   Company = "company",
   Individual = "individual",
 }

@@ -104,7 +104,6 @@ const nextConfig: NextConfig = {
     ];
   },
   poweredByHeader: false,
-  swcMinify: true,
 };
 
 export default nextConfig;
