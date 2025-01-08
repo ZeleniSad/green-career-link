@@ -1,0 +1,9 @@
+.wrapper {
+    width: 30%;
+}
+
+@media (max-width: 600px) {
+    .wrapper {
+        width: 100%;
+    }
+}

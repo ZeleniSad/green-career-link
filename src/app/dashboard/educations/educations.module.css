@@ -1,0 +1,10 @@
+.wrapper {
+    display: flex;
+    background-image: url('../../../../public/images/authentication-background.png');
+    background-repeat: no-repeat;
+    background-size: cover;
+    padding: 1rem;
+    min-height: 100vh;
+    flex-direction: column;
+    gap: 5rem;
+}

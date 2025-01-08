@@ -1,0 +1,28 @@
+.wrapper {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    background-image: url('../../../public/images/authentication-background.png');
+    background-repeat: no-repeat;
+    background-size: cover;
+    padding: 1rem;
+    gap: 1rem;
+}
+
+.profileBanner {
+    padding: 24px;
+    justify-content: space-between;
+    align-items: center;
+    border-radius: 24px;
+    background: linear-gradient(0deg, rgba(44, 194, 149, 0.5), rgba(3, 98, 76, 0.9)), url('../../../public/images/profile-background.png') no-repeat center;
+    background-size: cover;
+}
+
+.profileDetailsHeader {
+    width: 100%;
+    justify-content: space-between;
+    align-items: center;
+    padding: 24px;
+    background: linear-gradient(90deg, #2CC295 0%, #03624C 100%);
+    border-radius: 24px 24px 0 0;
+}
