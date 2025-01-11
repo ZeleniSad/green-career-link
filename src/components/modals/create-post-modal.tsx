@@ -31,7 +31,7 @@ import { StarterKit } from "@tiptap/starter-kit";
 import { makeStyles } from "@mui/styles";
 import { UploadFile } from "@/components/upload-file/upload-file";
 import { db, storage } from "@/config/firebaseConfig";
-import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { FeedItemDto } from "../../types/dto";
 import { addDoc, collection } from "firebase/firestore";
 
@@ -98,16 +98,13 @@ export const CreatePostModal = ({ modalOpen, handleClose }: { modalOpen: boolean
     setErrors(newErrors);
 
     if (!newErrors.selectedCategory) {
-      // Handle form submission
-      console.log("Form submitted", formState);
-      console.log("Selected file", selectedFile);
       let imageUrl = "";
       if (selectedFile) {
         imageUrl = await uploadImage(selectedFile);
       }
 
       const feedItem = {
-        category: "Job offering",
+        category: categories.find((c) => Number(formState.selectedCategory) == c.categoryId)!.label,
         body: formState.postDescription,
         userId: "JC5eBPBiYzfXyDQuXu7c5vJiIlr2",
         createdAt: new Date(),
@@ -122,33 +119,17 @@ export const CreatePostModal = ({ modalOpen, handleClose }: { modalOpen: boolean
   };
 
   const uploadImage = async (file: File): Promise<string> => {
-    const storageRef = ref(storage, `images/${file.name}`);
-    const uploadTask = uploadBytesResumable(storageRef, file);
+    try {
+      const storageRef = ref(storage, `images/${file.name}`);
 
-    return new Promise((resolve, reject) => {
-      uploadTask.on(
-        "state_changed",
-        (snapshot) => {
-          // Optional: Monitor upload progress here
-          const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-          console.log(`Upload is ${progress}% done`);
-        },
-        (error) => {
-          // Handle unsuccessful uploads
-          reject(error);
-        },
-        () => {
-          // Handle successful uploads on complete
-          getDownloadURL(uploadTask.snapshot.ref)
-            .then((downloadURL) => {
-              resolve(downloadURL);
-            })
-            .catch((error) => {
-              reject(error);
-            });
-        }
-      );
-    });
+      const snapshot = await uploadBytes(storageRef, file);
+
+      const downloadURL = await getDownloadURL(snapshot.ref);
+      return downloadURL;
+    } catch (error) {
+      console.error("Upload failed", error);
+      throw error;
+    }
   };
 
   return (
