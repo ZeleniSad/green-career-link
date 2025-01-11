@@ -81,7 +81,11 @@ export const RegisterFormWrapper = ({
           >
             {label.back}
           </Button>
-          <Button variant="contained" type="submit">
+          <Button
+            variant="contained"
+            type="submit"
+            disabled={formik.isSubmitting}
+          >
             {label.register}
           </Button>
         </Grid>
