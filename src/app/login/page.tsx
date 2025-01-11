@@ -116,7 +116,12 @@ const Login = () => {
               </Link>
             </Box>
           </Grid>
-          <Button variant="contained" color="primary" type="submit">
+          <Button
+            variant="contained"
+            color="primary"
+            type="submit"
+            disabled={formik.isSubmitting}
+          >
             {label.login}
           </Button>
         </Grid>

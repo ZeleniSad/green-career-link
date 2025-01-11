@@ -7,7 +7,6 @@ import { Welcome } from "@/components/feed/feed-app-bar/welcome";
 import { FeedAppBarUser } from "@/components/feed/feed-app-bar/feed-app-bar-user";
 import { CreatePostModal } from "@/components/modals/create-post-modal";
 import { useModal } from "@/hooks/useModal";
-import { mockedIndividualUser } from "@/components/mocked-data/mocked-data";
 
 export const DashboardAppBar = () => {
   const { modalOpen, handleOpen, handleClose } = useModal();
@@ -29,7 +28,7 @@ export const DashboardAppBar = () => {
             <CreatePostButton onClick={handleOpen} />
           </Grid>
         </Grid>
-        <FeedAppBarUser profile={mockedIndividualUser} />
+        <FeedAppBarUser />
       </Grid>
       <CreatePostModal modalOpen={modalOpen} handleClose={handleClose} />
     </>

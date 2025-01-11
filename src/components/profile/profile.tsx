@@ -13,7 +13,7 @@ export const Profile = () => {
 
   return (
     <Box className={styles.wrapper}>
-      <ProfileHeader handleOpen={handleOpen} profile={mockedIndividualUser} />
+      <ProfileHeader handleOpen={handleOpen} />
       <ProfileBanner profile={mockedIndividualUser} />
       <ProfileInformations profile={mockedIndividualUser} />
       <CreatePostModal modalOpen={modalOpen} handleClose={handleClose} />

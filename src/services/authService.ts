@@ -1,4 +1,8 @@
-import { signInWithEmailAndPassword } from "firebase/auth";
+import {
+  onAuthStateChanged,
+  signInWithEmailAndPassword,
+  signOut,
+} from "firebase/auth";
 import { auth } from "@/config/firebaseConfig";
 
 export const login = async (email: string, password: string) => {
@@ -15,4 +19,25 @@ export const login = async (email: string, password: string) => {
   } catch (error) {
     throw error;
   }
+};
+
+export const logout = async () => {
+  try {
+    await signOut(auth);
+    console.log("User signed out successfully");
+  } catch (error) {
+    console.error("Error signing out: ", error);
+  }
+};
+
+export const getAuthenticatedUser = () => {
+  return new Promise((resolve, reject) => {
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        resolve(user);
+      } else {
+        reject("No user is signed in");
+      }
+    });
+  });
 };

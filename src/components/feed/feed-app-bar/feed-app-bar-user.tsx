@@ -2,20 +2,44 @@
 import { Avatar, Menu, MenuItem, Typography } from "@mui/material";
 import { Grid } from "@mui/system";
 import { useTheme } from "@mui/material/styles";
-import React, { FC } from "react";
-import { UserType } from "@/types/enums";
-import { CompanyInformation, IndividualInformation } from "@/types/interfaces";
+import React, { FC, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { getAuthenticatedUser, logout } from "@/services/authService";
 
-interface FeedAppBarUserProps {
-  profile: CompanyInformation | IndividualInformation;
+interface FeedAppBarUser {
+  displayName: string;
+  photoURL: string;
 }
 
-export const FeedAppBarUser: FC<FeedAppBarUserProps> = ({ profile }) => {
+const mapUserDataToFeedAppBarUser = (userData): FeedAppBarUser => {
+  return {
+    displayName: userData.displayName,
+    photoURL: userData.photoURL,
+  };
+};
+
+export const FeedAppBarUser: FC = () => {
+  const [profile, setProfile] = useState<FeedAppBarUser | null>(null);
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
   const theme = useTheme();
   const router = useRouter();
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const userData = await getAuthenticatedUser();
+        const mappedUserData = mapUserDataToFeedAppBarUser(userData);
+        setProfile(mappedUserData);
+      } catch (error) {
+        console.error("Error fetching user data: ", error);
+      }
+    };
+
+    fetchUserData();
+  }, []);
+
+  console.log("profile", profile);
 
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -23,6 +47,11 @@ export const FeedAppBarUser: FC<FeedAppBarUserProps> = ({ profile }) => {
   const handleClose = () => {
     setAnchorEl(null);
   };
+
+  const handleLogout = async () => {
+    await logout();
+  };
+
   return (
     <>
       <Grid container sx={{ alignItems: "center", gap: 1 }}>
@@ -31,18 +60,12 @@ export const FeedAppBarUser: FC<FeedAppBarUserProps> = ({ profile }) => {
             backgroundColor: theme.palette.primary.main,
             cursor: "pointer",
           }}
-          src={profile?.image}
+          src={profile?.photoURL}
           onClick={handleClick}
         >
-          {profile?.type === UserType.Company
-            ? profile?.companyName?.charAt(0)
-            : `${profile?.firstName?.charAt(0)}${profile?.lastName?.charAt(0)}`}
+          {profile?.displayName[0]}
         </Avatar>
-        <Typography variant="body1">
-          {profile?.type === UserType.Company
-            ? profile?.companyName
-            : `${profile?.firstName} ${profile?.lastName}`}
-        </Typography>
+        <Typography variant="body1">{profile?.displayName}</Typography>
       </Grid>
       <Menu
         id="basic-menu"
@@ -68,13 +91,7 @@ export const FeedAppBarUser: FC<FeedAppBarUserProps> = ({ profile }) => {
         >
           Profile
         </MenuItem>
-        <MenuItem
-          onClick={() => {
-            router.push("/login");
-          }}
-        >
-          Logout
-        </MenuItem>
+        <MenuItem onClick={handleLogout}>Logout</MenuItem>
       </Menu>
     </>
   );
