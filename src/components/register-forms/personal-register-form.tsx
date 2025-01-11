@@ -8,7 +8,7 @@ import {
   passwordsValidationSchema,
   personalRegisterFirstStepValidationSchema,
 } from "@/config/validations";
-import { FormStep } from "@/types/enums";
+import {FormStep, UserType} from "@/types/enums";
 import { PersonalRegisterFormProps } from "@/types/props";
 import { useRouter } from "next/navigation";
 
@@ -24,6 +24,7 @@ export const PersonalRegisterForm = () => {
     country: "",
     password: "",
     confirmPassword: "",
+    userType: UserType.Individual
   };
 
   const formik = useFormik({
@@ -32,8 +33,24 @@ export const PersonalRegisterForm = () => {
       formStep === FormStep.FIRST
         ? personalRegisterFirstStepValidationSchema
         : passwordsValidationSchema,
-    onSubmit: () => {
-      router.push("/register-success");
+    onSubmit: async (values) => {
+      try {
+        const response = await fetch("http://localhost:3000/api/users", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(values),
+        });
+        if (response.ok) {
+          router.push("/register-success");
+        } else {
+          const errorData = await response.json();
+          console.error("Error:", errorData);
+        }
+      } catch (error) {
+        console.error("Error:", error);
+      }
     },
   });
 

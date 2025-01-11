@@ -7,9 +7,9 @@ const passwordSchema = string()
   .matches(/[a-z]/, "Password must contain at least one lowercase letter")
   .matches(/[A-Z]/, "Password must contain at least one uppercase letter")
   .matches(/\d/, "Password must contain at least one number")
-  .matches(/[@$!%*?&]/, "Password must contain at least one special character");
+  .matches(/[@$!%*?&.]/, "Password must contain at least one special character");
 
-const repeatPasswordSchema = string()
+const confirmPasswordSchema = string()
   .required("Please confirm your password")
   .oneOf([ref("password")], "Passwords must match");
 
@@ -19,7 +19,7 @@ const baseRegisterSchema = object({
   country: string().trim().required("Country is required"),
   city: string().trim().required("City is required"),
   password: passwordSchema,
-  repeatPassword: repeatPasswordSchema,
+  confirmPassword: confirmPasswordSchema,
 });
 
 export const registrationSchema = baseRegisterSchema.shape({
