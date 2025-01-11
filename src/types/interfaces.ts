@@ -15,7 +15,7 @@ export interface IndividualInformation {
   availability: string;
   keySkills: string;
   image?: string;
-  type: UserType.Individual;
+  userType: UserType.Individual;
 }
 
 export interface CompanyInformation {
@@ -36,7 +36,7 @@ export interface CompanyInformation {
   missionAndVision: string;
   website: string;
   image?: string;
-  type: UserType.Company;
+  userType: UserType.Company;
 }
 
 export interface EmailTemplate {

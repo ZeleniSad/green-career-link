@@ -35,7 +35,7 @@ export interface FeedItemProps {
 
 export interface FeedItemHeaderProps {
   user: string;
-  date: string;
+  date: Date;
   category: string;
   email: string;
   type: UserType;
