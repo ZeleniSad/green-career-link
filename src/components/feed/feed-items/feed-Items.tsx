@@ -55,7 +55,7 @@ export const FeedItems: FC<FeedItemsProps> = ({ sortOrder }) => {
         const data = doc.data();
         const feedItem = {
           id: doc.id,
-          userId: data.userId.id,
+          userId: data.userId,
           createdAt: data.createdAt.toDate(),
           category: data.category,
           body: data.body,
@@ -63,7 +63,7 @@ export const FeedItems: FC<FeedItemsProps> = ({ sortOrder }) => {
         } as FeedItemDto;
 
         newFeedItems.push(feedItem);
-        userIdsToFetch.add(data.userId.id);
+        userIdsToFetch.add(data.userId);
       });
 
       if (feedSnapshot.empty) {
