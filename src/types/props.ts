@@ -9,6 +9,7 @@ export interface CompanyRegisterFormProps {
   country: string;
   password: string;
   confirmPassword: string;
+  userType: UserType;
 }
 
 export interface PersonalRegisterFormProps {
