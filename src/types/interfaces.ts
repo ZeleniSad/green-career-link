@@ -38,3 +38,9 @@ export interface CompanyInformation {
   image?: string;
   type: UserType.Company;
 }
+
+export interface EmailTemplate {
+  to: string;
+  subject: string;
+  html: string;
+}
