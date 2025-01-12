@@ -11,3 +11,16 @@ export interface FeedItemDto {
   userType: UserType;
   applyToEmail: string;
 }
+
+export interface EducationItemDto {
+  id: string;
+  fileUrl: string;
+  title: string;
+  fileName: string;
+}
+
+export interface EducationQAItemDto {
+  id: string;
+  title: string;
+  body: string;
+}
