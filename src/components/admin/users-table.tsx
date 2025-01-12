@@ -11,7 +11,8 @@ import {
   TableHead,
   TableRow,
 } from "@mui/material";
-import { FC } from "react";
+import { FC, useEffect, useState } from "react";
+import { fetchAllUsers } from "@/services/userServices";
 
 interface User {
   name: string;
@@ -47,16 +48,21 @@ const UserRow: FC<{ user: User }> = ({ user }) => (
 );
 
 export const UsersTable: FC = () => {
-  const users: User[] = [
-    {
-      name: "John Doe",
-      email: "johndoe@gmail.com",
-      phone: "+38164000000",
-      country: "Serbia",
-      city: "Novi Sad",
-    },
-    // Add more users as needed
-  ];
+  const [users, setUsers] = useState([]);
+
+  useEffect(() => {
+    // Fetch users from the database
+    const getAllUsers = async () => {
+      try {
+        const users = await fetchAllUsers();
+        setUsers(users);
+      } catch (error) {
+        console.error("Error fetching user data: ", error);
+      }
+    };
+
+    getAllUsers();
+  }, []);
 
   return (
     <TableContainer component={Paper}>

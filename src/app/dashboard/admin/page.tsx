@@ -6,8 +6,10 @@ import { AdminTabs } from "@/components/admin/admin-tabs";
 const AdminPage = () => {
   return (
     <Grid container className={styles.wrapper}>
-      <Welcome />
-      <AdminTabs />
+      <Grid container sx={{ width: "100%", gap: 3 }}>
+        <Welcome />
+        <AdminTabs />
+      </Grid>
     </Grid>
   );
 };
