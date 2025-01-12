@@ -34,12 +34,13 @@ export interface FeedItemProps {
 }
 
 export interface FeedItemHeaderProps {
-  user: string;
+  userName: string;
   date: Date;
   category: string;
   email: string;
   type: UserType;
   profileUrl: string;
+  userId: string;
 }
 
 export interface FeedItemBodyProps {

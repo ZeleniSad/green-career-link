@@ -13,8 +13,15 @@ import { CompanyInformation, IndividualInformation } from "@/types/interfaces";
 
 const FEED_ITEMS_DELAY = 800;
 
-export const FeedItems: FC = () => {
-  const [feedItems, setFeedItems] = useState<FeedItemDto[]>([]);
+export const FeedItems: FC = ({
+  feedItems,
+  setFeedItems,
+}: {
+  feedItems: FeedItemDto[];
+  setFeedItems: (
+    value: ((prevState: FeedItemDto[]) => FeedItemDto[]) | FeedItemDto[],
+  ) => void;
+}) => {
   const [lastVisible, setLastVisible] =
     useState<QueryDocumentSnapshot<DocumentData> | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
@@ -44,10 +51,11 @@ export const FeedItems: FC = () => {
     return newFeedItems.map((item) => {
       const feedUser = usersCache.current[item.userId];
       const userType = feedUser.userType;
+
       const createdBy =
         userType === UserType.Individual
-          ? `${feedUser.firstName} ${feedUser.lastName}`
-          : feedUser.companyName;
+          ? `${(feedUser as IndividualInformation).firstName} ${(feedUser as IndividualInformation).lastName}`
+          : (feedUser as CompanyInformation).companyName;
 
       return {
         ...item,
@@ -100,7 +108,7 @@ export const FeedItems: FC = () => {
     } finally {
       setLoading(false);
     }
-  }, [lastVisible, loading, hasMore]);
+  }, [hasMore, lastVisible, setFeedItems]);
 
   const debouncedFetch = useCallback(() => {
     if (loading) return;
@@ -132,7 +140,7 @@ export const FeedItems: FC = () => {
           root: null,
           rootMargin: "100px",
           threshold: 0.1,
-        },
+        } as IntersectionObserverInit,
       );
 
       if (node) observer.current?.observe(node);

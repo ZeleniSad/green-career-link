@@ -9,11 +9,13 @@ export const IndividualInformationsForm = ({
   formikValues,
   handleChange,
   setSelectedFile,
+  isOwner,
 }: {
   isEditing: boolean;
   formikValues: FormikValues;
   handleChange: (e: ChangeEvent<HTMLInputElement>) => void;
   setSelectedFile: (file: File) => void;
+  isOwner?: boolean;
 }) => {
   const handleFileSelect = (file: File) => {
     setSelectedFile(file);
@@ -138,6 +140,7 @@ export const IndividualInformationsForm = ({
               isEditing={isEditing}
               onChange={handleChange}
               handleFileRemoveFromFormik={handleFileRemoveFromFormik}
+              isOwner={isOwner}
             />
           </Grid>
         </Grid>

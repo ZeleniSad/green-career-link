@@ -1,5 +1,5 @@
 "use client";
-import { Avatar, Menu, MenuItem, Typography } from "@mui/material";
+import { Avatar, Link, Menu, MenuItem, Typography } from "@mui/material";
 import { Grid } from "@mui/system";
 import { useTheme } from "@mui/material/styles";
 import React, { FC, useEffect, useState } from "react";
@@ -60,7 +60,15 @@ export const FeedAppBarUser: FC = () => {
         >
           {profile?.displayName[0]}
         </Avatar>
-        <Typography variant="h6">{profile?.displayName}</Typography>
+        <Link
+          underline="none"
+          onClick={() => router.push("/dashboard/profile")}
+          sx={{
+            cursor: "pointer",
+          }}
+        >
+          <Typography variant="h6">{profile?.displayName}</Typography>
+        </Link>
       </Grid>
       <Menu
         id="basic-menu"

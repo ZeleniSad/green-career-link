@@ -6,8 +6,9 @@ import { HomeWhyJoinsUs } from "@/components/home/home-why-joins-us";
 import { HomeHowItWorks } from "@/components/home/home-how-it-works";
 import { HomeGetStarted } from "@/components/home/home-get-started";
 import { HomeFooter } from "@/components/home/home-footer";
+import { ReactNode } from "react";
 
-const Home = (): JSX.Element => {
+const Home = (): ReactNode => {
   return (
     <Grid container sx={{ p: 2, gap: 3 }}>
       <HomeBar />

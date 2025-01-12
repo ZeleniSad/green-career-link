@@ -7,6 +7,7 @@ import { FC } from "react";
 import { FeedItemProps } from "@/types/props";
 
 export const FeedItem: FC<FeedItemProps> = ({ item }) => {
+  console.log("item", item);
   return (
     <Grid
       container
@@ -17,12 +18,13 @@ export const FeedItem: FC<FeedItemProps> = ({ item }) => {
       }}
     >
       <FeedItemHeader
-        user={item.createdBy}
+        userName={item.createdBy}
         date={item.createdAt}
         email={item.applyToEmail}
         category={item.category}
         type={item.userType}
         profileUrl={item.profileUrl}
+        userId={item.userId}
       />
       <Divider sx={{ width: "100%", pt: 2 }} />
       <FeedItemBody body={item.body} image={item.image} />

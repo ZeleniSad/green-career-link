@@ -1,7 +1,8 @@
-import { Box, Grid, useTheme } from "@mui/material";
-import Image from "next/image";
+import { Box, useTheme } from "@mui/material";
 import DOMPurify from "dompurify";
 import { FC } from "react";
+import { Grid } from "@mui/system";
+import Image from "next/image";
 
 interface FeedItemBodyProps {
   body: string;
@@ -13,8 +14,13 @@ export const FeedItemBody: FC<FeedItemBodyProps> = ({ body, image }) => {
   const theme = useTheme();
 
   return (
-    <Grid container spacing={2} sx={{ paddingTop: 2 }}>
-      <Grid item xs={12} md={image ? 6 : 12}>
+    <Grid container spacing={2} sx={{ pt: 2, height: "100%", width: "100%" }}>
+      <Grid
+        size={{
+          xs: 6,
+          md: image ? 6 : 12,
+        }}
+      >
         {body && (
           <Box
             sx={{
@@ -25,18 +31,27 @@ export const FeedItemBody: FC<FeedItemBodyProps> = ({ body, image }) => {
         )}
       </Grid>
       {image && (
-        <Grid item xs={12} md={6} sx={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
-          <Box
-            sx={{
-              position: "relative",
-              width: "100%",
-              height: 0,
-              paddingBottom: "56.25%", // 16:9 aspect ratio
-              borderRadius: 2,
-              overflow: "hidden",
-            }}>
-            <Image src={image} alt='Post Image' layout='fill' objectFit='cover' />
-          </Box>
+        <Grid
+          size={{
+            xs: 12,
+            md: 6,
+          }}
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "flex-end",
+          }}
+        >
+          <Image
+            src={image}
+            alt="Feed item image"
+            layout="intrinsic"
+            width={500}
+            height={0}
+            style={{
+              borderRadius: 12,
+            }}
+          />
         </Grid>
       )}
     </Grid>
