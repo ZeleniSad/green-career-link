@@ -34,9 +34,8 @@ const ResetPassword = () => {
   const formik = useFormik({
     initialValues: initialValues,
     validationSchema: resetPasswordValidationSchema,
-    onSubmit: (values) => {
+    onSubmit: () => {
       alert("Reset Password");
-      console.log("resetPasswordValues", values);
     },
   });
 
