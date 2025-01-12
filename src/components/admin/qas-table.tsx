@@ -1,14 +1,12 @@
 "use client";
 
 import { FC, useEffect, useState } from "react";
-import { EducationItemDto } from "../../types/dto";
-import { deleteEducation, getEducationsData } from "../../services/educationService";
+import { EducationQAItemDto } from "../../types/dto";
 import {
   Alert,
   Box,
   Button,
   CircularProgress,
-  IconButton,
   Paper,
   Snackbar,
   Table,
@@ -19,20 +17,13 @@ import {
   TableRow,
   Typography,
 } from "@mui/material";
-import { OpenInNew } from "@mui/icons-material";
+import { deleteQA, getQAsData } from "../../services/educationService";
 import ConfirmDialog from "../confirm-dialog/confirm-dialog";
 
-const EducationRow: FC<{ row: EducationItemDto; onDelete: (id: string) => void }> = ({ row, onDelete }) => (
+const QARow: FC<{ row: EducationQAItemDto; onDelete: (id: string) => void }> = ({ row, onDelete }) => (
   <TableRow>
     <TableCell sx={{ p: 1 }}>{row.title}</TableCell>
-    <TableCell sx={{ p: 1 }}>{row.fileName}</TableCell>
-    <TableCell sx={{ p: 1 }}>
-      <Box sx={{ display: "flex", gap: 1 }}>
-        <IconButton href={row.fileUrl} target='_blank' underline='none'>
-          <OpenInNew fontSize='small' />
-        </IconButton>
-      </Box>
-    </TableCell>
+    <TableCell sx={{ p: 1 }}>{row.body}</TableCell>
     <TableCell sx={{ p: 1 }}>
       <Button variant='contained' color='primary' fullWidth>
         Edit
@@ -46,63 +37,62 @@ const EducationRow: FC<{ row: EducationItemDto; onDelete: (id: string) => void }
   </TableRow>
 );
 
-export const EducationsTable: FC = () => {
-  const [educations, setEducations] = useState<EducationItemDto[]>([]);
+export const QAsTable: FC = () => {
+  const [qas, setQAs] = useState<EducationQAItemDto[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
-  const [selectedEducationId, setSelectedEducationId] = useState<string | null>(null);
+  const [selectedQAId, setSelectedQAId] = useState<string | null>(null);
   const [snackbarSeverity, setSnackbarSeverity] = useState<"success" | "error">("success");
 
   const handleCloseSnackbar = () => {
     setSnackbarOpen(false);
   };
 
-  const fetchEducations = async () => {
+  const fetchQAs = async () => {
     setLoading(true);
     setSnackbarOpen(false);
     setSnackbarMessage("");
-
     try {
-      const data = await getEducationsData();
-      setEducations(data);
+      const data = await getQAsData();
+      setQAs(data);
       setLoading(false);
     } catch (error) {
-      console.error("Error fetching educations for table data: ", error);
+      console.error("Error fetching QAs for table data: ", error);
       setSnackbarSeverity("error");
       setSnackbarOpen(true);
       setLoading(false);
-      setSnackbarMessage("Failed to fetch education files.");
+      setSnackbarMessage("Failed to fetch Q&A table items.");
     }
   };
 
   useEffect(() => {
-    fetchEducations();
+    fetchQAs();
   }, []);
 
   const handleDeleteClick = (id: string) => {
-    setSelectedEducationId(id);
+    setSelectedQAId(id);
     setConfirmDialogOpen(true);
   };
 
   const handleConfirmDelete = async () => {
-    if (selectedEducationId) {
-      const deletedEducation = educations.find((item) => item.id === selectedEducationId)!;
-      setEducations((prevEducations) => prevEducations.filter((item) => item.id !== selectedEducationId));
+    if (selectedQAId) {
+      const deletedQA = qas.find((item) => item.id === selectedQAId)!;
+      setQAs((prevQAs) => prevQAs.filter((item) => item.id !== selectedQAId));
 
-      await deleteEducation(deletedEducation.id, deletedEducation.fileUrl);
-      setSnackbarMessage("Education item deleted successfully.");
+      await deleteQA(deletedQA.id);
+      setSnackbarMessage("Q&A item deleted successfully.");
       setSnackbarSeverity("success");
       setSnackbarOpen(true);
-      setSelectedEducationId(null);
+      setSelectedQAId(null);
     }
   };
 
   return (
     <Box sx={{ p: 3, width: "100%" }}>
       <Typography variant='h3' color='primary' gutterBottom>
-        Education Files
+        Q&A Items
       </Typography>
       {loading ? (
         <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: 200 }}>
@@ -114,15 +104,14 @@ export const EducationsTable: FC = () => {
             <TableHead>
               <TableRow>
                 <TableCell sx={{ p: 1 }}>Title</TableCell>
-                <TableCell sx={{ p: 1 }}>File Name</TableCell>
-                <TableCell sx={{ p: 1 }}>File</TableCell>
+                <TableCell sx={{ p: 1 }}>Body</TableCell>
                 <TableCell sx={{ p: 1 }}>Edit</TableCell>
                 <TableCell sx={{ p: 1 }}>Delete</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {educations.map((education) => (
-                <EducationRow key={education.id} row={education} onDelete={handleDeleteClick} />
+              {qas.map((qa) => (
+                <QARow key={qa.id} row={qa} onDelete={handleDeleteClick} />
               ))}
             </TableBody>
           </Table>
@@ -137,7 +126,7 @@ export const EducationsTable: FC = () => {
         dialog={{
           open: confirmDialogOpen,
           title: "Confirm Delete",
-          message: "Are you sure you want to delete this education file?",
+          message: "Are you sure you want to delete this Q&A record?",
           onConfirm: handleConfirmDelete,
           onCancel: () => setConfirmDialogOpen(false),
         }}
