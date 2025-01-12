@@ -120,6 +120,7 @@ export const ProfileInformations = ({
                   formikValues={values}
                   handleChange={handleChange}
                   setSelectedFile={setSelectedFile}
+                  isOwner={isOwner}
                 />
               )}
             </Paper>

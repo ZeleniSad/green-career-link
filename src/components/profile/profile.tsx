@@ -2,8 +2,6 @@
 import { useEffect, useState } from "react";
 import { getAuth } from "firebase/auth";
 import { doc, getDoc, getFirestore } from "firebase/firestore";
-import { CreatePostModal } from "@/components/modals/create-post-modal";
-import { useModal } from "@/hooks/useModal";
 import { ProfileBanner } from "@/components/profile/profile-banner";
 import { ProfileHeader } from "@/components/profile/profile-header";
 import { ProfileInformations } from "@/components/profile/profile-informations";
@@ -13,7 +11,6 @@ import { CompanyInformation, IndividualInformation } from "@/types/interfaces";
 import { mapUserData } from "@/util/mappers";
 
 export const Profile = ({ uid: initialUid }: { uid?: string }) => {
-  const { modalOpen, handleOpen, handleClose } = useModal();
   const [userData, setUserData] = useState<
     IndividualInformation | CompanyInformation
   >(null);
@@ -52,10 +49,9 @@ export const Profile = ({ uid: initialUid }: { uid?: string }) => {
 
   return (
     <Box className={styles.wrapper}>
-      <ProfileHeader handleOpen={handleOpen} />
+      <ProfileHeader />
       <ProfileBanner profile={userData} uid={uid} />
       <ProfileInformations profile={userData} uid={uid} />
-      <CreatePostModal modalOpen={modalOpen} handleClose={handleClose} />
     </Box>
   );
 };

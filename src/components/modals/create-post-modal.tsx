@@ -12,7 +12,7 @@ import {
 } from "@mui/material";
 import { Grid } from "@mui/system";
 import { DescriptionOutlined } from "@mui/icons-material";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   MenuButtonBlockquote,
   MenuButtonBold,
@@ -34,7 +34,11 @@ import { db } from "@/config/firebaseConfig";
 import { FeedItemDto } from "@/types/dto";
 import { addDoc, collection } from "firebase/firestore";
 import { uploadFile } from "@/services/fileServices";
-import { useAuth } from "../../context/authContext";
+import { useAuth } from "@/context/authContext";
+import { fetchUserByUid } from "@/services/userServices";
+import { mapUserData } from "@/util/mappers";
+import { uuidv4 } from "@firebase/util";
+import { CompanyInformation, IndividualInformation } from "@/types/interfaces";
 
 const labels = {
   createPostTitle: "Create a post",
@@ -66,11 +70,20 @@ const useStyles = makeStyles({
     transform: "translate(-50%, -50%)",
     width: 600,
     padding: 24,
-    borderRadius: 48,
   },
 });
 
-export const CreatePostModal = ({ modalOpen, handleClose }: { modalOpen: boolean; handleClose: () => void }) => {
+export const CreatePostModal = ({
+  modalOpen,
+  handleClose,
+  setFeedItems,
+}: {
+  modalOpen: boolean;
+  handleClose: () => void;
+  setFeedItems: (
+    value: ((prevState: FeedItemDto[]) => FeedItemDto[]) | FeedItemDto[],
+  ) => void;
+}) => {
   const { user } = useAuth();
   const [loading, setLoading] = useState(false);
   const rteRef = useRef<RichTextEditorRef | null>(null);
@@ -82,6 +95,22 @@ export const CreatePostModal = ({ modalOpen, handleClose }: { modalOpen: boolean
     selectedCategory: false,
   });
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [userData, setUserData] = useState<
+    IndividualInformation | CompanyInformation
+  >(null);
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      if (user) {
+        const fetchedUserData = await fetchUserByUid(user.uid);
+        const mappedUserData = mapUserData(fetchedUserData);
+        setUserData(mappedUserData);
+      }
+    };
+
+    fetchUserData();
+  }, [user]);
+
   const handleFileSelect = (file: File | null) => {
     setSelectedFile(file);
   };
@@ -108,19 +137,32 @@ export const CreatePostModal = ({ modalOpen, handleClose }: { modalOpen: boolean
         imageUrl = await uploadFile(selectedFile, userId);
       }
 
-      const category = categories.find((c) => Number(formState.selectedCategory) == c.categoryId)!.label;
+      const category = categories.find(
+        (c) => Number(formState.selectedCategory) == c.categoryId,
+      )!.label;
       const body = formState.postDescription;
 
       const feedItem = {
         category,
         body,
         userId,
+        id: uuidv4(),
         createdAt: new Date(),
         image: imageUrl,
+        createdBy: user?.displayName,
+        profileUrl: userData?.profileUrl,
+        userType: userData?.userType,
+        applyToEmail: userData?.email,
       } as FeedItemDto;
 
       const feedItemsCollection = collection(db, "feedItems");
-      await addDoc(feedItemsCollection, feedItem);
+      try {
+        console.log("feedItem", feedItem);
+        await addDoc(feedItemsCollection, feedItem);
+        setFeedItems((prevFeedItems) => [feedItem, ...prevFeedItems]);
+      } catch (error) {
+        console.error("Error creating feed item: ", error);
+      }
 
       handleClose();
       setLoading(false);
@@ -131,24 +173,35 @@ export const CreatePostModal = ({ modalOpen, handleClose }: { modalOpen: boolean
     <Modal
       open={modalOpen}
       onClose={handleClose}
-      aria-labelledby='modal-modal-title'
-      aria-describedby='modal-modal-description'>
-      <Paper className={classes.modalStyle}>
+      aria-labelledby="modal-modal-title"
+      aria-describedby="modal-modal-description"
+    >
+      <Paper
+        className={classes.modalStyle}
+        sx={{
+          borderRadius: 6,
+        }}
+      >
         <Grid container sx={{ gap: 3 }}>
           <Grid container sx={{ alignItems: "center", gap: 2 }}>
-            <DescriptionOutlined color='primary' />
-            <Typography variant='h5'>{labels.createPostTitle}</Typography>
+            <DescriptionOutlined color="primary" />
+            <Typography variant="h5">{labels.createPostTitle}</Typography>
           </Grid>
-          <Typography variant='body1'>{labels.createPostDescription}</Typography>
+          <Typography variant="body1">
+            {labels.createPostDescription}
+          </Typography>
           <FormControl fullWidth error={errors.selectedCategory}>
-            <InputLabel id='demo-simple-select-label'>{labels.categoryLabel}</InputLabel>
+            <InputLabel id="demo-simple-select-label">
+              {labels.categoryLabel}
+            </InputLabel>
             <Select
-              labelId='demo-simple-select-label'
-              id='demo-simple-select'
-              name='selectedCategory'
+              labelId="demo-simple-select-label"
+              id="demo-simple-select"
+              name="selectedCategory"
               value={formState.selectedCategory}
               label={labels.categoryLabel}
-              onChange={handleSelectChange}>
+              onChange={handleSelectChange}
+            >
               {categories.map((category) => (
                 <MenuItem key={category.categoryId} value={category.categoryId}>
                   {category.label}
@@ -163,7 +216,8 @@ export const CreatePostModal = ({ modalOpen, handleClose }: { modalOpen: boolean
               "& .ProseMirror": {
                 minHeight: "150px",
               },
-            }}>
+            }}
+          >
             <RichTextEditor
               onUpdate={({ editor }) => {
                 setFormState({
@@ -194,17 +248,25 @@ export const CreatePostModal = ({ modalOpen, handleClose }: { modalOpen: boolean
             disabled={false}
             onFileSelect={handleFileSelect}
             isEditing={true}
+            isOwner={true}
             allowedFileTypes={{
               "image/png": [".png"],
               "image/jpeg": [".jpg", ".jpeg"],
             }}
           />
-          <Typography variant='body2'>{labels.supportedFormats}</Typography>
-          <Grid container sx={{ width: "100%", justifyContent: "flex-end", gap: 2 }}>
-            <Button variant='outlined' onClick={handleClose}>
+          <Typography variant="body2">{labels.supportedFormats}</Typography>
+          <Grid
+            container
+            sx={{ width: "100%", justifyContent: "flex-end", gap: 2 }}
+          >
+            <Button variant="outlined" onClick={handleClose}>
               {labels.cancel}
             </Button>
-            <Button variant='contained' onClick={handleFormSubmit} disabled={loading}>
+            <Button
+              variant="contained"
+              onClick={handleFormSubmit}
+              disabled={loading}
+            >
               {labels.createPostButton}
             </Button>
           </Grid>
