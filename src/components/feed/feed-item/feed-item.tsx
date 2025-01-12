@@ -14,14 +14,13 @@ export const FeedItem: FC<FeedItemProps> = ({ item }) => {
         border: `1px solid ${grey[300]}`,
         p: 2,
         borderRadius: 5,
-      }}
-    >
+      }}>
       <FeedItemHeader
-        user={item.user}
-        date={item.date}
-        email={item.email}
+        user={item.createdBy}
+        date={item.createdAt}
+        email={item.applyToEmail}
         category={item.category}
-        type={item.type}
+        type={item.userType}
       />
       <Divider sx={{ width: "100%", pt: 2 }} />
       <FeedItemBody body={item.body} image={item.image} />

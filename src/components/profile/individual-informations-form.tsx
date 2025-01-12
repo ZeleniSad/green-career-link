@@ -115,7 +115,13 @@ export const IndividualInformationsForm = ({
           </Grid>
 
           <Grid size={12}>
-            <UploadFile disabled={!isEditing} />
+            <UploadFile
+              disabled={!isEditing}
+              onFileSelect={handleFileSelect}
+              allowedFileTypes={{
+                "application/pdf": [".pdf"],
+              }}
+            />
           </Grid>
         </Grid>
       </Grid>

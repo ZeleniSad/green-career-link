@@ -8,7 +8,6 @@ import {
   Paper,
   Select,
   SelectChangeEvent,
-  TextField,
   Typography,
 } from "@mui/material";
 import { Grid } from "@mui/system";
@@ -31,17 +30,20 @@ import {
 import { StarterKit } from "@tiptap/starter-kit";
 import { makeStyles } from "@mui/styles";
 import { UploadFile } from "@/components/upload-file/upload-file";
+import { db, storage } from "@/config/firebaseConfig";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import { FeedItemDto } from "../../types/dto";
+import { addDoc, collection } from "firebase/firestore";
 
 const labels = {
   createPostTitle: "Create a post",
   createPostDescription:
     "The form allows you to easily create and share posts about business opportunities, volunteer actions, or environmental projects with the community on the platform.",
   categoryLabel: "Choose category",
-  postNameLabel: "Post Name",
   postDescription: "Post Description",
   attachFiles: "Attach Files",
   supportedFormats:
-    "If you want, you can add an image or document to make your post more visually appealing. Supported formats: PNG, JPG.",
+    "If you want, you can add an image to make your post more visually appealing. Supported formats: PNG, JPG, JPEG",
   cancel: "Cancel",
   createPostButton: "Create post",
 };
@@ -67,36 +69,20 @@ const useStyles = makeStyles({
   },
 });
 
-export const CreatePostModal = ({
-  modalOpen,
-  handleClose,
-}: {
-  modalOpen: boolean;
-  handleClose: () => void;
-}) => {
+export const CreatePostModal = ({ modalOpen, handleClose }: { modalOpen: boolean; handleClose: () => void }) => {
   const rteRef = useRef<RichTextEditorRef | null>(null);
   const [formState, setFormState] = useState({
     selectedCategory: "",
-    postName: "",
     postDescription: "",
   });
   const [errors, setErrors] = useState({
     selectedCategory: false,
-    postName: false,
   });
-  const classes = useStyles();
-
-  const handleInputChange = (
-    event:
-      | React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-      | SelectChangeEvent,
-  ) => {
-    const { name, value } = event.target;
-    setFormState((prevState) => ({
-      ...prevState,
-      [name]: value,
-    }));
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const handleFileSelect = (file: File | null) => {
+    setSelectedFile(file);
   };
+  const classes = useStyles();
 
   const handleSelectChange = (event: SelectChangeEvent) => {
     setFormState((prevState) => ({
@@ -105,17 +91,44 @@ export const CreatePostModal = ({
     }));
   };
 
-  const handleFormSubmit = () => {
+  const handleFormSubmit = async () => {
     const newErrors = {
       selectedCategory: !formState.selectedCategory,
-      postName: !formState.postName,
     };
     setErrors(newErrors);
 
-    if (!newErrors.selectedCategory && !newErrors.postName) {
-      // Handle form submission
-      console.log("Form submitted", formState);
+    if (!newErrors.selectedCategory) {
+      let imageUrl = "";
+      if (selectedFile) {
+        imageUrl = await uploadImage(selectedFile);
+      }
+
+      const feedItem = {
+        category: categories.find((c) => Number(formState.selectedCategory) == c.categoryId)!.label,
+        body: formState.postDescription,
+        userId: "JC5eBPBiYzfXyDQuXu7c5vJiIlr2",
+        createdAt: new Date(),
+        image: imageUrl,
+      } as FeedItemDto;
+
+      const feedItemsCollection = collection(db, "feedItems");
+      await addDoc(feedItemsCollection, feedItem);
+
       handleClose();
+    }
+  };
+
+  const uploadImage = async (file: File): Promise<string> => {
+    try {
+      const storageRef = ref(storage, `images/${file.name}`);
+
+      const snapshot = await uploadBytes(storageRef, file);
+
+      const downloadURL = await getDownloadURL(snapshot.ref);
+      return downloadURL;
+    } catch (error) {
+      console.error("Upload failed", error);
+      throw error;
     }
   };
 
@@ -123,30 +136,24 @@ export const CreatePostModal = ({
     <Modal
       open={modalOpen}
       onClose={handleClose}
-      aria-labelledby="modal-modal-title"
-      aria-describedby="modal-modal-description"
-    >
+      aria-labelledby='modal-modal-title'
+      aria-describedby='modal-modal-description'>
       <Paper className={classes.modalStyle}>
         <Grid container sx={{ gap: 3 }}>
           <Grid container sx={{ alignItems: "center", gap: 2 }}>
-            <DescriptionOutlined color="primary" />
-            <Typography variant="h5">{labels.createPostTitle}</Typography>
+            <DescriptionOutlined color='primary' />
+            <Typography variant='h5'>{labels.createPostTitle}</Typography>
           </Grid>
-          <Typography variant="body1">
-            {labels.createPostDescription}
-          </Typography>
+          <Typography variant='body1'>{labels.createPostDescription}</Typography>
           <FormControl fullWidth error={errors.selectedCategory}>
-            <InputLabel id="demo-simple-select-label">
-              {labels.categoryLabel}
-            </InputLabel>
+            <InputLabel id='demo-simple-select-label'>{labels.categoryLabel}</InputLabel>
             <Select
-              labelId="demo-simple-select-label"
-              id="demo-simple-select"
-              name="selectedCategory"
+              labelId='demo-simple-select-label'
+              id='demo-simple-select'
+              name='selectedCategory'
               value={formState.selectedCategory}
               label={labels.categoryLabel}
-              onChange={handleSelectChange}
-            >
+              onChange={handleSelectChange}>
               {categories.map((category) => (
                 <MenuItem key={category.categoryId} value={category.categoryId}>
                   {category.label}
@@ -154,15 +161,6 @@ export const CreatePostModal = ({
               ))}
             </Select>
           </FormControl>
-          <TextField
-            id="postName"
-            name="postName"
-            value={formState.postName}
-            onChange={handleInputChange}
-            label={labels.postNameLabel}
-            fullWidth
-            error={errors.postName}
-          />
           <Box sx={{ width: "100%", minHeight: 200 }}>
             <RichTextEditor
               onUpdate={({ editor }) => {
@@ -190,16 +188,20 @@ export const CreatePostModal = ({
               className={classes.textEditor}
             />
           </Box>
-          <UploadFile disabled={false} />
-          <Typography variant="body2">{labels.supportedFormats}</Typography>
-          <Grid
-            container
-            sx={{ width: "100%", justifyContent: "flex-end", gap: 2 }}
-          >
-            <Button variant="outlined" onClick={handleClose}>
+          <UploadFile
+            disabled={false}
+            onFileSelect={handleFileSelect}
+            allowedFileTypes={{
+              "image/png": [".png"],
+              "image/jpeg": [".jpg", ".jpeg"],
+            }}
+          />
+          <Typography variant='body2'>{labels.supportedFormats}</Typography>
+          <Grid container sx={{ width: "100%", justifyContent: "flex-end", gap: 2 }}>
+            <Button variant='outlined' onClick={handleClose}>
               {labels.cancel}
             </Button>
-            <Button variant="contained" onClick={handleFormSubmit}>
+            <Button variant='contained' onClick={handleFormSubmit}>
               {labels.createPostButton}
             </Button>
           </Grid>

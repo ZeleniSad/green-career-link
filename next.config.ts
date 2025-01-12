@@ -66,6 +66,7 @@ const nextConfig: NextConfig = {
         hostname: "images.pexels.com",
       },
     ],
+    domains: ["firebasestorage.googleapis.com"],
   },
   serverExternalPackages: ["pino"],
   headers: async () => {
