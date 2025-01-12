@@ -3,6 +3,7 @@ import {
   Avatar,
   Box,
   Button,
+  IconButton,
   Paper,
   Table,
   TableBody,
@@ -13,6 +14,7 @@ import {
 } from "@mui/material";
 import { FC, useEffect, useState } from "react";
 import { fetchAllUsers } from "@/services/userServices";
+import { Delete, Edit } from "@mui/icons-material";
 
 interface User {
   name: string;
@@ -23,7 +25,15 @@ interface User {
 }
 
 const UserRow: FC<{ user: User }> = ({ user }) => (
-  <TableRow>
+  <TableRow
+    sx={{
+      "&:nth-of-type(odd)": {
+        backgroundColor: "action.hover",
+      },
+      "&:hover": {
+        backgroundColor: "action.selected",
+      },
+    }}>
     <TableCell sx={{ p: 1 }}>
       <Box sx={{ display: "flex", justifyContent: "center" }}>
         <Avatar />
@@ -34,15 +44,13 @@ const UserRow: FC<{ user: User }> = ({ user }) => (
     <TableCell sx={{ p: 1 }}>{user.phone}</TableCell>
     <TableCell sx={{ p: 1 }}>{user.country}</TableCell>
     <TableCell sx={{ p: 1 }}>{user.city}</TableCell>
-    <TableCell sx={{ p: 1 }}>
-      <Button variant="contained" color="primary" fullWidth>
-        Edit
-      </Button>
-    </TableCell>
-    <TableCell sx={{ p: 1 }}>
-      <Button variant="contained" color="error" fullWidth>
-        Delete
-      </Button>
+    <TableCell sx={{ p: 2, textAlign: "right" }}>
+      <IconButton color='primary' size='small'>
+        <Edit fontSize='medium' />
+      </IconButton>
+      <IconButton color='error' size='small'>
+        <Delete fontSize='medium' />
+      </IconButton>
     </TableCell>
   </TableRow>
 );
@@ -65,18 +73,17 @@ export const UsersTable: FC = () => {
   }, []);
 
   return (
-    <TableContainer component={Paper}>
+    <TableContainer component={Paper} sx={{ boxShadow: 3, borderRadius: 2 }}>
       <Table>
         <TableHead>
-          <TableRow>
-            <TableCell sx={{ p: 1 }}></TableCell>
-            <TableCell sx={{ p: 1 }}>Name</TableCell>
-            <TableCell sx={{ p: 1 }}>Email</TableCell>
-            <TableCell sx={{ p: 1 }}>Phone</TableCell>
-            <TableCell sx={{ p: 1 }}>Country</TableCell>
-            <TableCell sx={{ p: 1 }}>City</TableCell>
-            <TableCell sx={{ p: 1 }}></TableCell>
-            <TableCell sx={{ p: 1 }}></TableCell>
+          <TableRow sx={{ backgroundColor: "primary.main" }}>
+            <TableCell sx={{ p: 1, color: "primary.contrastText", fontWeight: "bold" }}></TableCell>
+            <TableCell sx={{ p: 1, color: "primary.contrastText", fontWeight: "bold" }}>Name</TableCell>
+            <TableCell sx={{ p: 1, color: "primary.contrastText", fontWeight: "bold" }}>Email</TableCell>
+            <TableCell sx={{ p: 1, color: "primary.contrastText", fontWeight: "bold" }}>Phone</TableCell>
+            <TableCell sx={{ p: 1, color: "primary.contrastText", fontWeight: "bold" }}>Country</TableCell>
+            <TableCell sx={{ p: 1, color: "primary.contrastText", fontWeight: "bold" }}>City</TableCell>
+            <TableCell sx={{ p: 1, color: "primary.contrastText", fontWeight: "bold" }}></TableCell>
           </TableRow>
         </TableHead>
         <TableBody>

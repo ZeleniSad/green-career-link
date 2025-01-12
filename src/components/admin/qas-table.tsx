@@ -1,11 +1,11 @@
 "use client";
 
 import { FC, useEffect, useState } from "react";
-import { EducationItemDto } from "../../types/dto";
-import { deleteEducation, getEducationsData } from "../../services/educationService";
+import { EducationQAItemDto } from "../../types/dto";
 import {
   Alert,
   Box,
+  Button,
   CircularProgress,
   IconButton,
   Paper,
@@ -18,10 +18,11 @@ import {
   TableRow,
   Typography,
 } from "@mui/material";
-import { Delete, Edit, OpenInNew } from "@mui/icons-material";
+import { deleteQA, getQAsData } from "../../services/educationService";
 import ConfirmDialog from "../confirm-dialog/confirm-dialog";
+import { Delete, Edit } from "@mui/icons-material";
 
-const EducationRow: FC<{ row: EducationItemDto; onDelete: (id: string) => void }> = ({ row, onDelete }) => (
+const QARow: FC<{ row: EducationQAItemDto; onDelete: (id: string) => void }> = ({ row, onDelete }) => (
   <TableRow
     sx={{
       "&:nth-of-type(odd)": {
@@ -31,86 +32,81 @@ const EducationRow: FC<{ row: EducationItemDto; onDelete: (id: string) => void }
         backgroundColor: "action.selected",
       },
     }}>
-    <TableCell sx={{ p: 2 }}>{row.title}</TableCell>
-    <TableCell sx={{ p: 2 }}>{row.fileName}</TableCell>
-    <TableCell sx={{ p: 2 }}>
+    <TableCell sx={{ p: 1, verticalAlign: "middle" }}>{row.title}</TableCell>
+    <TableCell sx={{ p: 1, verticalAlign: "middle" }}>{row.body}</TableCell>
+    <TableCell sx={{ p: 1, textAlign: "right", verticalAlign: "middle", whiteSpace: "nowrap" }}>
       <IconButton
-        href={row.fileUrl}
-        target='_blank'
-        rel='noopener noreferrer'
-        size='small' // Set the size to small
-      >
-        <OpenInNew fontSize='small' />
+        color='primary'
+        size='small'
+        sx={{ padding: 0, marginRight: 1 }}
+        onClick={() => {
+          /* Handle edit action */
+        }}>
+        <Edit fontSize='small' />
       </IconButton>
-    </TableCell>
-    <TableCell sx={{ p: 2, textAlign: "right" }}>
-      <IconButton color='primary' size='small'>
-        <Edit fontSize='medium' />
-      </IconButton>
-      <IconButton color='error' size='small' onClick={() => onDelete(row.id)}>
-        <Delete fontSize='medium' />
+      <IconButton color='error' size='small' sx={{ padding: 0 }} onClick={() => onDelete(row.id)}>
+        <Delete fontSize='small' />
       </IconButton>
     </TableCell>
   </TableRow>
 );
 
-export const EducationsTable: FC = () => {
-  const [educations, setEducations] = useState<EducationItemDto[]>([]);
+export const QAsTable: FC = () => {
+  const [qas, setQAs] = useState<EducationQAItemDto[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
-  const [selectedEducationId, setSelectedEducationId] = useState<string | null>(null);
+  const [selectedQAId, setSelectedQAId] = useState<string | null>(null);
   const [snackbarSeverity, setSnackbarSeverity] = useState<"success" | "error">("success");
 
   const handleCloseSnackbar = () => {
     setSnackbarOpen(false);
   };
 
-  const fetchEducations = async () => {
+  const fetchQAs = async () => {
     setLoading(true);
     setSnackbarOpen(false);
     setSnackbarMessage("");
-
     try {
-      const data = await getEducationsData();
-      setEducations(data);
+      const data = await getQAsData();
+      setQAs(data);
       setLoading(false);
     } catch (error) {
-      console.error("Error fetching educations for table data: ", error);
+      console.error("Error fetching QAs for table data: ", error);
       setSnackbarSeverity("error");
       setSnackbarOpen(true);
       setLoading(false);
-      setSnackbarMessage("Failed to fetch education files.");
+      setSnackbarMessage("Failed to fetch Q&A table items.");
     }
   };
 
   useEffect(() => {
-    fetchEducations();
+    fetchQAs();
   }, []);
 
   const handleDeleteClick = (id: string) => {
-    setSelectedEducationId(id);
+    setSelectedQAId(id);
     setConfirmDialogOpen(true);
   };
 
   const handleConfirmDelete = async () => {
-    if (selectedEducationId) {
-      const deletedEducation = educations.find((item) => item.id === selectedEducationId)!;
-      setEducations((prevEducations) => prevEducations.filter((item) => item.id !== selectedEducationId));
+    if (selectedQAId) {
+      const deletedQA = qas.find((item) => item.id === selectedQAId)!;
+      setQAs((prevQAs) => prevQAs.filter((item) => item.id !== selectedQAId));
 
-      await deleteEducation(deletedEducation.id, deletedEducation.fileUrl);
-      setSnackbarMessage("Education item deleted successfully.");
+      await deleteQA(deletedQA.id);
+      setSnackbarMessage("Q&A item deleted successfully.");
       setSnackbarSeverity("success");
       setSnackbarOpen(true);
-      setSelectedEducationId(null);
+      setSelectedQAId(null);
     }
   };
 
   return (
     <Box sx={{ p: 3, width: "100%" }}>
       <Typography variant='h3' color='primary' gutterBottom>
-        Education Files
+        Q&A Items
       </Typography>
       {loading ? (
         <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: 200 }}>
@@ -122,24 +118,19 @@ export const EducationsTable: FC = () => {
             <TableHead>
               <TableRow sx={{ backgroundColor: "primary.main" }}>
                 <TableCell sx={{ p: 2, color: "primary.contrastText", fontWeight: "bold" }}>Title</TableCell>
-                <TableCell sx={{ p: 2, color: "primary.contrastText", fontWeight: "bold" }}>File Name</TableCell>
-                <TableCell sx={{ p: 2, color: "primary.contrastText", fontWeight: "bold" }}>File</TableCell>
+                <TableCell sx={{ p: 2, color: "primary.contrastText", fontWeight: "bold" }}>Body</TableCell>
                 <TableCell sx={{ p: 2, color: "primary.contrastText", fontWeight: "bold" }}></TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {educations.map((education) => (
-                <EducationRow key={education.id} row={education} onDelete={handleDeleteClick} />
+              {qas.map((qa) => (
+                <QARow key={qa.id} row={qa} onDelete={handleDeleteClick} />
               ))}
             </TableBody>
           </Table>
         </TableContainer>
       )}
-      <Snackbar
-        open={snackbarOpen}
-        autoHideDuration={6000}
-        onClose={handleCloseSnackbar}
-        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}>
+      <Snackbar open={snackbarOpen} autoHideDuration={6000} onClose={handleCloseSnackbar}>
         <Alert severity={snackbarSeverity} sx={{ width: "100%" }} onClose={handleCloseSnackbar}>
           {snackbarMessage}
         </Alert>
@@ -148,7 +139,7 @@ export const EducationsTable: FC = () => {
         dialog={{
           open: confirmDialogOpen,
           title: "Confirm Delete",
-          message: "Are you sure you want to delete this education file?",
+          message: "Are you sure you want to delete this Q&A record?",
           onConfirm: handleConfirmDelete,
           onCancel: () => setConfirmDialogOpen(false),
         }}

@@ -12,3 +12,16 @@ export interface FeedItemDto {
   applyToEmail: string;
   profileUrl: string;
 }
+
+export interface EducationItemDto {
+  id: string;
+  fileUrl: string;
+  title: string;
+  fileName: string;
+}
+
+export interface EducationQAItemDto {
+  id: string;
+  title: string;
+  body: string;
+}
