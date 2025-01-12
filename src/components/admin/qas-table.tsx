@@ -5,7 +5,6 @@ import { EducationQAItemDto } from "../../types/dto";
 import {
   Alert,
   Box,
-  Button,
   CircularProgress,
   IconButton,
   Paper,
@@ -22,7 +21,10 @@ import { deleteQA, getQAsData } from "../../services/educationService";
 import ConfirmDialog from "../confirm-dialog/confirm-dialog";
 import { Delete, Edit } from "@mui/icons-material";
 
-const QARow: FC<{ row: EducationQAItemDto; onDelete: (id: string) => void }> = ({ row, onDelete }) => (
+const QARow: FC<{
+  row: EducationQAItemDto;
+  onDelete: (id: string) => void;
+}> = ({ row, onDelete }) => (
   <TableRow
     sx={{
       "&:nth-of-type(odd)": {
@@ -31,21 +33,35 @@ const QARow: FC<{ row: EducationQAItemDto; onDelete: (id: string) => void }> = (
       "&:hover": {
         backgroundColor: "action.selected",
       },
-    }}>
+    }}
+  >
     <TableCell sx={{ p: 1, verticalAlign: "middle" }}>{row.title}</TableCell>
     <TableCell sx={{ p: 1, verticalAlign: "middle" }}>{row.body}</TableCell>
-    <TableCell sx={{ p: 1, textAlign: "right", verticalAlign: "middle", whiteSpace: "nowrap" }}>
+    <TableCell
+      sx={{
+        p: 1,
+        textAlign: "right",
+        verticalAlign: "middle",
+        whiteSpace: "nowrap",
+      }}
+    >
       <IconButton
-        color='primary'
-        size='small'
+        color="primary"
+        size="small"
         sx={{ padding: 0, marginRight: 1 }}
         onClick={() => {
           /* Handle edit action */
-        }}>
-        <Edit fontSize='small' />
+        }}
+      >
+        <Edit fontSize="small" />
       </IconButton>
-      <IconButton color='error' size='small' sx={{ padding: 0 }} onClick={() => onDelete(row.id)}>
-        <Delete fontSize='small' />
+      <IconButton
+        color="error"
+        size="small"
+        sx={{ padding: 0 }}
+        onClick={() => onDelete(row.id)}
+      >
+        <Delete fontSize="small" />
       </IconButton>
     </TableCell>
   </TableRow>
@@ -58,7 +74,9 @@ export const QAsTable: FC = () => {
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
   const [selectedQAId, setSelectedQAId] = useState<string | null>(null);
-  const [snackbarSeverity, setSnackbarSeverity] = useState<"success" | "error">("success");
+  const [snackbarSeverity, setSnackbarSeverity] = useState<"success" | "error">(
+    "success",
+  );
 
   const handleCloseSnackbar = () => {
     setSnackbarOpen(false);
@@ -105,21 +123,53 @@ export const QAsTable: FC = () => {
 
   return (
     <Box sx={{ p: 3, width: "100%" }}>
-      <Typography variant='h3' color='primary' gutterBottom>
+      <Typography variant="h3" color="primary" gutterBottom>
         Q&A Items
       </Typography>
       {loading ? (
-        <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: 200 }}>
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            minHeight: 200,
+          }}
+        >
           <CircularProgress />
         </Box>
       ) : (
-        <TableContainer component={Paper} sx={{ boxShadow: 3, borderRadius: 2 }}>
+        <TableContainer
+          component={Paper}
+          sx={{ boxShadow: 3, borderRadius: 2 }}
+        >
           <Table>
             <TableHead>
               <TableRow sx={{ backgroundColor: "primary.main" }}>
-                <TableCell sx={{ p: 2, color: "primary.contrastText", fontWeight: "bold" }}>Title</TableCell>
-                <TableCell sx={{ p: 2, color: "primary.contrastText", fontWeight: "bold" }}>Body</TableCell>
-                <TableCell sx={{ p: 2, color: "primary.contrastText", fontWeight: "bold" }}></TableCell>
+                <TableCell
+                  sx={{
+                    p: 2,
+                    color: "primary.contrastText",
+                    fontWeight: "bold",
+                  }}
+                >
+                  Title
+                </TableCell>
+                <TableCell
+                  sx={{
+                    p: 2,
+                    color: "primary.contrastText",
+                    fontWeight: "bold",
+                  }}
+                >
+                  Body
+                </TableCell>
+                <TableCell
+                  sx={{
+                    p: 2,
+                    color: "primary.contrastText",
+                    fontWeight: "bold",
+                  }}
+                ></TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -130,8 +180,16 @@ export const QAsTable: FC = () => {
           </Table>
         </TableContainer>
       )}
-      <Snackbar open={snackbarOpen} autoHideDuration={6000} onClose={handleCloseSnackbar}>
-        <Alert severity={snackbarSeverity} sx={{ width: "100%" }} onClose={handleCloseSnackbar}>
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={6000}
+        onClose={handleCloseSnackbar}
+      >
+        <Alert
+          severity={snackbarSeverity}
+          sx={{ width: "100%" }}
+          onClose={handleCloseSnackbar}
+        >
           {snackbarMessage}
         </Alert>
       </Snackbar>

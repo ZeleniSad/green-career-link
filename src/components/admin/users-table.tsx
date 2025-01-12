@@ -2,7 +2,6 @@
 import {
   Avatar,
   Box,
-  Button,
   IconButton,
   Paper,
   Table,
@@ -33,7 +32,8 @@ const UserRow: FC<{ user: User }> = ({ user }) => (
       "&:hover": {
         backgroundColor: "action.selected",
       },
-    }}>
+    }}
+  >
     <TableCell sx={{ p: 1 }}>
       <Box sx={{ display: "flex", justifyContent: "center" }}>
         <Avatar />
@@ -45,11 +45,11 @@ const UserRow: FC<{ user: User }> = ({ user }) => (
     <TableCell sx={{ p: 1 }}>{user.country}</TableCell>
     <TableCell sx={{ p: 1 }}>{user.city}</TableCell>
     <TableCell sx={{ p: 2, textAlign: "right" }}>
-      <IconButton color='primary' size='small'>
-        <Edit fontSize='medium' />
+      <IconButton color="primary" size="small">
+        <Edit fontSize="medium" />
       </IconButton>
-      <IconButton color='error' size='small'>
-        <Delete fontSize='medium' />
+      <IconButton color="error" size="small">
+        <Delete fontSize="medium" />
       </IconButton>
     </TableCell>
   </TableRow>
@@ -77,13 +77,37 @@ export const UsersTable: FC = () => {
       <Table>
         <TableHead>
           <TableRow sx={{ backgroundColor: "primary.main" }}>
-            <TableCell sx={{ p: 1, color: "primary.contrastText", fontWeight: "bold" }}></TableCell>
-            <TableCell sx={{ p: 1, color: "primary.contrastText", fontWeight: "bold" }}>Name</TableCell>
-            <TableCell sx={{ p: 1, color: "primary.contrastText", fontWeight: "bold" }}>Email</TableCell>
-            <TableCell sx={{ p: 1, color: "primary.contrastText", fontWeight: "bold" }}>Phone</TableCell>
-            <TableCell sx={{ p: 1, color: "primary.contrastText", fontWeight: "bold" }}>Country</TableCell>
-            <TableCell sx={{ p: 1, color: "primary.contrastText", fontWeight: "bold" }}>City</TableCell>
-            <TableCell sx={{ p: 1, color: "primary.contrastText", fontWeight: "bold" }}></TableCell>
+            <TableCell
+              sx={{ p: 1, color: "primary.contrastText", fontWeight: "bold" }}
+            ></TableCell>
+            <TableCell
+              sx={{ p: 1, color: "primary.contrastText", fontWeight: "bold" }}
+            >
+              Name
+            </TableCell>
+            <TableCell
+              sx={{ p: 1, color: "primary.contrastText", fontWeight: "bold" }}
+            >
+              Email
+            </TableCell>
+            <TableCell
+              sx={{ p: 1, color: "primary.contrastText", fontWeight: "bold" }}
+            >
+              Phone
+            </TableCell>
+            <TableCell
+              sx={{ p: 1, color: "primary.contrastText", fontWeight: "bold" }}
+            >
+              Country
+            </TableCell>
+            <TableCell
+              sx={{ p: 1, color: "primary.contrastText", fontWeight: "bold" }}
+            >
+              City
+            </TableCell>
+            <TableCell
+              sx={{ p: 1, color: "primary.contrastText", fontWeight: "bold" }}
+            ></TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
