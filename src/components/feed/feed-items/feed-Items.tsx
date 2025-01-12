@@ -1,148 +1,136 @@
 "use client";
 
 import { Grid } from "@mui/system";
-import { Box, Paper } from "@mui/material";
+import { Alert, Box, CircularProgress, Paper, Typography } from "@mui/material";
 import { FeedItem } from "@/components/feed/feed-item/feed-item";
 import { FC, useCallback, useEffect, useRef, useState } from "react";
 import { FeedItemDto } from "@/types/dto";
-import {
-  collection,
-  DocumentData,
-  documentId,
-  getDocs,
-  limit,
-  orderBy,
-  query,
-  QueryDocumentSnapshot,
-  startAfter,
-  where,
-} from "firebase/firestore";
-import { db } from "@/config/firebaseConfig";
-import { CompanyInformation, IndividualInformation } from "@/types/interfaces";
+import { DocumentData, QueryDocumentSnapshot } from "firebase/firestore";
 import { UserType } from "@/types/enums";
+import { getFeedItemsData } from "@/services/feedItemsService";
+import { getUsersDataMapInChunks } from "@/services/userServices";
+import { CompanyInformation, IndividualInformation } from "@/types/interfaces";
 
-export type SortOrder = "ascending" | "descending";
-interface FeedItemsProps {
-  sortOrder: SortOrder;
-}
+const FEED_ITEMS_DELAY = 800;
 
-export const FeedItems: FC<FeedItemsProps> = ({ sortOrder }) => {
+export const FeedItems: FC = () => {
   const [feedItems, setFeedItems] = useState<FeedItemDto[]>([]);
-  const [lastVisible, setLastVisible] =
-    useState<QueryDocumentSnapshot<DocumentData> | null>(null);
+  const [lastVisible, setLastVisible] = useState<QueryDocumentSnapshot<DocumentData> | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
-  const [hasMore, setHasMore] = useState<boolean>(true); // State to track if more items are available
+  const [hasMore, setHasMore] = useState<boolean>(true);
   const observer = useRef<IntersectionObserver | null>(null);
+  const usersCache = useRef<Record<string, IndividualInformation | CompanyInformation>>({});
+  const debounceTimeout = useRef<NodeJS.Timeout>();
+
+  const mapCreatorsToFeedItems = async (feedItemCreatorIds: string[], newFeedItems: FeedItemDto[]) => {
+    // Filter out already cached user IDs
+    const uncachedUserIds = feedItemCreatorIds.filter((id) => !usersCache.current[id]);
+
+    if (uncachedUserIds.length > 0) {
+      const feedItemCreatorsMap = await getUsersDataMapInChunks(uncachedUserIds);
+      // Update cache with new user data
+      usersCache.current = { ...usersCache.current, ...feedItemCreatorsMap };
+    }
+
+    return newFeedItems.map((item) => {
+      const feedUser = usersCache.current[item.userId];
+      const userType = feedUser.userType;
+      const createdBy =
+        userType === UserType.Individual ? `${feedUser.firstName} ${feedUser.lastName}` : feedUser.companyName;
+
+      return {
+        ...item,
+        userType,
+        createdBy,
+        applyToEmail: feedUser.email,
+      } as FeedItemDto;
+    });
+  };
 
   const fetchFeedItems = useCallback(async () => {
     if (loading || !hasMore) return;
 
     try {
       setLoading(true);
-      let feedQuery = query(
-        collection(db, "feedItems"),
-        orderBy("createdAt", sortOrder === "ascending" ? "asc" : "desc"),
-        limit(10),
-      );
 
-      if (lastVisible) {
-        feedQuery = query(feedQuery, startAfter(lastVisible));
-      }
+      const { items: newFeedItems, lastDoc } = await getFeedItemsData(lastVisible);
 
-      const feedSnapshot = await getDocs(feedQuery);
-      const newFeedItems: FeedItemDto[] = [];
-      const userIdsToFetch: Set<string> = new Set();
-
-      feedSnapshot.forEach((doc) => {
-        const data = doc.data();
-        const feedItem = {
-          id: doc.id,
-          userId: data.userId,
-          createdAt: data.createdAt.toDate(),
-          category: data.category,
-          body: data.body,
-          image: data.image,
-        } as FeedItemDto;
-
-        newFeedItems.push(feedItem);
-        userIdsToFetch.add(data.userId);
-      });
-
-      if (feedSnapshot.empty) {
+      if (!newFeedItems.length) {
         setHasMore(false);
         setLoading(false);
         return;
       }
 
-      const userIdsArray = Array.from(userIdsToFetch);
-      const userChunks = [];
-      const chunkSize = 10;
+      // Use Set to ensure unique IDs
+      const feedItemCreatorIds = [...new Set(newFeedItems.map((item) => item.userId))];
+      const feedItemsWithUsers = await mapCreatorsToFeedItems(feedItemCreatorIds, newFeedItems);
 
-      for (let i = 0; i < userIdsArray.length; i += chunkSize) {
-        userChunks.push(userIdsArray.slice(i, i + chunkSize));
-      }
-
-      const userDocsPromises = userChunks.map((chunk) =>
-        getDocs(
-          query(collection(db, "users"), where(documentId(), "in", chunk)),
-        ),
-      );
-
-      const userDocsSnapshots = await Promise.all(userDocsPromises);
-      const userMap: Record<
-        string,
-        IndividualInformation | CompanyInformation
-      > = {};
-
-      userDocsSnapshots.forEach((snapshot) => {
-        snapshot.forEach((userDoc) => {
-          const userData = userDoc.data();
-          userMap[userDoc.id] = { id: userDoc.id, ...userData } as unknown as
-            | IndividualInformation
-            | CompanyInformation;
-        });
+      // Use Set to ensure unique feed items
+      setFeedItems((prevItems) => {
+        const uniqueItems = new Map<string, FeedItemDto>([
+          ...prevItems.map((item) => [item.id, item] as [string, FeedItemDto]),
+          ...feedItemsWithUsers.map((item) => [item.id, item] as [string, FeedItemDto]),
+        ]);
+        return Array.from(uniqueItems.values());
       });
 
-      const feedItemsWithUsers = newFeedItems.map((item) => {
-        const feedUser = userMap[item.userId];
-        const userType = feedUser.userType;
-        const createdBy =
-          userType === UserType.Individual
-            ? `${feedUser.firstName} ${feedUser.lastName}`
-            : feedUser.companyName;
-
-        return {
-          ...item,
-          userType,
-          createdBy,
-          applyToEmail: feedUser.email,
-        } as FeedItemDto;
-      });
-
-      setFeedItems((prevItems) => [...prevItems, ...feedItemsWithUsers]);
-      setLastVisible(feedSnapshot.docs[feedSnapshot.docs.length - 1]);
-      setLoading(false);
+      setLastVisible(lastDoc);
     } catch (error) {
       console.error("Error fetching feed items:", error);
+    } finally {
       setLoading(false);
     }
-  }, [lastVisible, loading, hasMore, sortOrder]);
+  }, [lastVisible, loading, hasMore]);
+
+  const debouncedFetch = useCallback(() => {
+    if (loading) return;
+
+    setLoading(true);
+
+    if (debounceTimeout.current) {
+      clearTimeout(debounceTimeout.current);
+    }
+
+    debounceTimeout.current = setTimeout(() => {
+      fetchFeedItems();
+    }, FEED_ITEMS_DELAY);
+  }, [fetchFeedItems, loading]);
 
   const lastItemRef = useCallback(
     (node: HTMLDivElement) => {
-      if (observer.current) observer.current?.disconnect();
-      observer.current = new IntersectionObserver((entries) => {
-        if (entries[0].isIntersecting) {
-          fetchFeedItems();
+      if (loading) return;
+
+      if (observer.current) observer.current.disconnect();
+
+      observer.current = new IntersectionObserver(
+        (entries) => {
+          if (entries[0].isIntersecting && hasMore) {
+            debouncedFetch();
+          }
+        },
+        {
+          root: null,
+          rootMargin: "100px",
+          threshold: 0.1,
         }
-      });
-      if (node) observer.current?.observe(node);
+      );
+
+      if (node) observer.current.observe(node);
     },
-    [fetchFeedItems],
+    [debouncedFetch, loading, hasMore]
   );
 
   useEffect(() => {
     fetchFeedItems();
+
+    return () => {
+      if (observer.current) {
+        observer.current.disconnect();
+      }
+      if (debounceTimeout.current) {
+        clearTimeout(debounceTimeout.current);
+      }
+    };
   }, []);
 
   return (
@@ -155,19 +143,33 @@ export const FeedItems: FC<FeedItemsProps> = ({ sortOrder }) => {
           width: "100%",
           p: 3,
           borderRadius: 5,
-        }}
-      >
+        }}>
         {feedItems.map((feedItem, index) => (
-          <Box
-            id={feedItem.id}
-            key={feedItem.id}
-            ref={index === feedItems.length - 1 ? lastItemRef : null}
-          >
+          <Box id={feedItem.id} key={feedItem.id} ref={index === feedItems.length - 1 ? lastItemRef : null}>
             <FeedItem item={feedItem} />
           </Box>
         ))}
-        {loading && <p>Loading more items...</p>}
-        {!hasMore && <p>No more items to load.</p>}
+
+        {loading && (
+          <Box display='flex' justifyContent='center' alignItems='center' mt={2}>
+            <CircularProgress />
+            <Typography variant='body1' sx={{ ml: 2 }}>
+              Fetching new posts...
+            </Typography>
+          </Box>
+        )}
+
+        {!loading && feedItems.length === 0 && (
+          <Alert severity='info' sx={{ mt: 2 }}>
+            The feed is currently empty.
+          </Alert>
+        )}
+
+        {!loading && !hasMore && feedItems.length > 0 && (
+          <Alert severity='warning' sx={{ mt: 2 }}>
+            You&apos;ve reached the end of the feed.
+          </Alert>
+        )}
       </Paper>
     </Grid>
   );

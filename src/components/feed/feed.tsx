@@ -7,7 +7,7 @@ export const Feed = () => {
   return (
     <Box className={styles.wrapper}>
       <DashboardAppBar />
-      <FeedItems sortOrder="descending" />
+      <FeedItems />
     </Box>
   );
 };
