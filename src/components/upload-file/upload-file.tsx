@@ -21,9 +21,11 @@ const ALLOWED_FILE_TYPES = {
 export const UploadFile = ({
   disabled,
   onFileSelect,
+  allowedFileTypes = ALLOWED_FILE_TYPES,
 }: {
   disabled: boolean;
   onFileSelect: (file: File | null) => void;
+  allowedFileTypes?: { [key: string]: string[] };
 }) => {
   const [fileUploadErrors, setFileUploadErrors] = useState<string[]>([]);
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
@@ -53,7 +55,7 @@ export const UploadFile = ({
 
   const { getRootProps, getInputProps, isDragActive, isDragReject } = useDropzone({
     onDrop,
-    accept: ALLOWED_FILE_TYPES,
+    accept: allowedFileTypes,
     maxFiles: MAX_FILES,
     maxSize: MAX_FILE_SIZE,
     disabled,

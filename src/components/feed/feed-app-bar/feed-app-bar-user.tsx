@@ -32,20 +32,17 @@ export const FeedAppBarUser: FC<FeedAppBarUserProps> = ({ profile }) => {
             cursor: "pointer",
           }}
           src={profile?.image}
-          onClick={handleClick}
-        >
-          {profile?.type === UserType.Company
+          onClick={handleClick}>
+          {profile?.userType === UserType.Company
             ? profile?.companyName?.charAt(0)
             : `${profile?.firstName?.charAt(0)}${profile?.lastName?.charAt(0)}`}
         </Avatar>
-        <Typography variant="body1">
-          {profile?.type === UserType.Company
-            ? profile?.companyName
-            : `${profile?.firstName} ${profile?.lastName}`}
+        <Typography variant='body1'>
+          {profile?.userType === UserType.Company ? profile?.companyName : `${profile?.firstName} ${profile?.lastName}`}
         </Typography>
       </Grid>
       <Menu
-        id="basic-menu"
+        id='basic-menu'
         anchorEl={anchorEl}
         open={open}
         onClose={handleClose}
@@ -59,20 +56,17 @@ export const FeedAppBarUser: FC<FeedAppBarUserProps> = ({ profile }) => {
         transformOrigin={{
           vertical: "top",
           horizontal: "center",
-        }}
-      >
+        }}>
         <MenuItem
           onClick={() => {
             router.push("/dashboard/profile");
-          }}
-        >
+          }}>
           Profile
         </MenuItem>
         <MenuItem
           onClick={() => {
             router.push("/login");
-          }}
-        >
+          }}>
           Logout
         </MenuItem>
       </Menu>

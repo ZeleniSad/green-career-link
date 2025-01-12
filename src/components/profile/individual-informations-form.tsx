@@ -11,8 +11,13 @@ export const IndividualInformationsForm = ({
   isEditing: boolean;
   profile: IndividualInformation;
 }) => {
-  const [individualInformation, setIndividualInformation] =
-    useState<IndividualInformation>(profile);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+
+  const handleFileSelect = (file: File | null) => {
+    setSelectedFile(file);
+  };
+
+  const [individualInformation, setIndividualInformation] = useState<IndividualInformation>(profile);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -25,9 +30,9 @@ export const IndividualInformationsForm = ({
         <Grid container spacing={3}>
           <Grid size={{ xs: 12, lg: 6 }}>
             <TextField
-              id="firstName"
-              name="firstName"
-              label="First Name"
+              id='firstName'
+              name='firstName'
+              label='First Name'
               fullWidth
               disabled={!isEditing}
               value={individualInformation?.firstName}
@@ -36,9 +41,9 @@ export const IndividualInformationsForm = ({
           </Grid>
           <Grid size={{ xs: 12, lg: 6 }}>
             <TextField
-              id="lastName"
-              name="lastName"
-              label="Last Name"
+              id='lastName'
+              name='lastName'
+              label='Last Name'
               fullWidth
               disabled={!isEditing}
               value={individualInformation?.lastName}
@@ -47,10 +52,10 @@ export const IndividualInformationsForm = ({
           </Grid>
           <Grid size={{ xs: 12, lg: 6 }}>
             <TextField
-              id="email"
-              name="email"
-              type="email"
-              label="Email Address"
+              id='email'
+              name='email'
+              type='email'
+              label='Email Address'
               fullWidth
               disabled={!isEditing}
               value={individualInformation?.email}
@@ -59,10 +64,10 @@ export const IndividualInformationsForm = ({
           </Grid>
           <Grid size={{ xs: 12, lg: 6 }}>
             <TextField
-              id="phone"
-              name="phone"
-              type="text"
-              label="Phone number"
+              id='phone'
+              name='phone'
+              type='text'
+              label='Phone number'
               fullWidth
               disabled={!isEditing}
               value={individualInformation?.phone}
@@ -71,10 +76,10 @@ export const IndividualInformationsForm = ({
           </Grid>
           <Grid size={12}>
             <TextField
-              id="moto"
-              name="moto"
-              type="text"
-              label="Moto"
+              id='moto'
+              name='moto'
+              type='text'
+              label='Moto'
               fullWidth
               disabled={!isEditing}
               value={individualInformation?.moto}
@@ -84,10 +89,10 @@ export const IndividualInformationsForm = ({
 
           <Grid size={12}>
             <TextField
-              id="description"
-              name="description"
-              type="text"
-              label="About Me"
+              id='description'
+              name='description'
+              type='text'
+              label='About Me'
               multiline
               minRows={8}
               fullWidth
@@ -102,10 +107,10 @@ export const IndividualInformationsForm = ({
         <Grid container spacing={3}>
           <Grid size={{ xs: 12, lg: 6 }}>
             <TextField
-              id="title"
-              name="title"
-              type="text"
-              label="Title"
+              id='title'
+              name='title'
+              type='text'
+              label='Title'
               fullWidth
               disabled={!isEditing}
               value={individualInformation?.title}
@@ -114,10 +119,10 @@ export const IndividualInformationsForm = ({
           </Grid>
           <Grid size={{ xs: 12, lg: 6 }}>
             <TextField
-              id="educationalLevel"
-              name="educationalLevel"
-              type="text"
-              label="Level of Education"
+              id='educationalLevel'
+              name='educationalLevel'
+              type='text'
+              label='Level of Education'
               fullWidth
               disabled={!isEditing}
               value={individualInformation?.educationalLevel}
@@ -126,10 +131,10 @@ export const IndividualInformationsForm = ({
           </Grid>
           <Grid size={{ xs: 12, lg: 6 }}>
             <TextField
-              id="yearsOfExperience"
-              name="yearsOfExperience"
-              label="Years of Experience"
-              type="number"
+              id='yearsOfExperience'
+              name='yearsOfExperience'
+              label='Years of Experience'
+              type='number'
               fullWidth
               disabled={!isEditing}
               value={individualInformation?.yearsOfExperience}
@@ -138,9 +143,9 @@ export const IndividualInformationsForm = ({
           </Grid>
           <Grid size={{ xs: 12, lg: 6 }}>
             <TextField
-              id="currentJob"
-              name="currentJob"
-              label="Current Job"
+              id='currentJob'
+              name='currentJob'
+              label='Current Job'
               fullWidth
               disabled={!isEditing}
               value={individualInformation?.currentJob}
@@ -149,9 +154,9 @@ export const IndividualInformationsForm = ({
           </Grid>
           <Grid size={{ xs: 12, lg: 6 }}>
             <TextField
-              id="languages"
-              name="languages"
-              label="Languages"
+              id='languages'
+              name='languages'
+              label='Languages'
               fullWidth
               disabled={!isEditing}
               value={individualInformation?.languages}
@@ -160,9 +165,9 @@ export const IndividualInformationsForm = ({
           </Grid>
           <Grid size={{ xs: 12, lg: 6 }}>
             <TextField
-              id="availability"
-              name="availability"
-              label="Availability"
+              id='availability'
+              name='availability'
+              label='Availability'
               fullWidth
               disabled={!isEditing}
               value={individualInformation?.availability}
@@ -171,9 +176,9 @@ export const IndividualInformationsForm = ({
           </Grid>
           <Grid size={12}>
             <TextField
-              id="keySkills"
-              name="keySkills"
-              label="Key Skills"
+              id='keySkills'
+              name='keySkills'
+              label='Key Skills'
               multiline
               rows={2.5}
               fullWidth
@@ -183,7 +188,13 @@ export const IndividualInformationsForm = ({
             />
           </Grid>
           <Grid size={12}>
-            <UploadFile disabled={!isEditing} />
+            <UploadFile
+              disabled={!isEditing}
+              onFileSelect={handleFileSelect}
+              allowedFileTypes={{
+                "application/pdf": [".pdf"],
+              }}
+            />
           </Grid>
         </Grid>
       </Grid>

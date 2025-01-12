@@ -188,7 +188,14 @@ export const CreatePostModal = ({ modalOpen, handleClose }: { modalOpen: boolean
               className={classes.textEditor}
             />
           </Box>
-          <UploadFile disabled={false} onFileSelect={handleFileSelect} />
+          <UploadFile
+            disabled={false}
+            onFileSelect={handleFileSelect}
+            allowedFileTypes={{
+              "image/png": [".png"],
+              "image/jpeg": [".jpg", ".jpeg"],
+            }}
+          />
           <Typography variant='body2'>{labels.supportedFormats}</Typography>
           <Grid container sx={{ width: "100%", justifyContent: "flex-end", gap: 2 }}>
             <Button variant='outlined' onClick={handleClose}>
