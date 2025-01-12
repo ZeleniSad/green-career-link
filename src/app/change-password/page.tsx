@@ -33,9 +33,8 @@ const ChangePassword = () => {
   const formik = useFormik({
     initialValues: initialValues,
     validationSchema: changePasswordValidationSchema,
-    onSubmit: (values) => {
+    onSubmit: () => {
       alert("Change Password");
-      console.log("changePasswordValues", values);
     },
   });
 

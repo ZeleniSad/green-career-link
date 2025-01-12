@@ -1,24 +1,17 @@
 import { Grid } from "@mui/system";
 import { TextField } from "@mui/material";
-import { useState } from "react";
 import { UploadFile } from "@/components/upload-file/upload-file";
-import { IndividualInformation } from "@/types/interfaces";
+import { FormikValues } from "formik";
 
 export const IndividualInformationsForm = ({
   isEditing,
   profile,
+  handleChange,
 }: {
   isEditing: boolean;
-  profile: IndividualInformation;
+  profile: FormikValues;
+  handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }) => {
-  const [individualInformation, setIndividualInformation] =
-    useState<IndividualInformation>(profile);
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setIndividualInformation({ ...individualInformation, [name]: value });
-  };
-
   return (
     <Grid container spacing={2}>
       <Grid size={{ xs: 12, lg: 6 }}>
@@ -30,7 +23,7 @@ export const IndividualInformationsForm = ({
               label="First Name"
               fullWidth
               disabled={!isEditing}
-              value={individualInformation?.firstName}
+              value={profile?.firstName}
               onChange={handleChange}
             />
           </Grid>
@@ -41,7 +34,7 @@ export const IndividualInformationsForm = ({
               label="Last Name"
               fullWidth
               disabled={!isEditing}
-              value={individualInformation?.lastName}
+              value={profile?.lastName}
               onChange={handleChange}
             />
           </Grid>
@@ -52,8 +45,8 @@ export const IndividualInformationsForm = ({
               type="email"
               label="Email Address"
               fullWidth
-              disabled={!isEditing}
-              value={individualInformation?.email}
+              disabled
+              value={profile?.email}
               onChange={handleChange}
             />
           </Grid>
@@ -65,7 +58,7 @@ export const IndividualInformationsForm = ({
               label="Phone number"
               fullWidth
               disabled={!isEditing}
-              value={individualInformation?.phone}
+              value={profile?.phone}
               onChange={handleChange}
             />
           </Grid>
@@ -77,22 +70,7 @@ export const IndividualInformationsForm = ({
               label="Moto"
               fullWidth
               disabled={!isEditing}
-              value={individualInformation?.moto}
-              onChange={handleChange}
-            />
-          </Grid>
-
-          <Grid size={12}>
-            <TextField
-              id="description"
-              name="description"
-              type="text"
-              label="About Me"
-              multiline
-              minRows={8}
-              fullWidth
-              disabled={!isEditing}
-              value={individualInformation?.description}
+              value={profile?.motivation}
               onChange={handleChange}
             />
           </Grid>
@@ -102,25 +80,13 @@ export const IndividualInformationsForm = ({
         <Grid container spacing={3}>
           <Grid size={{ xs: 12, lg: 6 }}>
             <TextField
-              id="title"
-              name="title"
-              type="text"
-              label="Title"
-              fullWidth
-              disabled={!isEditing}
-              value={individualInformation?.title}
-              onChange={handleChange}
-            />
-          </Grid>
-          <Grid size={{ xs: 12, lg: 6 }}>
-            <TextField
               id="educationalLevel"
               name="educationalLevel"
               type="text"
               label="Level of Education"
               fullWidth
               disabled={!isEditing}
-              value={individualInformation?.educationalLevel}
+              value={profile?.education}
               onChange={handleChange}
             />
           </Grid>
@@ -132,7 +98,7 @@ export const IndividualInformationsForm = ({
               type="number"
               fullWidth
               disabled={!isEditing}
-              value={individualInformation?.yearsOfExperience}
+              value={profile?.yearsOfExperience}
               onChange={handleChange}
             />
           </Grid>
@@ -143,45 +109,11 @@ export const IndividualInformationsForm = ({
               label="Current Job"
               fullWidth
               disabled={!isEditing}
-              value={individualInformation?.currentJob}
+              value={profile?.currentJob}
               onChange={handleChange}
             />
           </Grid>
-          <Grid size={{ xs: 12, lg: 6 }}>
-            <TextField
-              id="languages"
-              name="languages"
-              label="Languages"
-              fullWidth
-              disabled={!isEditing}
-              value={individualInformation?.languages}
-              onChange={handleChange}
-            />
-          </Grid>
-          <Grid size={{ xs: 12, lg: 6 }}>
-            <TextField
-              id="availability"
-              name="availability"
-              label="Availability"
-              fullWidth
-              disabled={!isEditing}
-              value={individualInformation?.availability}
-              onChange={handleChange}
-            />
-          </Grid>
-          <Grid size={12}>
-            <TextField
-              id="keySkills"
-              name="keySkills"
-              label="Key Skills"
-              multiline
-              rows={2.5}
-              fullWidth
-              disabled={!isEditing}
-              value={individualInformation?.keySkills}
-              onChange={handleChange}
-            />
-          </Grid>
+
           <Grid size={12}>
             <UploadFile disabled={!isEditing} />
           </Grid>

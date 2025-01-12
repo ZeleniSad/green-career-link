@@ -3,40 +3,35 @@ import { UserType } from "@/types/enums";
 export interface IndividualInformation {
   firstName: string;
   lastName: string;
-  email: string;
   phone: string;
-  moto: string;
-  description: string;
-  title: string;
-  educationalLevel: string;
-  yearsOfExperience: number;
+  email: string;
+  country: string;
+  city: string;
+  about: string;
+  ambitions: string;
   currentJob: string;
-  languages: string;
-  availability: string;
-  keySkills: string;
-  image?: string;
-  type: UserType.Individual;
+  cvUrl: string;
+  lookingForJob: boolean;
+  motivation: string;
+  yearsOfExperience: number;
+  education: string;
+  profileUrl: string;
+  userType: UserType.Individual;
 }
 
 export interface CompanyInformation {
   companyName: string;
-  email: string;
-  phone: string;
-  city: string;
   country: string;
-  description: string;
-  founded: number;
-  employeesNumber: string;
-  industry: string;
-  companySize: string;
-  workingTimes: string;
-  benefits: string;
-  remote: string;
-  typeOfContract: string;
-  missionAndVision: string;
+  city: string;
+  phone: string;
+  email: string;
+  about: string;
+  goals: string;
+  numOfEmployees: number;
+  offeringJob: boolean;
   website: string;
-  image?: string;
-  type: UserType.Company;
+  profileUrl: string;
+  userType: UserType.Company;
 }
 
 export interface EmailTemplate {

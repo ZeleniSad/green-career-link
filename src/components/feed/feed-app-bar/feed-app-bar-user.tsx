@@ -4,19 +4,18 @@ import { Grid } from "@mui/system";
 import { useTheme } from "@mui/material/styles";
 import React, { FC, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { getAuthenticatedUser, logout } from "@/services/authService";
+import {
+  fetchUserByUid,
+  getAuthenticatedUser,
+  logout,
+} from "@/services/authService";
+import { mapUserDataToFeedAppBarUser } from "@/util/mappers";
 
-interface FeedAppBarUser {
+export interface FeedAppBarUser {
   displayName: string;
   photoURL: string;
+  uid: string;
 }
-
-const mapUserDataToFeedAppBarUser = (userData): FeedAppBarUser => {
-  return {
-    displayName: userData.displayName,
-    photoURL: userData.photoURL,
-  };
-};
 
 export const FeedAppBarUser: FC = () => {
   const [profile, setProfile] = useState<FeedAppBarUser | null>(null);
@@ -28,7 +27,8 @@ export const FeedAppBarUser: FC = () => {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const userData = await getAuthenticatedUser();
+        const authenticatedUserData = await getAuthenticatedUser();
+        const userData = await fetchUserByUid(authenticatedUserData.uid);
         const mappedUserData = mapUserDataToFeedAppBarUser(userData);
         setProfile(mappedUserData);
       } catch (error) {
@@ -38,8 +38,6 @@ export const FeedAppBarUser: FC = () => {
 
     fetchUserData();
   }, []);
-
-  console.log("profile", profile);
 
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -65,7 +63,7 @@ export const FeedAppBarUser: FC = () => {
         >
           {profile?.displayName[0]}
         </Avatar>
-        <Typography variant="body1">{profile?.displayName}</Typography>
+        <Typography variant="h6">{profile?.displayName}</Typography>
       </Grid>
       <Menu
         id="basic-menu"

@@ -121,28 +121,28 @@ export const Sidebar = ({
               title="Feed"
               icon={<DynamicFeedOutlined />}
               label="Feed"
-              url="feed"
+              url="/dashboard/feed"
             />
             <SidebarButton
               isOpen={open}
               title="Profile"
               icon={<AccountBoxOutlined />}
               label="Profile"
-              url="profile"
+              url="/dashboard/profile"
             />
             <SidebarButton
               isOpen={open}
               title="Educations"
               icon={<SchoolOutlined />}
               label="Educations"
-              url="educations"
+              url="/dashboard/educations"
             />
             <SidebarButton
               isOpen={open}
               title="Admin Dashboard"
               icon={<AdminPanelSettingsOutlined />}
               label="Admin Dashboard"
-              url="admin"
+              url="/dashboard/admin"
             />
           </Grid>
         </Grid>

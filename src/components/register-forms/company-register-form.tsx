@@ -55,9 +55,9 @@ export const CompanyRegisterForm = () => {
           }
         }
       } catch (error) {
-        console.log(error);
         setSnackbarMessage(`Something went wrong.`);
         setSnackbarOpen(true);
+        console.error(error);
       }
     },
   });
