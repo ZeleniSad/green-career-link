@@ -14,6 +14,7 @@ export const FeedItemHeader: FC<FeedItemHeaderProps> = ({
   category,
   email,
   date,
+  profileUrl,
 }) => {
   const theme = useTheme();
   return (
@@ -27,7 +28,10 @@ export const FeedItemHeader: FC<FeedItemHeaderProps> = ({
     >
       <Grid container gap={2}>
         <Grid>
-          <Avatar sx={{ backgroundColor: theme.palette.primary.main }}>
+          <Avatar
+            src={profileUrl}
+            sx={{ backgroundColor: theme.palette.primary.main }}
+          >
             {user
               .split(" ")
               .map((name) => name[0])

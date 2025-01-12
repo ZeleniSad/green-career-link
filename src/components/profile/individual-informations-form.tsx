@@ -75,10 +75,10 @@ export const IndividualInformationsForm = ({
           </Grid>
           <Grid size={12}>
             <TextField
-              id="moto"
-              name="moto"
+              id="motivation"
+              name="motivation"
               type="text"
-              label="Moto"
+              label="Motivation"
               fullWidth
               disabled={!isEditing}
               value={formikValues?.motivation}
@@ -93,8 +93,8 @@ export const IndividualInformationsForm = ({
         <Grid container spacing={3}>
           <Grid size={{ xs: 12, lg: 6 }}>
             <TextField
-              id="educationalLevel"
-              name="educationalLevel"
+              id="education"
+              name="education"
               type="text"
               label="Level of Education"
               fullWidth

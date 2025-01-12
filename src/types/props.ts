@@ -39,6 +39,7 @@ export interface FeedItemHeaderProps {
   category: string;
   email: string;
   type: UserType;
+  profileUrl: string;
 }
 
 export interface FeedItemBodyProps {

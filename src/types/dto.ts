@@ -10,4 +10,5 @@ export interface FeedItemDto {
   createdBy: string;
   userType: UserType;
   applyToEmail: string;
+  profileUrl: string;
 }

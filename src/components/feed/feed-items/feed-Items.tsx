@@ -15,19 +15,28 @@ const FEED_ITEMS_DELAY = 800;
 
 export const FeedItems: FC = () => {
   const [feedItems, setFeedItems] = useState<FeedItemDto[]>([]);
-  const [lastVisible, setLastVisible] = useState<QueryDocumentSnapshot<DocumentData> | null>(null);
+  const [lastVisible, setLastVisible] =
+    useState<QueryDocumentSnapshot<DocumentData> | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [hasMore, setHasMore] = useState<boolean>(true);
   const observer = useRef<IntersectionObserver | null>(null);
-  const usersCache = useRef<Record<string, IndividualInformation | CompanyInformation>>({});
+  const usersCache = useRef<
+    Record<string, IndividualInformation | CompanyInformation>
+  >({});
   const debounceTimeout = useRef<NodeJS.Timeout>();
 
-  const mapCreatorsToFeedItems = async (feedItemCreatorIds: string[], newFeedItems: FeedItemDto[]) => {
+  const mapCreatorsToFeedItems = async (
+    feedItemCreatorIds: string[],
+    newFeedItems: FeedItemDto[],
+  ) => {
     // Filter out already cached user IDs
-    const uncachedUserIds = feedItemCreatorIds.filter((id) => !usersCache.current[id]);
+    const uncachedUserIds = feedItemCreatorIds.filter(
+      (id) => !usersCache.current[id],
+    );
 
     if (uncachedUserIds.length > 0) {
-      const feedItemCreatorsMap = await getUsersDataMapInChunks(uncachedUserIds);
+      const feedItemCreatorsMap =
+        await getUsersDataMapInChunks(uncachedUserIds);
       // Update cache with new user data
       usersCache.current = { ...usersCache.current, ...feedItemCreatorsMap };
     }
@@ -36,13 +45,16 @@ export const FeedItems: FC = () => {
       const feedUser = usersCache.current[item.userId];
       const userType = feedUser.userType;
       const createdBy =
-        userType === UserType.Individual ? `${feedUser.firstName} ${feedUser.lastName}` : feedUser.companyName;
+        userType === UserType.Individual
+          ? `${feedUser.firstName} ${feedUser.lastName}`
+          : feedUser.companyName;
 
       return {
         ...item,
         userType,
         createdBy,
         applyToEmail: feedUser.email,
+        profileUrl: feedUser.profileUrl,
       } as FeedItemDto;
     });
   };
@@ -53,7 +65,8 @@ export const FeedItems: FC = () => {
     try {
       setLoading(true);
 
-      const { items: newFeedItems, lastDoc } = await getFeedItemsData(lastVisible);
+      const { items: newFeedItems, lastDoc } =
+        await getFeedItemsData(lastVisible);
 
       if (!newFeedItems.length) {
         setHasMore(false);
@@ -62,14 +75,21 @@ export const FeedItems: FC = () => {
       }
 
       // Use Set to ensure unique IDs
-      const feedItemCreatorIds = [...new Set(newFeedItems.map((item) => item.userId))];
-      const feedItemsWithUsers = await mapCreatorsToFeedItems(feedItemCreatorIds, newFeedItems);
+      const feedItemCreatorIds = [
+        ...new Set(newFeedItems.map((item) => item.userId)),
+      ];
+      const feedItemsWithUsers = await mapCreatorsToFeedItems(
+        feedItemCreatorIds,
+        newFeedItems,
+      );
 
       // Use Set to ensure unique feed items
       setFeedItems((prevItems) => {
         const uniqueItems = new Map<string, FeedItemDto>([
           ...prevItems.map((item) => [item.id, item] as [string, FeedItemDto]),
-          ...feedItemsWithUsers.map((item) => [item.id, item] as [string, FeedItemDto]),
+          ...feedItemsWithUsers.map(
+            (item) => [item.id, item] as [string, FeedItemDto],
+          ),
         ]);
         return Array.from(uniqueItems.values());
       });
@@ -100,7 +120,7 @@ export const FeedItems: FC = () => {
     (node: HTMLDivElement) => {
       if (loading) return;
 
-      if (observer.current) observer.current.disconnect();
+      if (observer.current) observer.current?.disconnect();
 
       observer.current = new IntersectionObserver(
         (entries) => {
@@ -112,12 +132,12 @@ export const FeedItems: FC = () => {
           root: null,
           rootMargin: "100px",
           threshold: 0.1,
-        }
+        },
       );
 
-      if (node) observer.current.observe(node);
+      if (node) observer.current?.observe(node);
     },
-    [debouncedFetch, loading, hasMore]
+    [debouncedFetch, loading, hasMore],
   );
 
   useEffect(() => {
@@ -125,7 +145,7 @@ export const FeedItems: FC = () => {
 
     return () => {
       if (observer.current) {
-        observer.current.disconnect();
+        observer.current?.disconnect();
       }
       if (debounceTimeout.current) {
         clearTimeout(debounceTimeout.current);
@@ -143,30 +163,40 @@ export const FeedItems: FC = () => {
           width: "100%",
           p: 3,
           borderRadius: 5,
-        }}>
+        }}
+      >
         {feedItems.map((feedItem, index) => (
-          <Box id={feedItem.id} key={feedItem.id} ref={index === feedItems.length - 1 ? lastItemRef : null}>
+          <Box
+            id={feedItem.id}
+            key={feedItem.id}
+            ref={index === feedItems.length - 1 ? lastItemRef : null}
+          >
             <FeedItem item={feedItem} />
           </Box>
         ))}
 
         {loading && (
-          <Box display='flex' justifyContent='center' alignItems='center' mt={2}>
+          <Box
+            display="flex"
+            justifyContent="center"
+            alignItems="center"
+            mt={2}
+          >
             <CircularProgress />
-            <Typography variant='body1' sx={{ ml: 2 }}>
+            <Typography variant="body1" sx={{ ml: 2 }}>
               Fetching new posts...
             </Typography>
           </Box>
         )}
 
         {!loading && feedItems.length === 0 && (
-          <Alert severity='info' sx={{ mt: 2 }}>
+          <Alert severity="info" sx={{ mt: 2 }}>
             The feed is currently empty.
           </Alert>
         )}
 
         {!loading && !hasMore && feedItems.length > 0 && (
-          <Alert severity='warning' sx={{ mt: 2 }}>
+          <Alert severity="warning" sx={{ mt: 2 }}>
             You&apos;ve reached the end of the feed.
           </Alert>
         )}
