@@ -7,7 +7,6 @@ import { FC } from "react";
 import { FeedItemProps } from "@/types/props";
 
 export const FeedItem: FC<FeedItemProps> = ({ item }) => {
-  console.log("item", item);
   return (
     <Grid
       container
