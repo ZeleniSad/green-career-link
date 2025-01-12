@@ -35,10 +35,8 @@ const SidebarButton = ({
   label: string;
   url: string;
 }) => {
-  console.log("url", url);
   const router = useRouter();
   const pathname = usePathname();
-  console.log("pathname", pathname);
 
   const isActive = pathname === url;
   const buttonActive: "contained" | "text" = isActive ? "contained" : "text";

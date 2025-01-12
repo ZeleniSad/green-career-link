@@ -14,6 +14,7 @@ import { UserType } from "@/types/enums";
 import { Form, Formik } from "formik";
 import { CompanyInformationsForm } from "@/components/profile/company-informations-form";
 import { IndividualInformationsForm } from "@/components/profile/individual-informations-form";
+import { uploadFile } from "@/services/fileServices";
 
 export const ProfileInformations = ({
   profile,
@@ -22,6 +23,7 @@ export const ProfileInformations = ({
   profile: CompanyInformation | IndividualInformation;
   uid: string;
 }) => {
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [isOwner, setIsOwner] = useState(false);
   const [userDocRef, setUserDocRef] = useState<DocumentReference | null>(null);
@@ -53,14 +55,19 @@ export const ProfileInformations = ({
   };
 
   const handleSaveClick = async (values) => {
-    console.log("values", values);
-
     if (!userDocRef) {
       console.error("User document reference is undefined");
       return;
     }
 
     try {
+      let cvUrl = "";
+      if (selectedFile) {
+        cvUrl = await uploadFile(selectedFile, userDocRef.id);
+        if (cvUrl) {
+          values.cvUrl = cvUrl;
+        }
+      }
       await updateDoc(userDocRef, values);
     } catch (error) {
       console.error(error);
@@ -110,8 +117,9 @@ export const ProfileInformations = ({
               ) : (
                 <IndividualInformationsForm
                   isEditing={isEditing}
-                  profile={values}
+                  formikValues={values}
                   handleChange={handleChange}
+                  setSelectedFile={setSelectedFile}
                 />
               )}
             </Paper>

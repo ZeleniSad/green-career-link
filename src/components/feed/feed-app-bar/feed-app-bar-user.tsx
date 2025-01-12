@@ -4,12 +4,9 @@ import { Grid } from "@mui/system";
 import { useTheme } from "@mui/material/styles";
 import React, { FC, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import {
-  fetchUserByUid,
-  getAuthenticatedUser,
-  logout,
-} from "@/services/authService";
+import { getAuthenticatedUser, logout } from "@/services/authService";
 import { mapUserDataToFeedAppBarUser } from "@/util/mappers";
+import { fetchUserByUid } from "@/services/userServices";
 
 export interface FeedAppBarUser {
   displayName: string;
