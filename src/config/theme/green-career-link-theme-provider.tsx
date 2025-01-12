@@ -9,7 +9,7 @@ declare module "@mui/material/Button" {
   }
 }
 
-export const YesDoItThemeProvider = ({
+export const GreenCareerLinkThemeProvider = ({
   children,
 }: {
   children: React.ReactNode;

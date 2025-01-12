@@ -10,11 +10,12 @@ import { RegisterType } from "@/types/enums";
 import { LogoBar } from "@/components/logos/logo-bar";
 
 const labels = {
-  title: "YES DO IT",
+  title: "GREEN CAREER LINK",
   text: `Create an account and become part of the <br />
-            <span style="color: #00DF81">YES DO IT</span>
+            <span style="color: #00DF81">GREEN CAREER LINK</span>
             community!`,
-  subtitle: "Create an account and become part of the YES DO IT community!",
+  subtitle:
+    "Create an account and become part of the GREEN CAREER LINK community!",
   description:
     "Welcome! Whether you are looking for a job or want to advertise open " +
     "positions in your company, our registration process is quick and easy. " +

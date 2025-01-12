@@ -25,9 +25,8 @@ const CreateNewPassword = () => {
   const formik = useFormik({
     initialValues: initialValues,
     validationSchema: passwordsValidationSchema,
-    onSubmit: (values) => {
+    onSubmit: () => {
       alert("Create New Password");
-      console.log("createNewPasswordValues", values);
     },
   });
 

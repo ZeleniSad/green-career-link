@@ -5,6 +5,7 @@ import { FC, ReactNode, SyntheticEvent, useState } from "react";
 import { UsersTable } from "@/components/admin/users-table";
 import { PostsTable } from "@/components/admin/posts-table";
 import { EducationsTable } from "@/components/admin/educations-table";
+import { QAsTable } from "./qas-table";
 
 interface TabPanelProps {
   children?: ReactNode;
@@ -17,12 +18,11 @@ const TabPanel: FC<TabPanelProps> = (props: TabPanelProps) => {
 
   return (
     <div
-      role="tabpanel"
+      role='tabpanel'
       hidden={value !== index}
       id={`simple-tabpanel-${index}`}
       aria-labelledby={`simple-tab-${index}`}
-      {...other}
-    >
+      {...other}>
       {value === index && (
         <Grid container sx={{ p: 2 }}>
           {children}
@@ -42,9 +42,9 @@ export const AdminTabs = () => {
   return (
     <Grid size={12}>
       <Tabs value={value} onChange={handleChange}>
-        <Tab label="Users" />
-        <Tab label="Posts" />
-        <Tab label="Education" />
+        <Tab label='Users' />
+        <Tab label='Posts' />
+        <Tab label='Education' />
       </Tabs>
       <TabPanel index={0} value={value}>
         <UsersTable />
@@ -54,6 +54,7 @@ export const AdminTabs = () => {
       </TabPanel>
       <TabPanel index={2} value={value}>
         <EducationsTable />
+        <QAsTable />
       </TabPanel>
     </Grid>
   );

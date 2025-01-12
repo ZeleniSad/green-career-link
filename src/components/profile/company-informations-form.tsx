@@ -1,23 +1,16 @@
 import { Grid } from "@mui/system";
-import { TextField } from "@mui/material";
-import { useState } from "react";
-import { CompanyInformation } from "@/types/interfaces";
+import { Checkbox, FormControlLabel, TextField } from "@mui/material";
+import { FormikValues } from "formik";
 
 export const CompanyInformationsForm = ({
   isEditing,
   profile,
+  handleChange,
 }: {
   isEditing: boolean;
-  profile: CompanyInformation;
+  profile: FormikValues;
+  handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }) => {
-  const [companyInformation, setCompanyInformation] =
-    useState<CompanyInformation>(profile);
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setCompanyInformation({ ...companyInformation, [name]: value });
-  };
-
   return (
     <Grid container spacing={2}>
       <Grid size={{ xs: 12, lg: 6 }}>
@@ -29,7 +22,7 @@ export const CompanyInformationsForm = ({
               label="Company Name"
               fullWidth
               disabled={!isEditing}
-              value={companyInformation?.companyName}
+              value={profile?.companyName}
               onChange={handleChange}
             />
           </Grid>
@@ -40,8 +33,8 @@ export const CompanyInformationsForm = ({
               type="email"
               label="Email Address"
               fullWidth
-              disabled={!isEditing}
-              value={companyInformation?.email}
+              disabled
+              value={profile?.email}
               onChange={handleChange}
             />
           </Grid>
@@ -53,7 +46,7 @@ export const CompanyInformationsForm = ({
               label="Phone number"
               fullWidth
               disabled={!isEditing}
-              value={companyInformation?.phone}
+              value={profile?.phone}
               onChange={handleChange}
             />
           </Grid>
@@ -65,7 +58,7 @@ export const CompanyInformationsForm = ({
               label="City"
               fullWidth
               disabled={!isEditing}
-              value={companyInformation?.city}
+              value={profile?.city}
               onChange={handleChange}
             />
           </Grid>
@@ -77,21 +70,7 @@ export const CompanyInformationsForm = ({
               label="Country"
               fullWidth
               disabled={!isEditing}
-              value={companyInformation?.country}
-              onChange={handleChange}
-            />
-          </Grid>
-          <Grid size={12}>
-            <TextField
-              id="description"
-              name="description"
-              type="text"
-              label="About company"
-              multiline
-              minRows={6}
-              fullWidth
-              disabled={!isEditing}
-              value={companyInformation?.description}
+              value={profile?.country}
               onChange={handleChange}
             />
           </Grid>
@@ -101,108 +80,72 @@ export const CompanyInformationsForm = ({
         <Grid container spacing={3}>
           <Grid size={{ xs: 12, lg: 6 }}>
             <TextField
-              id="founded"
-              name="founded"
+              id="numOfEmployees"
+              name="numOfEmployees"
               type="number"
-              label="Founded"
-              fullWidth
-              disabled={!isEditing}
-              value={companyInformation?.founded}
-              onChange={handleChange}
-            />
-          </Grid>
-          <Grid size={{ xs: 12, lg: 6 }}>
-            <TextField
-              id="employeesNumber"
-              name="employeesNumber"
-              type="text"
               label="Number of employees"
               fullWidth
               disabled={!isEditing}
-              value={companyInformation?.employeesNumber}
+              value={profile?.numOfEmployees}
               onChange={handleChange}
             />
           </Grid>
-          <Grid size={{ xs: 12, lg: 6 }}>
+          <Grid
+            size={{ xs: 12, lg: 6 }}
+            sx={{ display: "flex", alignItems: "center" }}
+          >
+            <FormControlLabel
+              id="offeringJob"
+              name="offeringJob"
+              label="Offering Job?"
+              disabled={!isEditing}
+              control={
+                <Checkbox
+                  checked={profile?.offeringJob}
+                  onChange={handleChange}
+                />
+              }
+            />
+          </Grid>
+          <Grid size={{ xs: 12 }}>
             <TextField
-              id="industry"
-              name="industry"
-              label="Industry"
+              id="website"
+              name="website"
+              type="text"
+              label="Company website"
               fullWidth
               disabled={!isEditing}
-              value={companyInformation?.industry}
+              value={profile?.website}
               onChange={handleChange}
             />
           </Grid>
-          <Grid size={{ xs: 12, lg: 6 }}>
+          <Grid size={{ xs: 12 }}>
             <TextField
-              id="companySize"
-              name="companySize"
-              label="Company size"
+              id="goals"
+              name="goals"
+              type="text"
+              label="Company goals"
               fullWidth
               disabled={!isEditing}
-              value={companyInformation?.companySize}
-              onChange={handleChange}
-            />
-          </Grid>
-          <Grid size={{ xs: 12, lg: 6 }}>
-            <TextField
-              id="workingTimes"
-              name="workingTimes"
-              label="Working times"
-              fullWidth
-              disabled={!isEditing}
-              value={companyInformation?.workingTimes}
-              onChange={handleChange}
-            />
-          </Grid>
-          <Grid size={{ xs: 12, lg: 6 }}>
-            <TextField
-              id="benefits"
-              name="benefits"
-              label="Benefits"
-              fullWidth
-              disabled={!isEditing}
-              value={companyInformation?.benefits}
-              onChange={handleChange}
-            />
-          </Grid>
-          <Grid size={{ xs: 12, lg: 6 }}>
-            <TextField
-              id="remote"
-              name="remote"
-              label="Remote"
-              fullWidth
-              disabled={!isEditing}
-              value={companyInformation?.remote}
-              onChange={handleChange}
-            />
-          </Grid>
-          <Grid size={{ xs: 12, lg: 6 }}>
-            <TextField
-              id="typeOfContract"
-              name="typeOfContract"
-              label="Type of contract"
-              fullWidth
-              disabled={!isEditing}
-              value={companyInformation?.typeOfContract}
-              onChange={handleChange}
-            />
-          </Grid>
-          <Grid size={12}>
-            <TextField
-              id="missionAndVision"
-              name="missionAndVision"
-              label="Mission and Vision"
-              multiline
-              rows={2.5}
-              fullWidth
-              disabled={!isEditing}
-              value={companyInformation?.missionAndVision}
+              value={profile?.goals}
               onChange={handleChange}
             />
           </Grid>
         </Grid>
+      </Grid>
+      <Grid size={12}>
+        <TextField
+          id="about"
+          name="about"
+          type="text"
+          label="About company"
+          multiline
+          minRows={6}
+          fullWidth
+          disabled={!isEditing}
+          value={profile?.about}
+          onChange={handleChange}
+        />
       </Grid>
     </Grid>
   );

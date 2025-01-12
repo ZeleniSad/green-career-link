@@ -17,11 +17,13 @@ export const FeedItem: FC<FeedItemProps> = ({ item }) => {
       }}
     >
       <FeedItemHeader
-        user={item.user}
-        date={item.date}
-        email={item.email}
+        userName={item.createdBy}
+        date={item.createdAt}
+        email={item.applyToEmail}
         category={item.category}
-        type={item.type}
+        type={item.userType}
+        profileUrl={item.profileUrl}
+        userId={item.userId}
       />
       <Divider sx={{ width: "100%", pt: 2 }} />
       <FeedItemBody body={item.body} image={item.image} />

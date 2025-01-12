@@ -1,18 +1,26 @@
-"use client";
+import { Box, useTheme } from "@mui/material";
+import DOMPurify from "dompurify";
+import { FC } from "react";
 import { Grid } from "@mui/system";
 import Image from "next/image";
-import { FC } from "react";
-import { FeedItemBodyProps } from "@/types/props";
-import DOMPurify from "isomorphic-dompurify";
-import { Box } from "@mui/material";
-import { useTheme } from "@mui/material/styles";
+
+interface FeedItemBodyProps {
+  body: string;
+  image?: string;
+}
 
 export const FeedItemBody: FC<FeedItemBodyProps> = ({ body, image }) => {
   const sanitizedBody = DOMPurify.sanitize(body);
   const theme = useTheme();
+
   return (
-    <Grid container sx={{ justifyContent: "space-between", pt: 2 }}>
-      <Grid size={image ? 6 : 12}>
+    <Grid container spacing={2} sx={{ pt: 2, height: "100%", width: "100%" }}>
+      <Grid
+        size={{
+          xs: 6,
+          md: image ? 6 : 12,
+        }}
+      >
         {body && (
           <Box
             sx={{
@@ -23,14 +31,26 @@ export const FeedItemBody: FC<FeedItemBodyProps> = ({ body, image }) => {
         )}
       </Grid>
       {image && (
-        <Grid sx={{ display: "flex", justifyContent: "flex-end" }} size={6}>
+        <Grid
+          size={{
+            xs: 12,
+            md: 6,
+          }}
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "flex-end",
+          }}
+        >
           <Image
             src={image}
-            alt="Post Image"
+            alt="Feed item image"
+            layout="intrinsic"
             width={500}
             height={0}
-            layout="intrinsic"
-            style={{ borderRadius: 10 }}
+            style={{
+              borderRadius: 12,
+            }}
           />
         </Grid>
       )}

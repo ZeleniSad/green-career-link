@@ -9,6 +9,7 @@ export interface CompanyRegisterFormProps {
   country: string;
   password: string;
   confirmPassword: string;
+  userType: UserType;
 }
 
 export interface PersonalRegisterFormProps {
@@ -20,6 +21,7 @@ export interface PersonalRegisterFormProps {
   country: string;
   password: string;
   confirmPassword: string;
+  userType: UserType;
 }
 
 export interface CreateNewPasswordProps {
@@ -32,11 +34,13 @@ export interface FeedItemProps {
 }
 
 export interface FeedItemHeaderProps {
-  user: string;
-  date: string;
+  userName: string;
+  date: Date;
   category: string;
   email: string;
   type: UserType;
+  profileUrl: string;
+  userId: string;
 }
 
 export interface FeedItemBodyProps {

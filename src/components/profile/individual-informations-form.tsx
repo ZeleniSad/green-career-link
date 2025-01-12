@@ -1,22 +1,28 @@
 import { Grid } from "@mui/system";
 import { TextField } from "@mui/material";
-import { useState } from "react";
 import { UploadFile } from "@/components/upload-file/upload-file";
-import { IndividualInformation } from "@/types/interfaces";
+import { FormikValues } from "formik";
+import { ChangeEvent } from "react";
 
 export const IndividualInformationsForm = ({
   isEditing,
-  profile,
+  formikValues,
+  handleChange,
+  setSelectedFile,
+  isOwner,
 }: {
   isEditing: boolean;
-  profile: IndividualInformation;
+  formikValues: FormikValues;
+  handleChange: (e: ChangeEvent<HTMLInputElement>) => void;
+  setSelectedFile: (file: File) => void;
+  isOwner?: boolean;
 }) => {
-  const [individualInformation, setIndividualInformation] =
-    useState<IndividualInformation>(profile);
+  const handleFileSelect = (file: File) => {
+    setSelectedFile(file);
+  };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setIndividualInformation({ ...individualInformation, [name]: value });
+  const handleFileRemoveFromFormik = () => {
+    formikValues.cvUrl = ""; // Update FormikValues object
   };
 
   return (
@@ -30,7 +36,7 @@ export const IndividualInformationsForm = ({
               label="First Name"
               fullWidth
               disabled={!isEditing}
-              value={individualInformation?.firstName}
+              value={formikValues?.firstName}
               onChange={handleChange}
             />
           </Grid>
@@ -41,7 +47,7 @@ export const IndividualInformationsForm = ({
               label="Last Name"
               fullWidth
               disabled={!isEditing}
-              value={individualInformation?.lastName}
+              value={formikValues?.lastName}
               onChange={handleChange}
             />
           </Grid>
@@ -52,8 +58,8 @@ export const IndividualInformationsForm = ({
               type="email"
               label="Email Address"
               fullWidth
-              disabled={!isEditing}
-              value={individualInformation?.email}
+              disabled
+              value={formikValues?.email}
               onChange={handleChange}
             />
           </Grid>
@@ -65,35 +71,22 @@ export const IndividualInformationsForm = ({
               label="Phone number"
               fullWidth
               disabled={!isEditing}
-              value={individualInformation?.phone}
+              value={formikValues?.phone}
               onChange={handleChange}
             />
           </Grid>
           <Grid size={12}>
             <TextField
-              id="moto"
-              name="moto"
+              id="motivation"
+              name="motivation"
               type="text"
-              label="Moto"
+              label="Motivation"
               fullWidth
               disabled={!isEditing}
-              value={individualInformation?.moto}
+              value={formikValues?.motivation}
               onChange={handleChange}
-            />
-          </Grid>
-
-          <Grid size={12}>
-            <TextField
-              id="description"
-              name="description"
-              type="text"
-              label="About Me"
               multiline
-              minRows={8}
-              fullWidth
-              disabled={!isEditing}
-              value={individualInformation?.description}
-              onChange={handleChange}
+              minRows={3}
             />
           </Grid>
         </Grid>
@@ -102,25 +95,13 @@ export const IndividualInformationsForm = ({
         <Grid container spacing={3}>
           <Grid size={{ xs: 12, lg: 6 }}>
             <TextField
-              id="title"
-              name="title"
-              type="text"
-              label="Title"
-              fullWidth
-              disabled={!isEditing}
-              value={individualInformation?.title}
-              onChange={handleChange}
-            />
-          </Grid>
-          <Grid size={{ xs: 12, lg: 6 }}>
-            <TextField
-              id="educationalLevel"
-              name="educationalLevel"
+              id="education"
+              name="education"
               type="text"
               label="Level of Education"
               fullWidth
               disabled={!isEditing}
-              value={individualInformation?.educationalLevel}
+              value={formikValues?.education}
               onChange={handleChange}
             />
           </Grid>
@@ -132,7 +113,7 @@ export const IndividualInformationsForm = ({
               type="number"
               fullWidth
               disabled={!isEditing}
-              value={individualInformation?.yearsOfExperience}
+              value={formikValues?.yearsOfExperience}
               onChange={handleChange}
             />
           </Grid>
@@ -143,47 +124,24 @@ export const IndividualInformationsForm = ({
               label="Current Job"
               fullWidth
               disabled={!isEditing}
-              value={individualInformation?.currentJob}
+              value={formikValues?.currentJob}
               onChange={handleChange}
             />
           </Grid>
-          <Grid size={{ xs: 12, lg: 6 }}>
-            <TextField
-              id="languages"
-              name="languages"
-              label="Languages"
-              fullWidth
-              disabled={!isEditing}
-              value={individualInformation?.languages}
-              onChange={handleChange}
-            />
-          </Grid>
-          <Grid size={{ xs: 12, lg: 6 }}>
-            <TextField
-              id="availability"
-              name="availability"
-              label="Availability"
-              fullWidth
-              disabled={!isEditing}
-              value={individualInformation?.availability}
-              onChange={handleChange}
-            />
-          </Grid>
+
           <Grid size={12}>
-            <TextField
-              id="keySkills"
-              name="keySkills"
-              label="Key Skills"
-              multiline
-              rows={2.5}
-              fullWidth
+            <UploadFile
               disabled={!isEditing}
-              value={individualInformation?.keySkills}
+              onFileSelect={handleFileSelect}
+              allowedFileTypes={{
+                "application/pdf": [".pdf"],
+              }}
+              alreadyAddedFileUrl={formikValues?.cvUrl}
+              isEditing={isEditing}
               onChange={handleChange}
+              handleFileRemoveFromFormik={handleFileRemoveFromFormik}
+              isOwner={isOwner}
             />
-          </Grid>
-          <Grid size={12}>
-            <UploadFile disabled={!isEditing} />
           </Grid>
         </Grid>
       </Grid>

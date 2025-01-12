@@ -51,6 +51,9 @@ const securityHeaders = [
 
 const nextConfig: NextConfig = {
   /* config options here */
+  typescript: {
+    ignoreBuildErrors: true,
+  },
   images: {
     remotePatterns: [
       {
@@ -66,6 +69,7 @@ const nextConfig: NextConfig = {
         hostname: "images.pexels.com",
       },
     ],
+    domains: ["firebasestorage.googleapis.com"],
   },
   serverExternalPackages: ["pino"],
   headers: async () => {

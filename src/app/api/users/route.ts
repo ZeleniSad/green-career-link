@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { ValidationError } from "yup";
 import { RegisterPayload, registrationSchema } from "@/shared/register.schema";
-import { registerUser, createUserDoc, checkEmailInUse } from "@/lib/firebase-admin";
+import { registerUser, createUserDoc, checkEmailInUse, generateVerificationLink } from "@/lib/firebase-admin";
 import { UserType } from "@/types/enums";
+import { sendEmailVerification } from "@/lib/email-sender";
 
 export async function POST(request: NextRequest) {
   try {
@@ -17,6 +18,11 @@ export async function POST(request: NextRequest) {
     }
 
     await handleRegister(payload as RegisterPayload);
+
+    await sendVerificationEmail(
+      payload.email,
+      payload.userType === UserType.Individual ? payload.firstName : payload.companyName
+    );
 
     return NextResponse.json({ message: "Registration successful" });
   } catch (error) {
@@ -41,6 +47,12 @@ const handleRegister = async ({
   const uid = await registerUser({ email, password, displayName });
 
   await createUserDoc(uid, cleanObject({ email, firstName, lastName, companyName, userType, city, country }));
+};
+
+const sendVerificationEmail = async (email: string, name: string) => {
+  const verificationLink = await generateVerificationLink(email);
+
+  await sendEmailVerification(email, verificationLink, name);
 };
 
 /* eslint-disable @typescript-eslint/no-unused-vars */

@@ -91,4 +91,17 @@ const checkEmailInUse = async (email: string): Promise<boolean> => {
     return false;
   }
 };
-export { registerUser, createUserDoc, checkEmailInUse };
+
+const generateVerificationLink = async (email: string): Promise<string> => {
+  try {
+    const link = await adminAuth.generateEmailVerificationLink(email, {
+      url: `${process.env.NEXT_PUBLIC_VERIFICATION_URL}`,
+    });
+
+    return link;
+  } catch (error) {
+    logger.error({ err: error, message: "Error generating verification link" });
+    throw error;
+  }
+};
+export { registerUser, createUserDoc, checkEmailInUse, generateVerificationLink };

@@ -37,7 +37,8 @@ const SidebarButton = ({
 }) => {
   const router = useRouter();
   const pathname = usePathname();
-  const isActive = pathname === `/dashboard/${url}`;
+
+  const isActive = pathname === url;
   const buttonActive: "contained" | "text" = isActive ? "contained" : "text";
   return (
     <Tooltip title={!isOpen && title} placement="right" arrow>
@@ -121,28 +122,28 @@ export const Sidebar = ({
               title="Feed"
               icon={<DynamicFeedOutlined />}
               label="Feed"
-              url="feed"
+              url="/dashboard/feed"
             />
             <SidebarButton
               isOpen={open}
               title="Profile"
               icon={<AccountBoxOutlined />}
               label="Profile"
-              url="profile"
+              url="/dashboard/profile"
             />
             <SidebarButton
               isOpen={open}
               title="Educations"
               icon={<SchoolOutlined />}
               label="Educations"
-              url="educations"
+              url="/dashboard/educations"
             />
             <SidebarButton
               isOpen={open}
               title="Admin Dashboard"
               icon={<AdminPanelSettingsOutlined />}
               label="Admin Dashboard"
-              url="admin"
+              url="/dashboard/admin"
             />
           </Grid>
         </Grid>
@@ -159,7 +160,7 @@ export const Sidebar = ({
                 </Typography>
               </Box>
               <Typography variant="h6" color="primary" fontWeight={900}>
-                YES DO IT
+                GREEN CAREER LINK
               </Typography>
             </Grid>
           )}

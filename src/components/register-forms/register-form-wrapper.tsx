@@ -16,7 +16,7 @@ const label = {
   nextStep: "Next step",
   privacyPolicy:
     "All the data you provide will be protected and used in " +
-    "accordance with the privacy policy of the YES DO IT platform. " +
+    "accordance with the privacy policy of the GREEN CAREER LINK platform. " +
     "You can edit or update your information at any time.",
   helpText: `Do you have trouble registering? <a href="mailto:" style="text-decoration: none; color: #03624C">Contact support.</a>`,
 };
@@ -81,7 +81,11 @@ export const RegisterFormWrapper = ({
           >
             {label.back}
           </Button>
-          <Button variant="contained" type="submit">
+          <Button
+            variant="contained"
+            type="submit"
+            disabled={formik.isSubmitting}
+          >
             {label.register}
           </Button>
         </Grid>
