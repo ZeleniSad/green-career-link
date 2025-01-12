@@ -77,6 +77,8 @@ export const IndividualInformationsForm = ({
               disabled={!isEditing}
               value={profile?.motivation}
               onChange={handleChange}
+              multiline
+              minRows={3}
             />
           </Grid>
         </Grid>

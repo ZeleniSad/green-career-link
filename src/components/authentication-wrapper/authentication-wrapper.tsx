@@ -6,7 +6,7 @@ import { LogoBar } from "@/components/logos/logo-bar";
 import { useRouter } from "next/navigation";
 
 const label = {
-  yesDoIt: "YES DO IT",
+  greenCareerLink: "GREEN CAREER LINK",
 };
 
 export const AuthenticationWrapper = ({
@@ -39,7 +39,7 @@ export const AuthenticationWrapper = ({
             onClick={() => router.push("/")}
             sx={{ cursor: "pointer" }}
           >
-            {label.yesDoIt}
+            {label.greenCareerLink}
           </Typography>
         </Grid>
       </Grid>

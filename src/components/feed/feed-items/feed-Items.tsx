@@ -1,24 +1,25 @@
 "use client";
 
 import { Grid } from "@mui/system";
-import { Paper } from "@mui/material";
+import { Box, Paper } from "@mui/material";
 import { FeedItem } from "@/components/feed/feed-item/feed-item";
 import { FC, useCallback, useEffect, useRef, useState } from "react";
-import { FeedItemDto } from "../../../types/dto";
+import { FeedItemDto } from "@/types/dto";
 import {
-  DocumentData,
-  QueryDocumentSnapshot,
   collection,
+  DocumentData,
   documentId,
   getDocs,
   limit,
   orderBy,
   query,
+  QueryDocumentSnapshot,
   startAfter,
   where,
 } from "firebase/firestore";
 import { db } from "@/config/firebaseConfig";
-import { CompanyInformation, IndividualInformation } from "../../../types/interfaces";
+import { CompanyInformation, IndividualInformation } from "@/types/interfaces";
+import { UserType } from "@/types/enums";
 
 export type SortOrder = "ascending" | "descending";
 interface FeedItemsProps {
@@ -27,7 +28,8 @@ interface FeedItemsProps {
 
 export const FeedItems: FC<FeedItemsProps> = ({ sortOrder }) => {
   const [feedItems, setFeedItems] = useState<FeedItemDto[]>([]);
-  const [lastVisible, setLastVisible] = useState<QueryDocumentSnapshot<DocumentData> | null>(null);
+  const [lastVisible, setLastVisible] =
+    useState<QueryDocumentSnapshot<DocumentData> | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [hasMore, setHasMore] = useState<boolean>(true); // State to track if more items are available
   const observer = useRef<IntersectionObserver | null>(null);
@@ -40,7 +42,7 @@ export const FeedItems: FC<FeedItemsProps> = ({ sortOrder }) => {
       let feedQuery = query(
         collection(db, "feedItems"),
         orderBy("createdAt", sortOrder === "ascending" ? "asc" : "desc"),
-        limit(10)
+        limit(10),
       );
 
       if (lastVisible) {
@@ -81,11 +83,16 @@ export const FeedItems: FC<FeedItemsProps> = ({ sortOrder }) => {
       }
 
       const userDocsPromises = userChunks.map((chunk) =>
-        getDocs(query(collection(db, "users"), where(documentId(), "in", chunk)))
+        getDocs(
+          query(collection(db, "users"), where(documentId(), "in", chunk)),
+        ),
       );
 
       const userDocsSnapshots = await Promise.all(userDocsPromises);
-      const userMap: Record<string, IndividualInformation | CompanyInformation> = {};
+      const userMap: Record<
+        string,
+        IndividualInformation | CompanyInformation
+      > = {};
 
       userDocsSnapshots.forEach((snapshot) => {
         snapshot.forEach((userDoc) => {
@@ -100,7 +107,9 @@ export const FeedItems: FC<FeedItemsProps> = ({ sortOrder }) => {
         const feedUser = userMap[item.userId];
         const userType = feedUser.userType;
         const createdBy =
-          userType === "individual" ? `${feedUser.firstName} ${feedUser.lastName}` : feedUser.companyName;
+          userType === UserType.Individual
+            ? `${feedUser.firstName} ${feedUser.lastName}`
+            : feedUser.companyName;
 
         return {
           ...item,
@@ -121,15 +130,15 @@ export const FeedItems: FC<FeedItemsProps> = ({ sortOrder }) => {
 
   const lastItemRef = useCallback(
     (node: HTMLDivElement) => {
-      if (observer.current) observer.current.disconnect();
+      if (observer.current) observer.current?.disconnect();
       observer.current = new IntersectionObserver((entries) => {
         if (entries[0].isIntersecting) {
           fetchFeedItems();
         }
       });
-      if (node) observer.current.observe(node);
+      if (node) observer.current?.observe(node);
     },
-    [fetchFeedItems]
+    [fetchFeedItems],
   );
 
   useEffect(() => {
@@ -146,11 +155,16 @@ export const FeedItems: FC<FeedItemsProps> = ({ sortOrder }) => {
           width: "100%",
           p: 3,
           borderRadius: 5,
-        }}>
+        }}
+      >
         {feedItems.map((feedItem, index) => (
-          <div key={feedItem.id} ref={index === feedItems.length - 1 ? lastItemRef : null}>
+          <Box
+            id={feedItem.id}
+            key={feedItem.id}
+            ref={index === feedItems.length - 1 ? lastItemRef : null}
+          >
             <FeedItem item={feedItem} />
-          </div>
+          </Box>
         ))}
         {loading && <p>Loading more items...</p>}
         {!hasMore && <p>No more items to load.</p>}

@@ -4,7 +4,7 @@ import { useTheme } from "@mui/material/styles";
 import { Grid } from "@mui/system";
 
 const label = {
-  yesDoIt: "YES DO IT",
+  greenCareerLink: "GREEN CAREER LINK",
 };
 export const LoadingScreen = () => {
   const theme = useTheme();
@@ -33,7 +33,7 @@ export const LoadingScreen = () => {
           fontSize={isMobile ? 48 : 140}
           sx={{ textTransform: "uppercase" }}
         >
-          {label.yesDoIt}
+          {label.greenCareerLink}
         </Typography>
       </Grid>
     </Grid>

@@ -35,9 +35,12 @@ const SidebarButton = ({
   label: string;
   url: string;
 }) => {
+  console.log("url", url);
   const router = useRouter();
   const pathname = usePathname();
-  const isActive = pathname === `/dashboard/${url}`;
+  console.log("pathname", pathname);
+
+  const isActive = pathname === url;
   const buttonActive: "contained" | "text" = isActive ? "contained" : "text";
   return (
     <Tooltip title={!isOpen && title} placement="right" arrow>
@@ -159,7 +162,7 @@ export const Sidebar = ({
                 </Typography>
               </Box>
               <Typography variant="h6" color="primary" fontWeight={900}>
-                YES DO IT
+                GREEN CAREER LINK
               </Typography>
             </Grid>
           )}
