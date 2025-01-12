@@ -2,6 +2,7 @@ import { Grid } from "@mui/system";
 import { TextField } from "@mui/material";
 import { UploadFile } from "@/components/upload-file/upload-file";
 import { FormikValues } from "formik";
+import { useState } from "react";
 
 export const IndividualInformationsForm = ({
   isEditing,
@@ -12,6 +13,10 @@ export const IndividualInformationsForm = ({
   profile: FormikValues;
   handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }) => {
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const handleFileSelect = (file: File) => {
+    setSelectedFile(file);
+  };
   return (
     <Grid container spacing={2}>
       <Grid size={{ xs: 12, lg: 6 }}>
