@@ -52,3 +52,16 @@ export const removeFileAndUpdateRecord = async (
     return false;
   }
 };
+
+export const updateProfilePicture = async (userId: string, url: string) => {
+  try {
+    const db = getFirestore();
+    const userDocRef = doc(db, "users", userId);
+    await updateDoc(userDocRef, { profileUrl: url } as UpdateData<{
+      profileUrl: string;
+    }>);
+  } catch (error) {
+    console.error("Error updating profile picture: ", error);
+    throw error;
+  }
+};

@@ -1,5 +1,10 @@
-import styles from "@/components/profile/profile.module.css";
-import { Grid } from "@mui/system";
+import { useEffect, useState } from "react";
+import {
+  removeFileAndUpdateRecord,
+  updateProfilePicture,
+  uploadFile,
+} from "@/services/fileServices";
+import { getAuth } from "firebase/auth";
 import {
   Avatar,
   Box,
@@ -8,14 +13,12 @@ import {
   Tooltip,
   Typography,
 } from "@mui/material";
-import LinkIcon from "@mui/icons-material/Link";
-import Work from "@mui/icons-material/Work";
+import { CloseRounded, Link as LinkIcon, Work } from "@mui/icons-material";
+import { useTheme } from "@mui/material/styles";
 import { CompanyInformation, IndividualInformation } from "@/types/interfaces";
 import { UserType } from "@/types/enums";
-import { useTheme } from "@mui/material/styles";
-import { CloseRounded } from "@mui/icons-material";
-import { useEffect, useState } from "react";
-import { getAuth } from "firebase/auth";
+import styles from "@/components/profile/profile.module.css";
+import { Grid } from "@mui/system";
 
 const formatWebsiteUrl = (website?: string) => {
   if (!website) return "";
@@ -31,6 +34,8 @@ export const ProfileBanner = ({
 }) => {
   const theme = useTheme();
   const [isOwner, setIsOwner] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [profileUrl, setProfileUrl] = useState(profile.profileUrl);
 
   useEffect(() => {
     const auth = getAuth();
@@ -44,29 +49,75 @@ export const ProfileBanner = ({
     }
   }, [uid]);
 
+  const handleFileChange = async (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    if (event.target.files && event.target?.files[0]) {
+      setLoading(true);
+      try {
+        const file = event.target?.files[0];
+        const userId = getAuth().currentUser?.uid;
+        if (userId) {
+          const url = await uploadFile(file, userId);
+          await updateProfilePicture(userId, url);
+          setProfileUrl(url); // Update the state with the new URL
+        }
+      } catch (error) {
+        console.error("Error uploading file: ", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+  };
+
+  const handleRemovePicture = async () => {
+    setLoading(true);
+    try {
+      const userId = getAuth().currentUser?.uid;
+      if (userId && profileUrl) {
+        await removeFileAndUpdateRecord(profileUrl, userId);
+        await updateProfilePicture(userId, "");
+        setProfileUrl(""); // Update the state to remove the URL
+      }
+    } catch (error) {
+      console.error("Error removing file: ", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <Grid container className={styles.profileBanner}>
       <Grid container sx={{ gap: 3, alignItems: "center" }}>
         <Box sx={{ position: "relative" }}>
-          <IconButton disabled={!isOwner}>
-            <Tooltip title="Change profile picture">
-              <Avatar
-                sx={{
-                  backgroundColor: theme.palette.common.white,
-                  color: theme.palette.primary.main,
-                  width: 120,
-                  height: 120,
-                  fontSize: "3rem",
-                }}
-                src={profile.profileUrl}
-              >
-                {profile?.userType === UserType.Company
-                  ? profile?.companyName[0]
-                  : profile?.firstName[0]}
-              </Avatar>
-            </Tooltip>
-          </IconButton>
-          {profile?.profileUrl && (
+          <input
+            type="file"
+            accept="image/*"
+            style={{ display: "none" }}
+            id="upload-profile-picture"
+            onChange={handleFileChange}
+          />
+          <label htmlFor="upload-profile-picture">
+            <IconButton component="span" disabled={!isOwner || loading}>
+              <Tooltip title="Change profile picture">
+                <Avatar
+                  sx={{
+                    backgroundColor: theme.palette.common.white,
+                    color: theme.palette.primary.main,
+                    width: 120,
+                    height: 120,
+                    fontSize: "3rem",
+                  }}
+                  src={profileUrl}
+                >
+                  {profile?.userType === UserType.Company
+                    ? profile?.companyName[0]
+                    : profile?.firstName[0]}
+                </Avatar>
+              </Tooltip>
+            </IconButton>
+          </label>
+          {profileUrl && (
             <IconButton
               sx={{
                 display: isOwner ? "flex" : "none",
@@ -78,6 +129,8 @@ export const ProfileBanner = ({
               }}
               size="small"
               disableRipple
+              onClick={handleRemovePicture}
+              disabled={loading}
             >
               <Tooltip title="Remove profile picture" placement="right">
                 <CloseRounded fontSize="small" />
