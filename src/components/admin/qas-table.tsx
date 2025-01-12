@@ -7,6 +7,7 @@ import {
   Box,
   Button,
   CircularProgress,
+  IconButton,
   Paper,
   Snackbar,
   Table,
@@ -19,20 +20,33 @@ import {
 } from "@mui/material";
 import { deleteQA, getQAsData } from "../../services/educationService";
 import ConfirmDialog from "../confirm-dialog/confirm-dialog";
+import { Delete, Edit } from "@mui/icons-material";
 
 const QARow: FC<{ row: EducationQAItemDto; onDelete: (id: string) => void }> = ({ row, onDelete }) => (
-  <TableRow>
-    <TableCell sx={{ p: 1 }}>{row.title}</TableCell>
-    <TableCell sx={{ p: 1 }}>{row.body}</TableCell>
-    <TableCell sx={{ p: 1 }}>
-      <Button variant='contained' color='primary' fullWidth>
-        Edit
-      </Button>
-    </TableCell>
-    <TableCell sx={{ p: 1 }}>
-      <Button variant='contained' color='error' fullWidth onClick={() => onDelete(row.id)}>
-        Delete
-      </Button>
+  <TableRow
+    sx={{
+      "&:nth-of-type(odd)": {
+        backgroundColor: "action.hover",
+      },
+      "&:hover": {
+        backgroundColor: "action.selected",
+      },
+    }}>
+    <TableCell sx={{ p: 1, verticalAlign: "middle" }}>{row.title}</TableCell>
+    <TableCell sx={{ p: 1, verticalAlign: "middle" }}>{row.body}</TableCell>
+    <TableCell sx={{ p: 1, textAlign: "right", verticalAlign: "middle", whiteSpace: "nowrap" }}>
+      <IconButton
+        color='primary'
+        size='small'
+        sx={{ padding: 0, marginRight: 1 }}
+        onClick={() => {
+          /* Handle edit action */
+        }}>
+        <Edit fontSize='small' />
+      </IconButton>
+      <IconButton color='error' size='small' sx={{ padding: 0 }} onClick={() => onDelete(row.id)}>
+        <Delete fontSize='small' />
+      </IconButton>
     </TableCell>
   </TableRow>
 );
@@ -99,14 +113,13 @@ export const QAsTable: FC = () => {
           <CircularProgress />
         </Box>
       ) : (
-        <TableContainer component={Paper}>
+        <TableContainer component={Paper} sx={{ boxShadow: 3, borderRadius: 2 }}>
           <Table>
             <TableHead>
-              <TableRow>
-                <TableCell sx={{ p: 1 }}>Title</TableCell>
-                <TableCell sx={{ p: 1 }}>Body</TableCell>
-                <TableCell sx={{ p: 1 }}>Edit</TableCell>
-                <TableCell sx={{ p: 1 }}>Delete</TableCell>
+              <TableRow sx={{ backgroundColor: "primary.main" }}>
+                <TableCell sx={{ p: 2, color: "primary.contrastText", fontWeight: "bold" }}>Title</TableCell>
+                <TableCell sx={{ p: 2, color: "primary.contrastText", fontWeight: "bold" }}>Body</TableCell>
+                <TableCell sx={{ p: 2, color: "primary.contrastText", fontWeight: "bold" }}></TableCell>
               </TableRow>
             </TableHead>
             <TableBody>

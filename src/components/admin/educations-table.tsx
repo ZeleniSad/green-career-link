@@ -6,7 +6,6 @@ import { deleteEducation, getEducationsData } from "../../services/educationServ
 import {
   Alert,
   Box,
-  Button,
   CircularProgress,
   IconButton,
   Paper,
@@ -19,29 +18,38 @@ import {
   TableRow,
   Typography,
 } from "@mui/material";
-import { OpenInNew } from "@mui/icons-material";
+import { Delete, Edit, OpenInNew } from "@mui/icons-material";
 import ConfirmDialog from "../confirm-dialog/confirm-dialog";
 
 const EducationRow: FC<{ row: EducationItemDto; onDelete: (id: string) => void }> = ({ row, onDelete }) => (
-  <TableRow>
-    <TableCell sx={{ p: 1 }}>{row.title}</TableCell>
-    <TableCell sx={{ p: 1 }}>{row.fileName}</TableCell>
-    <TableCell sx={{ p: 1 }}>
-      <Box sx={{ display: "flex", gap: 1 }}>
-        <IconButton href={row.fileUrl} target='_blank' underline='none'>
-          <OpenInNew fontSize='small' />
-        </IconButton>
-      </Box>
+  <TableRow
+    sx={{
+      "&:nth-of-type(odd)": {
+        backgroundColor: "action.hover",
+      },
+      "&:hover": {
+        backgroundColor: "action.selected",
+      },
+    }}>
+    <TableCell sx={{ p: 2 }}>{row.title}</TableCell>
+    <TableCell sx={{ p: 2 }}>{row.fileName}</TableCell>
+    <TableCell sx={{ p: 2 }}>
+      <IconButton
+        href={row.fileUrl}
+        target='_blank'
+        rel='noopener noreferrer'
+        size='small' // Set the size to small
+      >
+        <OpenInNew fontSize='small' />
+      </IconButton>
     </TableCell>
-    <TableCell sx={{ p: 1 }}>
-      <Button variant='contained' color='primary' fullWidth>
-        Edit
-      </Button>
-    </TableCell>
-    <TableCell sx={{ p: 1 }}>
-      <Button variant='contained' color='error' fullWidth onClick={() => onDelete(row.id)}>
-        Delete
-      </Button>
+    <TableCell sx={{ p: 2, textAlign: "right" }}>
+      <IconButton color='primary' size='small'>
+        <Edit fontSize='medium' />
+      </IconButton>
+      <IconButton color='error' size='small' onClick={() => onDelete(row.id)}>
+        <Delete fontSize='medium' />
+      </IconButton>
     </TableCell>
   </TableRow>
 );
@@ -109,15 +117,14 @@ export const EducationsTable: FC = () => {
           <CircularProgress />
         </Box>
       ) : (
-        <TableContainer component={Paper}>
+        <TableContainer component={Paper} sx={{ boxShadow: 3, borderRadius: 2 }}>
           <Table>
             <TableHead>
-              <TableRow>
-                <TableCell sx={{ p: 1 }}>Title</TableCell>
-                <TableCell sx={{ p: 1 }}>File Name</TableCell>
-                <TableCell sx={{ p: 1 }}>File</TableCell>
-                <TableCell sx={{ p: 1 }}>Edit</TableCell>
-                <TableCell sx={{ p: 1 }}>Delete</TableCell>
+              <TableRow sx={{ backgroundColor: "primary.main" }}>
+                <TableCell sx={{ p: 2, color: "primary.contrastText", fontWeight: "bold" }}>Title</TableCell>
+                <TableCell sx={{ p: 2, color: "primary.contrastText", fontWeight: "bold" }}>File Name</TableCell>
+                <TableCell sx={{ p: 2, color: "primary.contrastText", fontWeight: "bold" }}>File</TableCell>
+                <TableCell sx={{ p: 2, color: "primary.contrastText", fontWeight: "bold" }}></TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -128,7 +135,11 @@ export const EducationsTable: FC = () => {
           </Table>
         </TableContainer>
       )}
-      <Snackbar open={snackbarOpen} autoHideDuration={6000} onClose={handleCloseSnackbar}>
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={6000}
+        onClose={handleCloseSnackbar}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}>
         <Alert severity={snackbarSeverity} sx={{ width: "100%" }} onClose={handleCloseSnackbar}>
           {snackbarMessage}
         </Alert>
