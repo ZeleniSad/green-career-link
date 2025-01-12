@@ -34,6 +34,7 @@ import { db } from "@/config/firebaseConfig";
 import { FeedItemDto } from "@/types/dto";
 import { addDoc, collection } from "firebase/firestore";
 import { uploadFile } from "@/services/fileServices";
+import { useAuth } from "../../context/authContext";
 
 const labels = {
   createPostTitle: "Create a post",
@@ -69,13 +70,9 @@ const useStyles = makeStyles({
   },
 });
 
-export const CreatePostModal = ({
-  modalOpen,
-  handleClose,
-}: {
-  modalOpen: boolean;
-  handleClose: () => void;
-}) => {
+export const CreatePostModal = ({ modalOpen, handleClose }: { modalOpen: boolean; handleClose: () => void }) => {
+  const { user } = useAuth();
+  const [loading, setLoading] = useState(false);
   const rteRef = useRef<RichTextEditorRef | null>(null);
   const [formState, setFormState] = useState({
     selectedCategory: "",
@@ -104,17 +101,20 @@ export const CreatePostModal = ({
     setErrors(newErrors);
 
     if (!newErrors.selectedCategory) {
+      setLoading(true);
+      const userId = user!.uid;
       let imageUrl = "";
       if (selectedFile) {
-        imageUrl = await uploadFile(selectedFile, "images");
+        imageUrl = await uploadFile(selectedFile, userId);
       }
 
+      const category = categories.find((c) => Number(formState.selectedCategory) == c.categoryId)!.label;
+      const body = formState.postDescription;
+
       const feedItem = {
-        category: categories.find(
-          (c) => Number(formState.selectedCategory) == c.categoryId,
-        )!.label,
-        body: formState.postDescription,
-        userId: "JC5eBPBiYzfXyDQuXu7c5vJiIlr2",
+        category,
+        body,
+        userId,
         createdAt: new Date(),
         image: imageUrl,
       } as FeedItemDto;
@@ -123,6 +123,7 @@ export const CreatePostModal = ({
       await addDoc(feedItemsCollection, feedItem);
 
       handleClose();
+      setLoading(false);
     }
   };
 
@@ -130,30 +131,24 @@ export const CreatePostModal = ({
     <Modal
       open={modalOpen}
       onClose={handleClose}
-      aria-labelledby="modal-modal-title"
-      aria-describedby="modal-modal-description"
-    >
+      aria-labelledby='modal-modal-title'
+      aria-describedby='modal-modal-description'>
       <Paper className={classes.modalStyle}>
         <Grid container sx={{ gap: 3 }}>
           <Grid container sx={{ alignItems: "center", gap: 2 }}>
-            <DescriptionOutlined color="primary" />
-            <Typography variant="h5">{labels.createPostTitle}</Typography>
+            <DescriptionOutlined color='primary' />
+            <Typography variant='h5'>{labels.createPostTitle}</Typography>
           </Grid>
-          <Typography variant="body1">
-            {labels.createPostDescription}
-          </Typography>
+          <Typography variant='body1'>{labels.createPostDescription}</Typography>
           <FormControl fullWidth error={errors.selectedCategory}>
-            <InputLabel id="demo-simple-select-label">
-              {labels.categoryLabel}
-            </InputLabel>
+            <InputLabel id='demo-simple-select-label'>{labels.categoryLabel}</InputLabel>
             <Select
-              labelId="demo-simple-select-label"
-              id="demo-simple-select"
-              name="selectedCategory"
+              labelId='demo-simple-select-label'
+              id='demo-simple-select'
+              name='selectedCategory'
               value={formState.selectedCategory}
               label={labels.categoryLabel}
-              onChange={handleSelectChange}
-            >
+              onChange={handleSelectChange}>
               {categories.map((category) => (
                 <MenuItem key={category.categoryId} value={category.categoryId}>
                   {category.label}
@@ -161,7 +156,14 @@ export const CreatePostModal = ({
               ))}
             </Select>
           </FormControl>
-          <Box sx={{ width: "100%", minHeight: 200 }}>
+          <Box
+            sx={{
+              width: "100%",
+              minHeight: 200,
+              "& .ProseMirror": {
+                minHeight: "150px",
+              },
+            }}>
             <RichTextEditor
               onUpdate={({ editor }) => {
                 setFormState({
@@ -191,20 +193,18 @@ export const CreatePostModal = ({
           <UploadFile
             disabled={false}
             onFileSelect={handleFileSelect}
+            isEditing={true}
             allowedFileTypes={{
               "image/png": [".png"],
               "image/jpeg": [".jpg", ".jpeg"],
             }}
           />
-          <Typography variant="body2">{labels.supportedFormats}</Typography>
-          <Grid
-            container
-            sx={{ width: "100%", justifyContent: "flex-end", gap: 2 }}
-          >
-            <Button variant="outlined" onClick={handleClose}>
+          <Typography variant='body2'>{labels.supportedFormats}</Typography>
+          <Grid container sx={{ width: "100%", justifyContent: "flex-end", gap: 2 }}>
+            <Button variant='outlined' onClick={handleClose}>
               {labels.cancel}
             </Button>
-            <Button variant="contained" onClick={handleFormSubmit}>
+            <Button variant='contained' onClick={handleFormSubmit} disabled={loading}>
               {labels.createPostButton}
             </Button>
           </Grid>
