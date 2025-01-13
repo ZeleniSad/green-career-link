@@ -7,14 +7,21 @@ import {
   query,
   QueryDocumentSnapshot,
   startAfter,
+  where,
 } from "firebase/firestore";
 import { db } from "../config/firebaseConfig";
 import { FeedItemDto } from "../types/dto";
+import { FeedItemsFilters } from "@/types/interfaces";
 
 export const getFeedItemsData = async (
-  lastVisible: QueryDocumentSnapshot<DocumentData> | null
+  lastVisible: QueryDocumentSnapshot<DocumentData> | null,
+  filters: FeedItemsFilters
 ): Promise<{ items: FeedItemDto[]; lastDoc: QueryDocumentSnapshot<DocumentData> | null }> => {
-  let feedItemsQuery = query(collection(db, "feedItems"), orderBy("createdAt", "desc"), limit(10));
+  let feedItemsQuery = query(collection(db, "feedItems"), orderBy("createdAt", filters.order), limit(10));
+
+  if (filters.category) {
+    feedItemsQuery = query(feedItemsQuery, where("category", "==", filters.category));
+  }
 
   if (lastVisible) {
     feedItemsQuery = query(feedItemsQuery, startAfter(lastVisible));

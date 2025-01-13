@@ -39,3 +39,14 @@ export interface EmailTemplate {
   subject: string;
   html: string;
 }
+
+export interface FeedItemsFilters {
+  category: string | null;
+  order: "asc" | "desc";
+}
+
+export enum FeedItemCategory {
+  JobOffering = "Job offering",
+  LookingForJob = "Looking for job",
+  Other = "Other",
+}
