@@ -10,6 +10,7 @@ export const LogoBar = () => {
         width: "100%",
         justifyContent: "space-between",
         alignItems: "flex-start",
+        height: "100px",
       }}
     >
       <Box>
