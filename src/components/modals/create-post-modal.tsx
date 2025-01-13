@@ -38,7 +38,7 @@ import { useAuth } from "@/context/authContext";
 import { fetchUserByUid } from "@/services/userServices";
 import { mapUserData } from "@/util/mappers";
 import { uuidv4 } from "@firebase/util";
-import { CompanyInformation, IndividualInformation } from "@/types/interfaces";
+import { CompanyInformation, FeedItemCategory, IndividualInformation } from "@/types/interfaces";
 
 const labels = {
   createPostTitle: "Create a post",
@@ -52,12 +52,6 @@ const labels = {
   cancel: "Cancel",
   createPostButton: "Create post",
 };
-
-const categories = [
-  { categoryId: 1, label: "Job offering" },
-  { categoryId: 2, label: "Looking for job" },
-  { categoryId: 3, label: "Other" },
-];
 
 const useStyles = makeStyles({
   textEditor: {
@@ -80,9 +74,7 @@ export const CreatePostModal = ({
 }: {
   modalOpen: boolean;
   handleClose: () => void;
-  setFeedItems: (
-    value: ((prevState: FeedItemDto[]) => FeedItemDto[]) | FeedItemDto[],
-  ) => void;
+  setFeedItems: (value: ((prevState: FeedItemDto[]) => FeedItemDto[]) | FeedItemDto[]) => void;
 }) => {
   const { user } = useAuth();
   const [loading, setLoading] = useState(false);
@@ -95,9 +87,7 @@ export const CreatePostModal = ({
     selectedCategory: false,
   });
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [userData, setUserData] = useState<
-    IndividualInformation | CompanyInformation
-  >(null);
+  const [userData, setUserData] = useState<IndividualInformation | CompanyInformation>(null);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -137,9 +127,7 @@ export const CreatePostModal = ({
         imageUrl = await uploadFile(selectedFile, userId);
       }
 
-      const category = categories.find(
-        (c) => Number(formState.selectedCategory) == c.categoryId,
-      )!.label;
+      const category = formState.selectedCategory;
       const body = formState.postDescription;
 
       const feedItem = {
@@ -172,38 +160,31 @@ export const CreatePostModal = ({
     <Modal
       open={modalOpen}
       onClose={handleClose}
-      aria-labelledby="modal-modal-title"
-      aria-describedby="modal-modal-description"
-    >
+      aria-labelledby='modal-modal-title'
+      aria-describedby='modal-modal-description'>
       <Paper
         className={classes.modalStyle}
         sx={{
           borderRadius: 6,
-        }}
-      >
+        }}>
         <Grid container sx={{ gap: 3 }}>
           <Grid container sx={{ alignItems: "center", gap: 2 }}>
-            <DescriptionOutlined color="primary" />
-            <Typography variant="h5">{labels.createPostTitle}</Typography>
+            <DescriptionOutlined color='primary' />
+            <Typography variant='h5'>{labels.createPostTitle}</Typography>
           </Grid>
-          <Typography variant="body1">
-            {labels.createPostDescription}
-          </Typography>
+          <Typography variant='body1'>{labels.createPostDescription}</Typography>
           <FormControl fullWidth error={errors.selectedCategory}>
-            <InputLabel id="demo-simple-select-label">
-              {labels.categoryLabel}
-            </InputLabel>
+            <InputLabel id='demo-simple-select-label'>{labels.categoryLabel}</InputLabel>
             <Select
-              labelId="demo-simple-select-label"
-              id="demo-simple-select"
-              name="selectedCategory"
+              labelId='demo-simple-select-label'
+              id='demo-simple-select'
+              name='selectedCategory'
               value={formState.selectedCategory}
               label={labels.categoryLabel}
-              onChange={handleSelectChange}
-            >
-              {categories.map((category) => (
-                <MenuItem key={category.categoryId} value={category.categoryId}>
-                  {category.label}
+              onChange={handleSelectChange}>
+              {Object.values(FeedItemCategory).map((category) => (
+                <MenuItem key={category} value={category}>
+                  {category}
                 </MenuItem>
               ))}
             </Select>
@@ -215,8 +196,7 @@ export const CreatePostModal = ({
               "& .ProseMirror": {
                 minHeight: "150px",
               },
-            }}
-          >
+            }}>
             <RichTextEditor
               onUpdate={({ editor }) => {
                 setFormState({
@@ -253,19 +233,12 @@ export const CreatePostModal = ({
               "image/jpeg": [".jpg", ".jpeg"],
             }}
           />
-          <Typography variant="body2">{labels.supportedFormats}</Typography>
-          <Grid
-            container
-            sx={{ width: "100%", justifyContent: "flex-end", gap: 2 }}
-          >
-            <Button variant="outlined" onClick={handleClose}>
+          <Typography variant='body2'>{labels.supportedFormats}</Typography>
+          <Grid container sx={{ width: "100%", justifyContent: "flex-end", gap: 2 }}>
+            <Button variant='outlined' onClick={handleClose}>
               {labels.cancel}
             </Button>
-            <Button
-              variant="contained"
-              onClick={handleFormSubmit}
-              disabled={loading}
-            >
+            <Button variant='contained' onClick={handleFormSubmit} disabled={loading}>
               {labels.createPostButton}
             </Button>
           </Grid>
