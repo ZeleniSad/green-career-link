@@ -21,7 +21,7 @@ import {
 import { useTheme } from "@mui/material/styles";
 import { usePathname, useRouter } from "next/navigation";
 import Image from "next/image";
-import { getAuth } from "firebase/auth";
+import { useAuth } from "@/context/authContext";
 
 const SidebarButton = ({
   isOpen,
@@ -74,11 +74,10 @@ export const Sidebar = ({
   setOpen: (open: boolean) => void;
   sidebarRef: React.MutableRefObject<HTMLDivElement | null>;
 }) => {
+  const { userIsAdmin } = useAuth();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-  const auth = getAuth();
 
-  console.log(auth);
   return (
     <Drawer
       variant="permanent"
@@ -142,13 +141,15 @@ export const Sidebar = ({
               label="Educations"
               url="/dashboard/educations"
             />
-            <SidebarButton
-              isOpen={open}
-              title="Admin Dashboard"
-              icon={<AdminPanelSettingsOutlined />}
-              label="Admin Dashboard"
-              url="/dashboard/admin"
-            />
+            {userIsAdmin && (
+              <SidebarButton
+                isOpen={open}
+                title="Admin Dashboard"
+                icon={<AdminPanelSettingsOutlined />}
+                label="Admin Dashboard"
+                url="/dashboard/admin"
+              />
+            )}
           </Grid>
         </Grid>
         <Grid container sx={{ flexDirection: "column", gap: 3 }}>
