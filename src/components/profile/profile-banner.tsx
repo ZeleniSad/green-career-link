@@ -96,6 +96,7 @@ export const ProfileBanner = ({
             style={{ display: "none" }}
             id="upload-profile-picture"
             onChange={handleFileChange}
+            disabled={!isOwner || loading}
           />
           <label htmlFor="upload-profile-picture">
             <IconButton component="span" disabled={!isOwner || loading}>
