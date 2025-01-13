@@ -53,6 +53,28 @@ export const removeFileAndUpdateRecord = async (
   }
 };
 
+export const removePostimage = async (fileUrl: string, feedItemId: string) => {
+  try {
+    const storage = getStorage();
+    const fileRef = ref(storage, fileUrl);
+    await deleteObject(fileRef);
+
+    const db = getFirestore();
+    const feedItemDocRef: DocumentReference<DocumentData> = doc(
+      db,
+      "feedItems",
+      feedItemId,
+    );
+    await updateDoc(feedItemDocRef, { image: "" } as UpdateData<{
+      image: string;
+    }>);
+    return true;
+  } catch (error) {
+    console.error("Error removing file: ", error);
+    return false;
+  }
+};
+
 export const updateProfilePicture = async (userId: string, url: string) => {
   try {
     const db = getFirestore();

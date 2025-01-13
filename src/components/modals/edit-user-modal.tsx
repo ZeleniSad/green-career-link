@@ -215,8 +215,10 @@ export const EditUserModal: FC<EditUserModalProps> = ({
         />
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose}>Cancel</Button>
-        <Button onClick={handleSave} color="primary">
+        <Button variant="outlined" onClick={onClose}>
+          Cancel
+        </Button>
+        <Button variant="contained" onClick={handleSave} color="primary">
           Save
         </Button>
       </DialogActions>
