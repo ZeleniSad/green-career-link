@@ -1,9 +1,34 @@
 import { NextRequest, NextResponse } from "next/server";
 import { ValidationError } from "yup";
 import { RegisterPayload, registrationSchema } from "@/shared/register.schema";
-import { registerUser, createUserDoc, checkEmailInUse, generateVerificationLink } from "@/lib/firebase-admin";
+import {
+  registerUser,
+  createUserDoc,
+  checkEmailInUse,
+  generateVerificationLink,
+  isAdminToken,
+  deleteUser,
+} from "@/lib/firebase-admin";
 import { UserType } from "@/types/enums";
 import { sendEmailVerification } from "@/lib/email-sender";
+import logger from "@/lib/logger";
+
+export async function DELETE(request: NextRequest) {
+  try {
+    const jwt = request.headers.get("Authorization");
+    const userId = request.headers.get("userId");
+    if (!userId || !(await isAdminToken(jwt, userId))) {
+      return NextResponse.json({ messsage: "Unauthorized" }, { status: 403 });
+    }
+
+    await deleteUser(userId);
+
+    return NextResponse.json({ message: "User deleted" });
+  } catch (error) {
+    logger.error({ err: error, message: "Error deleting user" });
+    return NextResponse.json({ message: "An unexpected error occurred" }, { status: 500 });
+  }
+}
 
 export async function POST(request: NextRequest) {
   try {

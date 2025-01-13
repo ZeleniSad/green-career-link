@@ -7,6 +7,7 @@ import logger from "@/lib/logger";
 import { initializeApp, getApps, cert, App } from "firebase-admin/app";
 import { getAuth } from "firebase-admin/auth";
 import { getFirestore } from "firebase-admin/firestore";
+import { getStorage } from "firebase-admin/storage";
 
 dotenv.config();
 
@@ -38,6 +39,7 @@ if (!getApps().length) {
 
 const adminAuth = getAuth(adminApp);
 const adminDb = getFirestore(adminApp);
+const adminStorage = getStorage(adminApp);
 
 const registerUser = async ({
   email,
@@ -105,4 +107,84 @@ const generateVerificationLink = async (email: string): Promise<string> => {
     throw error;
   }
 };
-export { registerUser, createUserDoc, checkEmailInUse, generateVerificationLink };
+
+const isAdminToken = async (token: string | null, uid: string) => {
+  if (!token) {
+    return false;
+  }
+  try {
+    const adminUid = process.env.ADMIN_UID;
+    const decodedToken = await adminAuth.verifyIdToken(token);
+    return decodedToken["admin"] === true && uid !== adminUid;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  } catch (error) {
+    return false;
+  }
+};
+
+const deleteDocumentsConditionally = async (collectionName: string, field: string, value: string) => {
+  const collectionRef = adminDb.collection(collectionName);
+  const query = collectionRef.where(field, "==", value);
+  const querySnapshot = await query.get();
+
+  if (querySnapshot.empty) {
+    logger.info(`No matching documents found in ${collectionName} where ${field} == ${value}.`);
+    return;
+  }
+
+  const batchSize = 500; // Firestore allows up to 500 operations per batch
+  let batch = adminDb.batch();
+  let count = 0;
+
+  querySnapshot.docs.forEach((doc) => {
+    batch.delete(doc.ref);
+    count++;
+
+    if (count % batchSize === 0) {
+      batch.commit();
+      batch = adminDb.batch();
+    }
+  });
+
+  if (count % batchSize !== 0) {
+    await batch.commit();
+  }
+
+  logger.info(`Deleted ${count} documents from ${collectionName} where ${field} == ${value}.`);
+};
+
+const deleteUserStorageFolder = async (userId: string): Promise<void> => {
+  const folderPath = `documents/${userId}/`;
+  const bucket = adminStorage.bucket(process.env.FIREBASE_BUCKET_NAME);
+
+  await bucket.deleteFiles({ prefix: folderPath });
+
+  logger.info(`Deleted storage folder for userId: ${userId}`);
+};
+
+const deleteUserColl = async (userId: string): Promise<void> => {
+  await adminDb.collection("users").doc(userId).delete();
+
+  logger.info(`Deleted user document for userId: ${userId}`);
+};
+
+const deleteUser = async (uid: string) => {
+  try {
+    try {
+      await adminAuth.getUser(uid);
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (error) {
+      return;
+    }
+
+    await deleteUserStorageFolder(uid);
+    await deleteDocumentsConditionally("feedItems", "userId", uid);
+    await deleteUserColl(uid);
+
+    await adminAuth.deleteUser(uid);
+  } catch (error) {
+    logger.error({ err: error, message: "Error deleting user" });
+    throw error;
+  }
+};
+export { registerUser, createUserDoc, checkEmailInUse, generateVerificationLink, isAdminToken, deleteUser };
