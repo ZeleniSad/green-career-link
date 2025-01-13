@@ -1,12 +1,13 @@
 "use client";
 import { Grid } from "@mui/system";
 import { DashboardAppBarFilters } from "@/components/feed/feed-app-bar/dashboard-app-bar-filters";
-import { CreatePostButton } from "@/components/feed/feed-app-bar/create-post-button";
 import { Welcome } from "@/components/feed/feed-app-bar/welcome";
 import { FeedAppBarUser } from "@/components/feed/feed-app-bar/feed-app-bar-user";
 import { CreatePostModal } from "@/components/modals/create-post-modal";
 import { useModal } from "@/hooks/useModal";
 import { FeedItemDto } from "@/types/dto";
+import { CreatePostButton } from "@/components/feed/feed-app-bar/create-post-button";
+import React from "react";
 
 export const DashboardAppBar = ({
   feedItems,
@@ -32,10 +33,12 @@ export const DashboardAppBar = ({
           <Welcome />
           <Grid container sx={{ alignItems: "center", gap: 1 }}>
             <DashboardAppBarFilters />
-            <CreatePostButton onClick={handleOpen} />
           </Grid>
         </Grid>
-        <FeedAppBarUser />
+        <Grid container sx={{ alignItems: "center", gap: 3 }}>
+          <CreatePostButton onClick={handleOpen} />
+          <FeedAppBarUser handleOpen={handleOpen} />
+        </Grid>
       </Grid>
       <CreatePostModal
         modalOpen={modalOpen}

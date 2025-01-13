@@ -203,11 +203,11 @@ export const FeedItems: FC = ({
           </Alert>
         )}
 
-        {!loading && !hasMore && feedItems.length > 0 && (
-          <Alert severity="warning" sx={{ mt: 2 }}>
-            You&apos;ve reached the end of the feed.
-          </Alert>
-        )}
+        {/*{!loading && !hasMore && feedItems.length > 0 && (*/}
+        {/*  <Alert severity="warning" sx={{ mt: 2 }}>*/}
+        {/*    You&apos;ve reached the end of the feed.*/}
+        {/*  </Alert>*/}
+        {/*)}*/}
       </Paper>
     </Grid>
   );

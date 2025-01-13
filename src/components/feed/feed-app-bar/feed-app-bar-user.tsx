@@ -1,5 +1,5 @@
 "use client";
-import { Avatar, Link, Menu, MenuItem, Typography } from "@mui/material";
+import { Avatar, Link, Menu, MenuItem } from "@mui/material";
 import { Grid } from "@mui/system";
 import { useTheme } from "@mui/material/styles";
 import React, { FC, useEffect, useState } from "react";
@@ -49,11 +49,13 @@ export const FeedAppBarUser: FC = () => {
 
   return (
     <>
-      <Grid container sx={{ alignItems: "center", gap: 1 }}>
+      <Grid container sx={{ alignItems: "center", gap: 3 }}>
         <Avatar
           sx={{
             backgroundColor: theme.palette.primary.main,
             cursor: "pointer",
+            width: 64,
+            height: 64,
           }}
           src={profile?.photoURL}
           onClick={handleClick}
@@ -66,9 +68,7 @@ export const FeedAppBarUser: FC = () => {
           sx={{
             cursor: "pointer",
           }}
-        >
-          <Typography variant="h6">{profile?.displayName}</Typography>
-        </Link>
+        ></Link>
       </Grid>
       <Menu
         id="basic-menu"
