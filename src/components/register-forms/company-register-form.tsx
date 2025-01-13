@@ -35,7 +35,7 @@ export const CompanyRegisterForm = () => {
         : passwordsValidationSchema,
     onSubmit: async (values) => {
       try {
-        const response = await fetch("http://localhost:3000/api/users", {
+        const response = await fetch(`${window.location.origin}/api/users`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",

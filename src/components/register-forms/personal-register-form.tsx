@@ -17,6 +17,7 @@ export const PersonalRegisterForm = () => {
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const router = useRouter();
+
   const initialValues: PersonalRegisterFormProps = {
     firstName: "",
     lastName: "",
@@ -37,7 +38,7 @@ export const PersonalRegisterForm = () => {
         : passwordsValidationSchema,
     onSubmit: async (values) => {
       try {
-        const response = await fetch("http://localhost:3000/api/users", {
+        const response = await fetch(`${window.location.origin}/api/users`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
