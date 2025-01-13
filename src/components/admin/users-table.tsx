@@ -16,24 +16,13 @@ import { Delete, Edit } from "@mui/icons-material";
 import { deleteDoc, doc } from "firebase/firestore";
 import { db } from "@/config/firebaseConfig";
 import { EditUserModal } from "@/components/modals/edit-user-modal";
+import { UserDto } from "@/types/dto";
 
-export interface User {
-  uid: string;
-  firstName: string;
-  lastName: string;
-  companyName: string;
-  email: string;
-  phone: string;
-  country: string;
-  city: string;
-  profileUrl: string;
-}
-
-const UserRow: FC<{ user: User; onEdit: () => void; onDelete: () => void }> = ({
-  user,
-  onEdit,
-  onDelete,
-}) => {
+const UserRow: FC<{
+  user: UserDto;
+  onEdit: () => void;
+  onDelete: () => void;
+}> = ({ user, onEdit, onDelete }) => {
   return (
     <TableRow
       sx={{
@@ -75,8 +64,8 @@ const UserRow: FC<{ user: User; onEdit: () => void; onDelete: () => void }> = ({
 };
 
 export const UsersTable: FC = () => {
-  const [users, setUsers] = useState<User[]>([]);
-  const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const [users, setUsers] = useState<UserDto[]>([]);
+  const [selectedUser, setSelectedUser] = useState<UserDto>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   useEffect(() => {
@@ -92,7 +81,7 @@ export const UsersTable: FC = () => {
     getAllUsers();
   }, []);
 
-  const handleEdit = (user: User) => {
+  const handleEdit = (user: UserDto) => {
     setSelectedUser(user);
     setIsEditModalOpen(true);
   };
@@ -100,13 +89,13 @@ export const UsersTable: FC = () => {
   const handleDelete = async (uid: string) => {
     try {
       await deleteDoc(doc(db, "users", uid));
-      setUsers(users.filter((user) => user.uid !== uid));
+      setUsers(users.filter((user) => user.id !== uid));
     } catch (error) {
       console.error("Error deleting user: ", error);
     }
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     // Refresh the user list after saving
     const getAllUsers = async () => {
       try {
@@ -162,10 +151,10 @@ export const UsersTable: FC = () => {
           <TableBody>
             {users.map((user) => (
               <UserRow
-                key={user.uid}
+                key={user.id}
                 user={user}
                 onEdit={() => handleEdit(user)}
-                onDelete={() => handleDelete(user.uid)}
+                onDelete={() => handleDelete(user.id)}
               />
             ))}
           </TableBody>

@@ -157,7 +157,6 @@ export const CreatePostModal = ({
 
       const feedItemsCollection = collection(db, "feedItems");
       try {
-        console.log("feedItem", feedItem);
         await addDoc(feedItemsCollection, feedItem);
         setFeedItems((prevFeedItems) => [feedItem, ...prevFeedItems]);
       } catch (error) {
