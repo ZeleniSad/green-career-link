@@ -128,7 +128,28 @@ export const IndividualInformationsForm = ({
               onChange={handleChange}
             />
           </Grid>
-
+          <Grid size={{ xs: 12, lg: 3 }}>
+            <TextField
+              id="city"
+              name="city"
+              label="City"
+              fullWidth
+              disabled={!isEditing}
+              value={formikValues?.city}
+              onChange={handleChange}
+            />
+          </Grid>
+          <Grid size={{ xs: 12, lg: 3 }}>
+            <TextField
+              id="country"
+              name="country"
+              label="Country"
+              fullWidth
+              disabled={!isEditing}
+              value={formikValues?.country}
+              onChange={handleChange}
+            />
+          </Grid>
           <Grid size={12}>
             <UploadFile
               disabled={!isEditing}

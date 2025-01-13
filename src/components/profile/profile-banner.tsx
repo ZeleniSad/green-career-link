@@ -139,12 +139,17 @@ export const ProfileBanner = ({
           )}
         </Box>
 
-        <Grid container sx={{ flexDirection: "column", gap: 3 }}>
+        <Grid container sx={{ flexDirection: "column", gap: 1 }}>
           <Typography variant="h3" color="white">
             {profile?.userType === UserType.Company
               ? profile?.companyName
               : profile?.firstName + " " + profile?.lastName}
           </Typography>
+          {profile?.city && profile.country && (
+            <Typography variant="body2" color="white">
+              {profile?.city}, {profile?.country}
+            </Typography>
+          )}
 
           {profile?.userType === UserType.Company
             ? profile.website && (
@@ -161,7 +166,7 @@ export const ProfileBanner = ({
                         textDecoration: "none",
                       }}
                     >
-                      <LinkIcon fontSize="large" />
+                      <LinkIcon fontSize="small" />
                       <Typography variant="body1">
                         {profile?.website}
                       </Typography>
@@ -174,7 +179,7 @@ export const ProfileBanner = ({
                   container
                   sx={{ color: "white", alignItems: "center", gap: 1 }}
                 >
-                  <Work />
+                  <Work fontSize="small" />
                   <Typography variant="body2">{profile?.currentJob}</Typography>
                 </Grid>
               )}
