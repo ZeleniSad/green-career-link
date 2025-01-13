@@ -17,6 +17,7 @@ import { deleteDoc, doc } from "firebase/firestore";
 import { db } from "@/config/firebaseConfig";
 import { EditUserModal } from "@/components/modals/edit-user-modal";
 import { UserDto } from "@/types/dto";
+import { useAuth } from "@/context/authContext";
 
 const UserRow: FC<{
   user: UserDto;
@@ -64,6 +65,7 @@ const UserRow: FC<{
 };
 
 export const UsersTable: FC = () => {
+  const { user } = useAuth();
   const [users, setUsers] = useState<UserDto[]>([]);
   const [selectedUser, setSelectedUser] = useState<UserDto>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -71,7 +73,7 @@ export const UsersTable: FC = () => {
   useEffect(() => {
     const getAllUsers = async () => {
       try {
-        const users = await fetchAllUsers();
+        const users = (await fetchAllUsers()).filter((u) => u.id !== user?.uid);
         setUsers(users);
       } catch (error) {
         console.error("Error fetching user data: ", error);
