@@ -150,7 +150,7 @@ export const UploadFile = ({
             padding: 1,
             border: "1px solid #cccccc",
             borderRadius: 4,
-            background: "#e0f7fa",
+            background: "#f1f7f6",
             justifyContent: "space-between",
           }}
         >

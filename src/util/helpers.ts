@@ -11,5 +11,10 @@ export const truncateDisplayName = (
 export const getFileNameFromUrl = (url: string): string => {
   const parts = url.split("%2F");
   const fileNameWithParams = parts.pop() || "";
-  return fileNameWithParams.split("?")[0];
+  const fileName = fileNameWithParams.split("?")[0];
+  const extensionIndex = fileName.lastIndexOf(".");
+  if (extensionIndex !== -1) {
+    return fileName.substring(0, extensionIndex + 4); // Adjust the number 4 if your extensions have different lengths
+  }
+  return fileName;
 };

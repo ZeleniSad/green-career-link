@@ -21,6 +21,7 @@ import {
 import { useTheme } from "@mui/material/styles";
 import { usePathname, useRouter } from "next/navigation";
 import Image from "next/image";
+import { getAuth } from "firebase/auth";
 
 const SidebarButton = ({
   isOpen,
@@ -75,6 +76,9 @@ export const Sidebar = ({
 }) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const auth = getAuth();
+
+  console.log(auth);
   return (
     <Drawer
       variant="permanent"

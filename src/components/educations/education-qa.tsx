@@ -3,9 +3,9 @@
 import { Box, Grid } from "@mui/system";
 import { Alert, CircularProgress, Snackbar, Typography } from "@mui/material";
 import { EducationQAItem } from "@/components/educations/education-qa-item";
-import { EducationQAItemDto } from "../../types/dto";
+import { EducationQAItemDto } from "@/types/dto";
 import { useEffect, useState } from "react";
-import { getQAsData } from "../../services/educationService";
+import { getQAsData } from "@/services/educationService";
 
 export const EducationQA = () => {
   const [qas, setQas] = useState<EducationQAItemDto[]>([]);
@@ -38,24 +38,46 @@ export const EducationQA = () => {
   }, []);
 
   return (
-    <Box sx={{ p: 3 }}>
-      <Typography variant='h3' color='primary' gutterBottom>
+    <Box>
+      <Typography variant="h3" color="primary" gutterBottom>
         Education Questions & Answers
       </Typography>
       {loading ? (
-        <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "200px" }}>
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            minHeight: "200px",
+          }}
+        >
           <CircularProgress />
         </Box>
       ) : (
-        <Grid container size={12} spacing={1}>
+        <Grid container size={12} sx={{ gap: 2 }}>
           {qas.map((qa, index) => {
-            return <EducationQAItem key={qa.id} index={++index} title={qa.title} body={qa.body} />;
+            return (
+              <EducationQAItem
+                key={qa.id}
+                index={++index}
+                title={qa.title}
+                body={qa.body}
+              />
+            );
           })}
         </Grid>
       )}
 
-      <Snackbar open={snackbarOpen} autoHideDuration={6000} onClose={handleCloseSnackbar}>
-        <Alert severity='error' sx={{ width: "100%" }} onClose={handleCloseSnackbar}>
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={6000}
+        onClose={handleCloseSnackbar}
+      >
+        <Alert
+          severity="error"
+          sx={{ width: "100%" }}
+          onClose={handleCloseSnackbar}
+        >
           {snackbarMessage}
         </Alert>
       </Snackbar>

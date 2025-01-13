@@ -1,7 +1,14 @@
-import { Card, CardActions, CardContent, IconButton, Typography, Box } from "@mui/material";
+import {
+  Box,
+  Card,
+  CardActions,
+  CardContent,
+  IconButton,
+  Typography,
+} from "@mui/material";
 import { InsertDriveFileOutlined, OpenInNew } from "@mui/icons-material";
 
-export const FileCard = ({ title, fileName, fileUrl }) => {
+export const FileCard = ({ title, fileUrl }) => {
   return (
     <Card
       sx={{
@@ -10,22 +17,21 @@ export const FileCard = ({ title, fileName, fileUrl }) => {
         borderRadius: 2,
         overflow: "hidden",
         mb: 2,
-      }}>
+      }}
+    >
       <CardContent
         sx={{
           display: "flex",
           alignItems: "center",
-          gap: 2,
+          gap: 1,
           p: 2,
           backgroundColor: "background.paper",
-        }}>
-        <InsertDriveFileOutlined fontSize='large' color='action' />
+        }}
+      >
+        <InsertDriveFileOutlined color="action" />
         <Box>
-          <Typography variant='h6' component='div'>
+          <Typography variant="h6" component="div">
             {title}
-          </Typography>
-          <Typography variant='body2' color='text.secondary'>
-            {fileName}
           </Typography>
         </Box>
       </CardContent>
@@ -35,18 +41,20 @@ export const FileCard = ({ title, fileName, fileUrl }) => {
           justifyContent: "flex-end",
           p: 1,
           backgroundColor: "background.default",
-        }}>
+        }}
+      >
         <IconButton
-          color='primary'
+          color="primary"
           href={fileUrl}
-          target='_blank'
-          rel='noopener noreferrer'
+          target="_blank"
+          rel="noopener noreferrer"
           sx={{
             transition: "transform 0.2s",
             "&:hover": {
               transform: "scale(1.1)",
             },
-          }}>
+          }}
+        >
           <OpenInNew />
         </IconButton>
       </CardActions>
