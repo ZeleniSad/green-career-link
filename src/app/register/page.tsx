@@ -1,6 +1,6 @@
 "use client";
 import { Grid } from "@mui/system";
-import { Button, Typography } from "@mui/material";
+import { Button, Typography, useMediaQuery } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import { useMemo, useState } from "react";
 import { CompanyRegisterForm } from "@/components/register-forms/company-register-form";
@@ -30,9 +30,8 @@ const Register = () => {
   const [registerType, setRegisterType] = useState<RegisterType>(
     RegisterType.COMPANY,
   );
-
   const theme = useTheme();
-
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const companyButtonCheck: "contained" | "outlined" = useMemo(() => {
     return registerType === RegisterType.COMPANY ? "contained" : "outlined";
   }, [registerType]);
@@ -78,7 +77,7 @@ const Register = () => {
                 color="white"
                 variant={companyButtonCheck}
                 onClick={() => handleChangeRegisterType(RegisterType.COMPANY)}
-                href="#register-form"
+                href={isMobile ? "#register-form" : "#"}
               >
                 {labels.company}
               </Button>
@@ -86,7 +85,7 @@ const Register = () => {
                 color="white"
                 variant={personalButtonCheck}
                 onClick={() => handleChangeRegisterType(RegisterType.PERSONAL)}
-                href="#register-form"
+                href={isMobile ? "#register-form" : "#"}
               >
                 {labels.individual}
               </Button>

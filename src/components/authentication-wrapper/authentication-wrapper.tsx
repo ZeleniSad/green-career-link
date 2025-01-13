@@ -20,6 +20,7 @@ export const AuthenticationWrapper = ({
       container
       sx={{
         backgroundImage: "url(/images/authentication-background.png)",
+        backgroundSize: "cover",
         overflow: "hidden",
         width: "100%",
         minHeight: "100vh",

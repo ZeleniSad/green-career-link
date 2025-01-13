@@ -76,7 +76,7 @@ const ResetPassword = () => {
         </Typography>
         <Typography variant="body2" fontSize={14}>
           {label.resetPassword.rememberPassword}{" "}
-          <Link href="#" underline="none">
+          <Link href="/login" underline="none">
             {label.resetPassword.loginHere}
           </Link>
         </Typography>

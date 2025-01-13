@@ -1,15 +1,13 @@
 "use client";
 import { Grid } from "@mui/system";
 import {
+  Alert,
   Box,
   Button,
-  Checkbox,
-  FormControlLabel,
   Link,
+  Snackbar,
   TextField,
   Typography,
-  Snackbar,
-  Alert,
 } from "@mui/material";
 import { AuthenticationWrapper } from "@/components/authentication-wrapper/authentication-wrapper";
 import { useFormik } from "formik";
@@ -97,15 +95,15 @@ const Login = () => {
             error={formik.touched.password && Boolean(formik.errors.password)}
             helperText={formik.touched.password && formik.errors.password}
           />
-          <Grid container justifyContent="space-between" alignItems="center">
-            <Box display="flex" flexDirection="row" alignItems="center">
-              <FormControlLabel
-                control={<Checkbox disableRipple />}
-                label={
-                  <Typography variant="body2">{label.rememberMe}</Typography>
-                }
-              />
-            </Box>
+          <Grid container justifyContent="flex-end" alignItems="center">
+            {/*<Box display="flex" flexDirection="row" alignItems="center">*/}
+            {/*  <FormControlLabel*/}
+            {/*    control={<Checkbox disableRipple />}*/}
+            {/*    label={*/}
+            {/*      <Typography variant="body2">{label.rememberMe}</Typography>*/}
+            {/*    }*/}
+            {/*  />*/}
+            {/*</Box>*/}
             <Box>
               <Link
                 onClick={() => router.push("reset-password")}
@@ -124,6 +122,21 @@ const Login = () => {
           >
             {label.login}
           </Button>
+          <Grid
+            container
+            justifyContent="flex-start"
+            alignItems="center"
+            sx={{ gap: 1 }}
+          >
+            <Typography variant="body2">Having trouble logging in?</Typography>
+            <Link
+              href="mailto:info@greencareerlink.com"
+              underline="none"
+              sx={{ cursor: "pointer" }}
+            >
+              <Typography variant="body2">Contact support?</Typography>
+            </Link>
+          </Grid>
         </Grid>
       </AuthenticationWrapper>
       <Snackbar
