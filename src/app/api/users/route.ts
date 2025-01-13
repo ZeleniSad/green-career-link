@@ -42,11 +42,12 @@ const handleRegister = async ({
   userType,
   city,
   country,
+  phone,
 }: RegisterPayload) => {
   const displayName = userType === UserType.Individual ? `${firstName} ${lastName}` : `${companyName}`;
   const uid = await registerUser({ email, password, displayName });
 
-  await createUserDoc(uid, cleanObject({ email, firstName, lastName, companyName, userType, city, country }));
+  await createUserDoc(uid, cleanObject({ email, firstName, lastName, companyName, userType, city, country, phone }));
 };
 
 const sendVerificationEmail = async (email: string, name: string) => {

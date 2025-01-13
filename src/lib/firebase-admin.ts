@@ -72,6 +72,7 @@ const createUserDoc = async (
     userType: NonNullable<UserType | undefined>;
     country: string;
     city: string;
+    phone: string;
   }
 ) => {
   try {
