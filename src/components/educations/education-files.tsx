@@ -38,26 +38,41 @@ export const EducationFiles = () => {
   }, []);
 
   return (
-    <Box sx={{ p: 3 }}>
-      <Typography variant='h3' color='primary' gutterBottom>
+    <Box>
+      <Typography variant="h3" color="primary" gutterBottom>
         Education Files
       </Typography>
       {loading ? (
-        <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "200px" }}>
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            minHeight: "200px",
+          }}
+        >
           <CircularProgress />
         </Box>
       ) : (
         <Grid container spacing={3}>
-          {educations.map(({ id, fileUrl, title, fileName }) => (
-            <Grid item xs={12} sm={6} md={4} key={id}>
-              <FileCard title={title} fileUrl={fileUrl} fileName={fileName} />
+          {educations.map(({ id, fileUrl, title }) => (
+            <Grid xs={12} sm={6} md={4} key={id}>
+              <FileCard title={title} fileUrl={fileUrl} />
             </Grid>
           ))}
         </Grid>
       )}
 
-      <Snackbar open={snackbarOpen} autoHideDuration={6000} onClose={handleCloseSnackbar}>
-        <Alert severity='error' sx={{ width: "100%" }} onClose={handleCloseSnackbar}>
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={6000}
+        onClose={handleCloseSnackbar}
+      >
+        <Alert
+          severity="error"
+          sx={{ width: "100%" }}
+          onClose={handleCloseSnackbar}
+        >
           {snackbarMessage}
         </Alert>
       </Snackbar>

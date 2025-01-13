@@ -1,8 +1,11 @@
 "use client";
 
 import { FC, useEffect, useState } from "react";
-import { EducationItemDto } from "../../types/dto";
-import { deleteEducation, getEducationsData } from "../../services/educationService";
+import { EducationItemDto } from "@/types/dto";
+import {
+  deleteEducation,
+  getEducationsData,
+} from "@/services/educationService";
 import {
   Alert,
   Box,
@@ -21,7 +24,10 @@ import {
 import { Delete, Edit, OpenInNew } from "@mui/icons-material";
 import ConfirmDialog from "../confirm-dialog/confirm-dialog";
 
-const EducationRow: FC<{ row: EducationItemDto; onDelete: (id: string) => void }> = ({ row, onDelete }) => (
+const EducationRow: FC<{
+  row: EducationItemDto;
+  onDelete: (id: string) => void;
+}> = ({ row, onDelete }) => (
   <TableRow
     sx={{
       "&:nth-of-type(odd)": {
@@ -30,25 +36,26 @@ const EducationRow: FC<{ row: EducationItemDto; onDelete: (id: string) => void }
       "&:hover": {
         backgroundColor: "action.selected",
       },
-    }}>
+    }}
+  >
     <TableCell sx={{ p: 2 }}>{row.title}</TableCell>
     <TableCell sx={{ p: 2 }}>{row.fileName}</TableCell>
     <TableCell sx={{ p: 2 }}>
       <IconButton
         href={row.fileUrl}
-        target='_blank'
-        rel='noopener noreferrer'
-        size='small' // Set the size to small
+        target="_blank"
+        rel="noopener noreferrer"
+        size="small" // Set the size to small
       >
-        <OpenInNew fontSize='small' />
+        <OpenInNew fontSize="small" />
       </IconButton>
     </TableCell>
     <TableCell sx={{ p: 2, textAlign: "right" }}>
-      <IconButton color='primary' size='small'>
-        <Edit fontSize='medium' />
+      <IconButton color="primary" size="small">
+        <Edit fontSize="medium" />
       </IconButton>
-      <IconButton color='error' size='small' onClick={() => onDelete(row.id)}>
-        <Delete fontSize='medium' />
+      <IconButton color="error" size="small" onClick={() => onDelete(row.id)}>
+        <Delete fontSize="medium" />
       </IconButton>
     </TableCell>
   </TableRow>
@@ -60,8 +67,12 @@ export const EducationsTable: FC = () => {
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
-  const [selectedEducationId, setSelectedEducationId] = useState<string | null>(null);
-  const [snackbarSeverity, setSnackbarSeverity] = useState<"success" | "error">("success");
+  const [selectedEducationId, setSelectedEducationId] = useState<string | null>(
+    null,
+  );
+  const [snackbarSeverity, setSnackbarSeverity] = useState<"success" | "error">(
+    "success",
+  );
 
   const handleCloseSnackbar = () => {
     setSnackbarOpen(false);
@@ -96,8 +107,12 @@ export const EducationsTable: FC = () => {
 
   const handleConfirmDelete = async () => {
     if (selectedEducationId) {
-      const deletedEducation = educations.find((item) => item.id === selectedEducationId)!;
-      setEducations((prevEducations) => prevEducations.filter((item) => item.id !== selectedEducationId));
+      const deletedEducation = educations.find(
+        (item) => item.id === selectedEducationId,
+      )!;
+      setEducations((prevEducations) =>
+        prevEducations.filter((item) => item.id !== selectedEducationId),
+      );
 
       await deleteEducation(deletedEducation.id, deletedEducation.fileUrl);
       setSnackbarMessage("Education item deleted successfully.");
@@ -108,28 +123,72 @@ export const EducationsTable: FC = () => {
   };
 
   return (
-    <Box sx={{ p: 3, width: "100%" }}>
-      <Typography variant='h3' color='primary' gutterBottom>
+    <Box sx={{ width: "100%" }}>
+      <Typography variant="h4" color="primary" gutterBottom>
         Education Files
       </Typography>
       {loading ? (
-        <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: 200 }}>
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            minHeight: 200,
+          }}
+        >
           <CircularProgress />
         </Box>
       ) : (
-        <TableContainer component={Paper} sx={{ boxShadow: 3, borderRadius: 2 }}>
+        <TableContainer
+          component={Paper}
+          sx={{ boxShadow: 3, borderRadius: 2 }}
+        >
           <Table>
             <TableHead>
               <TableRow sx={{ backgroundColor: "primary.main" }}>
-                <TableCell sx={{ p: 2, color: "primary.contrastText", fontWeight: "bold" }}>Title</TableCell>
-                <TableCell sx={{ p: 2, color: "primary.contrastText", fontWeight: "bold" }}>File Name</TableCell>
-                <TableCell sx={{ p: 2, color: "primary.contrastText", fontWeight: "bold" }}>File</TableCell>
-                <TableCell sx={{ p: 2, color: "primary.contrastText", fontWeight: "bold" }}></TableCell>
+                <TableCell
+                  sx={{
+                    p: 2,
+                    color: "primary.contrastText",
+                    fontWeight: "bold",
+                  }}
+                >
+                  Title
+                </TableCell>
+                <TableCell
+                  sx={{
+                    p: 2,
+                    color: "primary.contrastText",
+                    fontWeight: "bold",
+                  }}
+                >
+                  File Name
+                </TableCell>
+                <TableCell
+                  sx={{
+                    p: 2,
+                    color: "primary.contrastText",
+                    fontWeight: "bold",
+                  }}
+                >
+                  File
+                </TableCell>
+                <TableCell
+                  sx={{
+                    p: 2,
+                    color: "primary.contrastText",
+                    fontWeight: "bold",
+                  }}
+                ></TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {educations.map((education) => (
-                <EducationRow key={education.id} row={education} onDelete={handleDeleteClick} />
+                <EducationRow
+                  key={education.id}
+                  row={education}
+                  onDelete={handleDeleteClick}
+                />
               ))}
             </TableBody>
           </Table>
@@ -139,8 +198,13 @@ export const EducationsTable: FC = () => {
         open={snackbarOpen}
         autoHideDuration={6000}
         onClose={handleCloseSnackbar}
-        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}>
-        <Alert severity={snackbarSeverity} sx={{ width: "100%" }} onClose={handleCloseSnackbar}>
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+      >
+        <Alert
+          severity={snackbarSeverity}
+          sx={{ width: "100%" }}
+          onClose={handleCloseSnackbar}
+        >
           {snackbarMessage}
         </Alert>
       </Snackbar>

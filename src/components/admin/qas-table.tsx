@@ -1,7 +1,7 @@
 "use client";
 
 import { FC, useEffect, useState } from "react";
-import { EducationQAItemDto } from "../../types/dto";
+import { EducationQAItemDto } from "@/types/dto";
 import {
   Alert,
   Box,
@@ -17,7 +17,7 @@ import {
   TableRow,
   Typography,
 } from "@mui/material";
-import { deleteQA, getQAsData } from "../../services/educationService";
+import { deleteQA, getQAsData } from "@/services/educationService";
 import ConfirmDialog from "../confirm-dialog/confirm-dialog";
 import { Delete, Edit } from "@mui/icons-material";
 
@@ -122,8 +122,8 @@ export const QAsTable: FC = () => {
   };
 
   return (
-    <Box sx={{ p: 3, width: "100%" }}>
-      <Typography variant="h3" color="primary" gutterBottom>
+    <Box sx={{ width: "100%" }}>
+      <Typography variant="h4" color="primary" gutterBottom>
         Q&A Items
       </Typography>
       {loading ? (
