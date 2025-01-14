@@ -20,11 +20,14 @@ import {
 import { deleteQA, getQAsData } from "@/services/educationService";
 import ConfirmDialog from "../confirm-dialog/confirm-dialog";
 import { Delete, Edit } from "@mui/icons-material";
+import { EditEducationQaModal } from "@/components/modals/edit-education-qa-modal";
 
 const QARow: FC<{
   row: EducationQAItemDto;
   onDelete: (id: string) => void;
-}> = ({ row, onDelete }) => (
+  setSelectedQa: (item: EducationQAItemDto) => void;
+  setModalOpen: (open: boolean) => void;
+}> = ({ row, onDelete, setSelectedQa, setModalOpen }) => (
   <TableRow
     sx={{
       "&:nth-of-type(odd)": {
@@ -50,7 +53,8 @@ const QARow: FC<{
         size="small"
         sx={{ padding: 0, marginRight: 1 }}
         onClick={() => {
-          /* Handle edit action */
+          setSelectedQa(row);
+          setModalOpen(true);
         }}
       >
         <Edit fontSize="small" />
@@ -68,6 +72,8 @@ const QARow: FC<{
 );
 
 export const QAsTable: FC = () => {
+  const [modalOpen, setModalOpen] = useState(false);
+  const [selectedQa, setSelectedQa] = useState<EducationQAItemDto>(null);
   const [qas, setQAs] = useState<EducationQAItemDto[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
@@ -174,7 +180,13 @@ export const QAsTable: FC = () => {
             </TableHead>
             <TableBody>
               {qas.map((qa) => (
-                <QARow key={qa.id} row={qa} onDelete={handleDeleteClick} />
+                <QARow
+                  key={qa.id}
+                  row={qa}
+                  onDelete={handleDeleteClick}
+                  setSelectedQa={setSelectedQa}
+                  setModalOpen={setModalOpen}
+                />
               ))}
             </TableBody>
           </Table>
@@ -201,6 +213,12 @@ export const QAsTable: FC = () => {
           onConfirm: handleConfirmDelete,
           onCancel: () => setConfirmDialogOpen(false),
         }}
+      />
+      <EditEducationQaModal
+        open={modalOpen}
+        onClose={() => setModalOpen(false)}
+        item={selectedQa}
+        onSave={() => {}}
       />
     </Box>
   );

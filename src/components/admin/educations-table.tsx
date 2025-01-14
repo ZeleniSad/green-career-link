@@ -23,11 +23,18 @@ import {
 } from "@mui/material";
 import { Delete, Edit, OpenInNew } from "@mui/icons-material";
 import ConfirmDialog from "../confirm-dialog/confirm-dialog";
+import { EditEducationFileModal } from "@/components/modals/edit-education-file-modal";
 
 const EducationRow: FC<{
   row: EducationItemDto;
   onDelete: (id: string) => void;
-}> = ({ row, onDelete }) => (
+  setSelectedFile: (
+    value:
+      | ((prevState: EducationItemDto) => EducationItemDto)
+      | EducationItemDto,
+  ) => void;
+  setModalOpen: (value: ((prevState: boolean) => boolean) | boolean) => void;
+}> = ({ row, onDelete, setSelectedFile, setModalOpen }) => (
   <TableRow
     sx={{
       "&:nth-of-type(odd)": {
@@ -51,7 +58,14 @@ const EducationRow: FC<{
       </IconButton>
     </TableCell>
     <TableCell sx={{ p: 2, textAlign: "right" }}>
-      <IconButton color="primary" size="small">
+      <IconButton
+        color="primary"
+        size="small"
+        onClick={() => {
+          setModalOpen(true);
+          setSelectedFile(row);
+        }}
+      >
         <Edit fontSize="medium" />
       </IconButton>
       <IconButton color="error" size="small" onClick={() => onDelete(row.id)}>
@@ -62,6 +76,8 @@ const EducationRow: FC<{
 );
 
 export const EducationsTable: FC = () => {
+  const [modalOpen, setModalOpen] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<EducationItemDto>(null);
   const [educations, setEducations] = useState<EducationItemDto[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
@@ -188,6 +204,8 @@ export const EducationsTable: FC = () => {
                   key={education.id}
                   row={education}
                   onDelete={handleDeleteClick}
+                  setSelectedFile={setSelectedFile}
+                  setModalOpen={setModalOpen}
                 />
               ))}
             </TableBody>
@@ -216,6 +234,12 @@ export const EducationsTable: FC = () => {
           onConfirm: handleConfirmDelete,
           onCancel: () => setConfirmDialogOpen(false),
         }}
+      />
+      <EditEducationFileModal
+        open={modalOpen}
+        file={selectedFile}
+        onClose={() => setModalOpen(false)}
+        onSave={() => alert("Saved")}
       />
     </Box>
   );

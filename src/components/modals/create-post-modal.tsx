@@ -165,12 +165,7 @@ export const CreatePostModal = ({
   };
 
   return (
-    <Modal
-      open={modalOpen}
-      onClose={handleClose}
-      aria-labelledby="modal-modal-title"
-      aria-describedby="modal-modal-description"
-    >
+    <Modal open={modalOpen} onClose={handleClose}>
       <Paper
         className={classes.modalStyle}
         sx={{
