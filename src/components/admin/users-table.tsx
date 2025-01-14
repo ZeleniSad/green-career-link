@@ -13,11 +13,10 @@ import {
 } from "@mui/material";
 import { fetchAllUsers } from "@/services/userServices";
 import { Delete, Edit } from "@mui/icons-material";
-import { deleteDoc, doc } from "firebase/firestore";
-import { db } from "@/config/firebaseConfig";
 import { EditUserModal } from "@/components/modals/edit-user-modal";
 import { UserDto } from "@/types/dto";
 import { useAuth } from "@/context/authContext";
+import { Loading } from "@/components/loading/loading";
 
 const UserRow: FC<{
   user: UserDto;
@@ -65,7 +64,8 @@ const UserRow: FC<{
 };
 
 export const UsersTable: FC = () => {
-  const { user } = useAuth();
+  const [loading, setLoading] = useState(false);
+  const { user, accessToken } = useAuth();
   const [users, setUsers] = useState<UserDto[]>([]);
   const [selectedUser, setSelectedUser] = useState<UserDto>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -90,18 +90,29 @@ export const UsersTable: FC = () => {
 
   const handleDelete = async (uid: string) => {
     try {
-      await deleteDoc(doc(db, "users", uid));
-      setUsers(users.filter((user) => user.id !== uid));
+      setLoading(true);
+      const response = await fetch(`${window.location.origin}/api/users`, {
+        method: "DELETE",
+        headers: {
+          userId: uid,
+          Authorization: accessToken ?? "",
+        },
+      });
+      if (response.ok) {
+        setUsers(users.filter((user) => user.id !== uid));
+      }
     } catch (error) {
-      console.error("Error deleting user: ", error);
+      console.error(error);
     }
+    setLoading(false);
   };
 
   const handleSave = async () => {
+    setLoading(true);
     // Refresh the user list after saving
     const getAllUsers = async () => {
       try {
-        const users = await fetchAllUsers();
+        const users = (await fetchAllUsers()).filter((u) => u.id !== user?.uid);
         setUsers(users);
       } catch (error) {
         console.error("Error fetching user data: ", error);
@@ -109,7 +120,12 @@ export const UsersTable: FC = () => {
     };
 
     getAllUsers();
+    setLoading(false);
   };
+
+  if (loading) {
+    return <Loading isOpen={loading} />;
+  }
 
   return (
     <>

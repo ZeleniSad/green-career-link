@@ -3,6 +3,7 @@ import { useAuth } from "@/context/authContext";
 import { ReactNode, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { jwtDecode } from "jwt-decode";
+import { Loading } from "@/components/loading/loading";
 
 const AdminRoute = ({ children }: { children: ReactNode }) => {
   const { user, loading, accessToken } = useAuth();
@@ -20,7 +21,7 @@ const AdminRoute = ({ children }: { children: ReactNode }) => {
   }, [user, loading, router]);
 
   if (loading || !user) {
-    return <div>Loading...</div>;
+    return <Loading isOpen={true} />;
   }
 
   return <>{children}</>;

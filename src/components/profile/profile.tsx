@@ -9,6 +9,7 @@ import { Box } from "@mui/material";
 import styles from "./profile.module.css";
 import { CompanyInformation, IndividualInformation } from "@/types/interfaces";
 import { mapUserData } from "@/util/mappers";
+import { Loading } from "@/components/loading/loading";
 
 export const Profile = ({ uid: initialUid }: { uid?: string }) => {
   const [userData, setUserData] = useState<
@@ -44,7 +45,7 @@ export const Profile = ({ uid: initialUid }: { uid?: string }) => {
   }, [uid]);
 
   if (!userData) {
-    return <div>Loading...</div>;
+    return <Loading isOpen={true} />;
   }
 
   return (
