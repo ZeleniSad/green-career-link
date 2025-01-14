@@ -23,9 +23,12 @@
 }
 
 .firstColumn {
-    border-radius: 24px;
+    /*TODO: Revert Styles*/
+    /*border-radius: 24px;*/
     background-size: cover;
-    background: linear-gradient(0deg, rgb(3, 98, 76, 0.3), rgb(3, 98, 76, 0.3)), url('../../../public/images/loading-screen.png') no-repeat center;
+    /*TODO: Revert Styles*/
+    /*background: linear-gradient(0deg, rgb(3, 98, 76, 0.3), rgb(3, 98, 76, 0.3)), url('../../../public/images/loading-screen.png') no-repeat center;*/
+    background: #1a4f4f;
     background-size: cover;
     display: flex;
     flex-direction: column;

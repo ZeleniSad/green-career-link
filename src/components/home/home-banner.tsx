@@ -24,9 +24,12 @@ export const HomeBanner = () => {
     <Grid
       container
       sx={{
-        backgroundColor: "#03624C",
+        // TODO: Revert Styles
+        // backgroundColor: "#03624C",
+        backgroundColor: "#1a4f4f",
         width: "100%",
-        borderRadius: 4,
+        // borderRadius: 4,
+        borderRadius: 0,
         alignItems: "center",
         justifyContent: "space-between",
       }}

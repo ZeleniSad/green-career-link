@@ -1,6 +1,6 @@
 "use client";
 import { Grid } from "@mui/system";
-import { Button, Typography, useMediaQuery } from "@mui/material";
+import { Button, Link, Typography, useMediaQuery } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import { useMemo, useState } from "react";
 import { CompanyRegisterForm } from "@/components/register-forms/company-register-form";
@@ -89,6 +89,22 @@ const Register = () => {
               >
                 {labels.individual}
               </Button>
+            </Grid>
+            <Grid container size={12} sx={{ gap: 1 }}>
+              <Typography variant="body1" color={theme.palette.common.white}>
+                Already have an account?
+              </Typography>
+              <Link
+                underline="none"
+                sx={{
+                  cursor: "pointer",
+                }}
+                href="/login"
+              >
+                <Typography variant="body1" sx={{ color: "#00DF81" }}>
+                  Login here
+                </Typography>
+              </Link>
             </Grid>
           </Grid>
         </Grid>

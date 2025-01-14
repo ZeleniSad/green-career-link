@@ -155,7 +155,11 @@ export const Sidebar = ({
         <Grid container sx={{ flexDirection: "column", gap: 3 }}>
           {open && (
             <Grid container sx={{ flexDirection: "column", gap: 5 }}>
-              <Link underline="none" sx={{ cursor: "pointer" }}>
+              <Link
+                underline="none"
+                sx={{ cursor: "pointer" }}
+                href="mailto:info@greencareerlink.com"
+              >
                 <Typography variant="body2">Support</Typography>
               </Link>
               <Box>
