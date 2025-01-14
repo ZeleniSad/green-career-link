@@ -3,9 +3,9 @@ import { Tab, Tabs } from "@mui/material";
 import { Grid } from "@mui/system";
 import { FC, ReactNode, SyntheticEvent, useState } from "react";
 import { UsersTable } from "@/components/admin/users-table";
-import { PostsTable } from "@/components/admin/posts-table";
 import { EducationsTable } from "@/components/admin/educations-table";
 import { QAsTable } from "./qas-table";
+import { FeedItemsTable } from "@/components/admin/feed-items-table";
 
 interface TabPanelProps {
   children?: ReactNode;
@@ -51,7 +51,7 @@ export const AdminTabs = () => {
         <UsersTable />
       </TabPanel>
       <TabPanel index={1} value={value}>
-        <PostsTable />
+        <FeedItemsTable />
       </TabPanel>
       <TabPanel index={2} value={value}>
         <Grid container sx={{ gap: 3 }}>

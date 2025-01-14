@@ -34,6 +34,9 @@ export const HomeBar = () => {
         <Button variant="text" sx={{ borderRadius: 2 }} href="#contact">
           Contact
         </Button>
+        <Button variant="outlined" sx={{ borderRadius: 2 }} href="/login">
+          Login
+        </Button>
         <Button
           variant="contained"
           color="success"

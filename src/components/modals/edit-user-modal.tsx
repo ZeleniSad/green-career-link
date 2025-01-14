@@ -1,20 +1,23 @@
 import React, { FC, useEffect, useState } from "react";
 import {
   Button,
+  Checkbox,
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
+  FormControlLabel,
   TextField,
 } from "@mui/material";
-import { doc, updateDoc } from "firebase/firestore";
+import { doc, UpdateData, updateDoc } from "firebase/firestore";
 import { db } from "@/config/firebaseConfig";
-import { User } from "@/components/admin/users-table";
+import { CompanyUserDto, IndividualUserDto, UserDto } from "@/types/dto";
+import { UserType } from "@/types/enums";
 
 interface EditUserModalProps {
   open: boolean;
   onClose: () => void;
-  user: User | null;
+  user: UserDto;
   onSave: () => void;
 }
 
@@ -24,20 +27,20 @@ export const EditUserModal: FC<EditUserModalProps> = ({
   user,
   onSave,
 }) => {
-  const [formData, setFormData] = useState<User | null>(user);
+  const [formData, setFormData] = useState<UserDto>(user);
 
   useEffect(() => {
     setFormData(user);
   }, [user]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value } as User);
+    setFormData({ ...formData, [e.target.name]: e.target.value } as UserDto);
   };
 
   const handleSave = async () => {
     if (formData) {
-      const userDoc = doc(db, "users", formData.uid);
-      await updateDoc(userDoc, formData);
+      const userDoc = doc(db, "users", formData.id);
+      await updateDoc(userDoc, formData as UpdateData<UserDto>);
       onSave();
       onClose();
     }
@@ -64,27 +67,127 @@ export const EditUserModal: FC<EditUserModalProps> = ({
           gap: 3,
         }}
       >
+        {formData.userType === UserType.Individual && (
+          <>
+            <TextField
+              margin="dense"
+              label="First Name"
+              name="firstName"
+              value={(formData as IndividualUserDto).firstName}
+              onChange={handleChange}
+            />
+            <TextField
+              margin="dense"
+              label="Last Name"
+              name="lastName"
+              value={(formData as IndividualUserDto).lastName}
+              onChange={handleChange}
+            />
+            <TextField
+              margin="dense"
+              label="Ambitions"
+              name="ambitions"
+              value={(formData as IndividualUserDto).ambitions}
+              onChange={handleChange}
+            />
+            <TextField
+              margin="dense"
+              label="Current Job"
+              name="currentJob"
+              value={(formData as IndividualUserDto).currentJob}
+              onChange={handleChange}
+            />
+            <TextField
+              margin="dense"
+              label="CV URL"
+              name="cvUrl"
+              value={(formData as IndividualUserDto).cvUrl}
+              onChange={handleChange}
+            />
+            <TextField
+              margin="dense"
+              label="Motivation"
+              name="motivation"
+              value={(formData as IndividualUserDto).motivation}
+              onChange={handleChange}
+            />
+            <TextField
+              margin="dense"
+              label="Years of Experience"
+              name="yearsOfExperience"
+              type="number"
+              value={(formData as IndividualUserDto).yearsOfExperience}
+              onChange={handleChange}
+            />
+            <TextField
+              margin="dense"
+              label="Education"
+              name="education"
+              value={(formData as IndividualUserDto).education}
+              onChange={handleChange}
+            />
+          </>
+        )}
+        {formData.userType === UserType.Company && (
+          <>
+            <TextField
+              margin="dense"
+              label="Company Name"
+              name="companyName"
+              value={(formData as CompanyUserDto).companyName}
+              onChange={handleChange}
+            />
+
+            <TextField
+              margin="dense"
+              label="Goals"
+              name="goals"
+              value={(formData as CompanyUserDto).goals}
+              onChange={handleChange}
+            />
+            <TextField
+              margin="dense"
+              label="Number of Employees"
+              name="numOfEmployees"
+              type="number"
+              value={(formData as CompanyUserDto).numOfEmployees}
+              onChange={handleChange}
+            />
+            <FormControlLabel
+              id="offeringJob"
+              name="offeringJob"
+              label="Offering Job?"
+              control={
+                <Checkbox
+                  checked={(formData as CompanyUserDto).offeringJob}
+                  onChange={handleChange}
+                />
+              }
+            />
+            <TextField
+              margin="dense"
+              label="Website"
+              name="website"
+              value={(formData as CompanyUserDto).website}
+              onChange={handleChange}
+            />
+          </>
+        )}
+
         <TextField
           margin="dense"
-          label="First Name"
-          name="firstName"
-          value={formData.firstName}
-          onChange={handleChange}
-        />
-        <TextField
-          margin="dense"
-          label="Last Name"
-          name="lastName"
-          value={formData.lastName}
-          onChange={handleChange}
-        />
-        <TextField
-          margin="dense"
-          label="Email"
-          name="email"
-          value={formData.email}
+          label="City"
+          name="city"
+          value={formData.city}
           onChange={handleChange}
           fullWidth
+        />
+        <TextField
+          margin="dense"
+          label="Country"
+          name="country"
+          value={(formData as CompanyUserDto).country}
+          onChange={handleChange}
         />
         <TextField
           margin="dense"
@@ -96,24 +199,26 @@ export const EditUserModal: FC<EditUserModalProps> = ({
         />
         <TextField
           margin="dense"
-          label="Country"
-          name="country"
-          value={formData.country}
+          label="About"
+          name="about"
+          value={formData.about}
           onChange={handleChange}
           fullWidth
         />
         <TextField
           margin="dense"
-          label="City"
-          name="city"
-          value={formData.city}
+          label="Profile Image"
+          name="profileUrl"
+          value={formData.profileUrl}
           onChange={handleChange}
           fullWidth
         />
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose}>Cancel</Button>
-        <Button onClick={handleSave} color="primary">
+        <Button variant="outlined" onClick={onClose}>
+          Cancel
+        </Button>
+        <Button variant="contained" onClick={handleSave} color="primary">
           Save
         </Button>
       </DialogActions>

@@ -14,8 +14,10 @@
     padding: 24px;
     justify-content: space-between;
     align-items: center;
-    border-radius: 24px;
-    background: linear-gradient(0deg, rgba(44, 194, 149, 0.5), rgba(3, 98, 76, 0.9)), url('../../../public/images/profile-background.png') no-repeat center;
+    /*TODO: Revert Styles*/
+    /*border-radius: 24px;*/
+    /*background: linear-gradient(0deg, rgba(44, 194, 149, 0.5), rgba(3, 98, 76, 0.9)), url('../../../public/images/profile-background.png') no-repeat center;*/
+    background: #1a4f4f;
     background-size: cover;
 }
 
@@ -24,6 +26,8 @@
     justify-content: space-between;
     align-items: center;
     padding: 24px;
-    background: linear-gradient(90deg, #2CC295 0%, #03624C 100%);
+    /*TODO: Revert Styles*/
+    /*background: linear-gradient(90deg, #2CC295 0%, #03624C 100%);*/
+    background: #1a4f4f;
     border-radius: 24px 24px 0 0;
 }

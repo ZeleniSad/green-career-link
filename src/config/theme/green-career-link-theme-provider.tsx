@@ -17,7 +17,9 @@ export const GreenCareerLinkThemeProvider = ({
   const yesDoItTheme = createTheme({
     palette: {
       primary: {
-        main: "#03624C",
+        // TODO: Revert Styles
+        // main: "#03624C",
+        main: "#1A4F4F",
       },
       secondary: {
         main: "#2CC295",
@@ -62,7 +64,9 @@ export const GreenCareerLinkThemeProvider = ({
         styleOverrides: {
           root: {
             textTransform: "none",
-            borderRadius: 24,
+            // TODO: Revert Styles
+            // borderRadius: 24,
+            borderRadius: 0,
             fontSize: 16,
             paddingLeft: 20,
             paddingRight: 20,

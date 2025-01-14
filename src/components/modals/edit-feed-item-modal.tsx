@@ -32,30 +32,25 @@ import { makeStyles } from "@mui/styles";
 import { UploadFile } from "@/components/upload-file/upload-file";
 import { db } from "@/config/firebaseConfig";
 import { FeedItemDto } from "@/types/dto";
-import { addDoc, collection } from "firebase/firestore";
+import { doc, UpdateData, updateDoc } from "firebase/firestore";
 import { uploadFile } from "@/services/fileServices";
-import { useAuth } from "@/context/authContext";
-import { fetchUserByUid } from "@/services/userServices";
-import { mapUserData } from "@/util/mappers";
-import { uuidv4 } from "@firebase/util";
-import {
-  CompanyInformation,
-  FeedItemCategory,
-  IndividualInformation,
-} from "@/types/interfaces";
 
 const labels = {
   createPostTitle: "Create a post",
-  createPostDescription:
-    "The form allows you to easily create and share posts about business opportunities, volunteer actions, or environmental projects with the community on the platform.",
   categoryLabel: "Choose category",
   postDescription: "Post Description",
   attachFiles: "Attach Files",
   supportedFormats:
     "If you want, you can add an image to make your post more visually appealing. Supported formats: PNG, JPG, JPEG",
   cancel: "Cancel",
-  createPostButton: "Create post",
+  createPostButton: "Edit post",
 };
+
+const categories = [
+  { categoryId: 1, label: "Job offering" },
+  { categoryId: 2, label: "Looking for job" },
+  { categoryId: 3, label: "Other" },
+];
 
 const useStyles = makeStyles({
   textEditor: {
@@ -71,43 +66,26 @@ const useStyles = makeStyles({
   },
 });
 
-export const CreatePostModal = ({
+export const EditFeedItemModal = ({
+  feedItem,
   modalOpen,
   handleClose,
-  setFeedItems,
 }: {
+  feedItem: FeedItemDto;
   modalOpen: boolean;
   handleClose: () => void;
-  setFeedItems: (
-    value: ((prevState: FeedItemDto[]) => FeedItemDto[]) | FeedItemDto[],
-  ) => void;
 }) => {
-  const { user } = useAuth();
+  const [feedItemData, setFeedItemData] = useState<FeedItemDto>(feedItem);
   const [loading, setLoading] = useState(false);
   const rteRef = useRef<RichTextEditorRef | null>(null);
-  const [formState, setFormState] = useState({
-    selectedCategory: "",
-    postDescription: "",
-  });
   const [errors, setErrors] = useState({
     selectedCategory: false,
   });
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [userData, setUserData] = useState<
-    IndividualInformation | CompanyInformation
-  >(null);
 
   useEffect(() => {
-    const fetchUserData = async () => {
-      if (user) {
-        const fetchedUserData = await fetchUserByUid(user.uid);
-        const mappedUserData = mapUserData(fetchedUserData);
-        setUserData(mappedUserData);
-      }
-    };
-
-    fetchUserData();
-  }, [user]);
+    setFeedItemData(feedItem);
+  }, [feedItem]);
 
   const handleFileSelect = (file: File | null) => {
     setSelectedFile(file);
@@ -115,46 +93,31 @@ export const CreatePostModal = ({
   const classes = useStyles();
 
   const handleSelectChange = (event: SelectChangeEvent) => {
-    setFormState((prevState) => ({
+    setFeedItemData((prevState) => ({
       ...prevState,
-      selectedCategory: event.target.value,
+      category: event.target.value,
     }));
   };
 
   const handleFormSubmit = async () => {
     const newErrors = {
-      selectedCategory: !formState.selectedCategory,
+      selectedCategory: !feedItemData?.category,
     };
     setErrors(newErrors);
 
     if (!newErrors.selectedCategory) {
       setLoading(true);
-      const userId = user!.uid;
       let imageUrl = "";
       if (selectedFile) {
-        imageUrl = await uploadFile(selectedFile, userId);
+        imageUrl = await uploadFile(selectedFile, feedItemData?.userId ?? "");
+        if (imageUrl) {
+          feedItemData.image = imageUrl;
+        }
       }
 
-      const category = formState.selectedCategory;
-      const body = formState.postDescription;
-
-      const feedItem = {
-        category,
-        body,
-        userId,
-        id: uuidv4(),
-        createdAt: new Date(),
-        image: imageUrl,
-        createdBy: user?.displayName,
-        profileUrl: userData?.profileUrl,
-        userType: userData?.userType,
-        applyToEmail: userData?.email,
-      } as FeedItemDto;
-
-      const feedItemsCollection = collection(db, "feedItems");
+      const feedItemDoc = doc(db, "feedItems", feedItem.id);
       try {
-        await addDoc(feedItemsCollection, feedItem);
-        setFeedItems((prevFeedItems) => [feedItem, ...prevFeedItems]);
+        await updateDoc(feedItemDoc, feedItemData as UpdateData<FeedItemDto>);
       } catch (error) {
         console.error("Error creating feed item: ", error);
       }
@@ -174,9 +137,7 @@ export const CreatePostModal = ({
       <Paper
         className={classes.modalStyle}
         sx={{
-          // TODO: Revert Styles
-          // borderRadius: 6,
-          borderRadius: 0,
+          borderRadius: 6,
         }}
       >
         <Grid container sx={{ gap: 3 }}>
@@ -184,9 +145,6 @@ export const CreatePostModal = ({
             <DescriptionOutlined color="primary" />
             <Typography variant="h5">{labels.createPostTitle}</Typography>
           </Grid>
-          <Typography variant="body1">
-            {labels.createPostDescription}
-          </Typography>
           <FormControl fullWidth error={errors.selectedCategory}>
             <InputLabel id="demo-simple-select-label">
               {labels.categoryLabel}
@@ -195,13 +153,13 @@ export const CreatePostModal = ({
               labelId="demo-simple-select-label"
               id="demo-simple-select"
               name="selectedCategory"
-              value={formState.selectedCategory}
+              value={feedItemData?.category}
               label={labels.categoryLabel}
               onChange={handleSelectChange}
             >
-              {Object.values(FeedItemCategory).map((category) => (
-                <MenuItem key={category} value={category}>
-                  {category}
+              {categories.map((category) => (
+                <MenuItem key={category.categoryId} value={category.label}>
+                  {category.label}
                 </MenuItem>
               ))}
             </Select>
@@ -217,14 +175,14 @@ export const CreatePostModal = ({
           >
             <RichTextEditor
               onUpdate={({ editor }) => {
-                setFormState({
-                  ...formState,
-                  postDescription: editor.getHTML(),
+                setFeedItemData({
+                  ...feedItemData,
+                  body: editor.getHTML(),
                 });
               }}
               ref={rteRef}
               extensions={[StarterKit]}
-              content={formState.postDescription}
+              content={feedItemData?.body}
               renderControls={() => (
                 <MenuControlsContainer>
                   <MenuSelectHeading />
@@ -244,8 +202,7 @@ export const CreatePostModal = ({
           <UploadFile
             disabled={false}
             onFileSelect={handleFileSelect}
-            isEditing={true}
-            isOwner={true}
+            alreadyAddedFileUrl={feedItemData?.image}
             allowedFileTypes={{
               "image/png": [".png"],
               "image/jpeg": [".jpg", ".jpeg"],

@@ -18,6 +18,7 @@ const baseRegisterSchema = object({
   email: string().trim().email("Invalid email format").required("Email is required"),
   country: string().trim().required("Country is required"),
   city: string().trim().required("City is required"),
+  phone: string().trim().required("Phone number is required"),
   password: passwordSchema,
   confirmPassword: confirmPasswordSchema,
 });

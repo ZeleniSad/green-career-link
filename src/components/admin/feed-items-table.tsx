@@ -1,7 +1,6 @@
 import React, { FC, useEffect, useState } from "react";
+import { FeedItemDto } from "@/types/dto";
 import {
-  Avatar,
-  Box,
   IconButton,
   Paper,
   Table,
@@ -11,19 +10,17 @@ import {
   TableHead,
   TableRow,
 } from "@mui/material";
-import { fetchAllUsers } from "@/services/userServices";
 import { Delete, Edit } from "@mui/icons-material";
 import { deleteDoc, doc } from "firebase/firestore";
 import { db } from "@/config/firebaseConfig";
-import { EditUserModal } from "@/components/modals/edit-user-modal";
-import { UserDto } from "@/types/dto";
-import { useAuth } from "@/context/authContext";
+import { getAllFeedItems } from "@/services/feedItemsService";
+import { EditFeedItemModal } from "@/components/modals/edit-feed-item-modal";
 
-const UserRow: FC<{
-  user: UserDto;
+const FeedItemRow: FC<{
+  feedItem: FeedItemDto;
   onEdit: () => void;
   onDelete: () => void;
-}> = ({ user, onEdit, onDelete }) => {
+}> = ({ feedItem, onEdit, onDelete }) => {
   return (
     <TableRow
       sx={{
@@ -35,23 +32,10 @@ const UserRow: FC<{
         },
       }}
     >
-      <TableCell sx={{ p: 1 }}>
-        <Box sx={{ display: "flex", justifyContent: "center" }}>
-          <Avatar
-            src={user.profileUrl}
-            sx={{ backgroundColor: "primary.main" }}
-          />
-        </Box>
-      </TableCell>
-      <TableCell sx={{ p: 1 }}>
-        {user.firstName
-          ? `${user.firstName} ${user.lastName}`
-          : user.companyName}
-      </TableCell>
-      <TableCell sx={{ p: 1 }}>{user.email}</TableCell>
-      <TableCell sx={{ p: 1 }}>{user.phone}</TableCell>
-      <TableCell sx={{ p: 1 }}>{user.country}</TableCell>
-      <TableCell sx={{ p: 1 }}>{user.city}</TableCell>
+      <TableCell sx={{ p: 1 }}>{feedItem.id}</TableCell>
+      <TableCell sx={{ p: 1 }}>{feedItem.userId}</TableCell>
+      <TableCell sx={{ p: 1 }}>{feedItem.category}</TableCell>
+      <TableCell sx={{ p: 1 }}>{feedItem.createdAt.toDateString()}</TableCell>
       <TableCell sx={{ p: 2, textAlign: "right" }}>
         <IconButton color="primary" size="small" onClick={onEdit}>
           <Edit fontSize="medium" />
@@ -64,17 +48,16 @@ const UserRow: FC<{
   );
 };
 
-export const UsersTable: FC = () => {
-  const { user } = useAuth();
-  const [users, setUsers] = useState<UserDto[]>([]);
-  const [selectedUser, setSelectedUser] = useState<UserDto>(null);
+export const FeedItemsTable: FC = () => {
+  const [feedItems, setFeedItems] = useState<FeedItemDto[]>([]);
+  const [selectedFeedItem, setSelectedFeedItem] = useState<FeedItemDto>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   useEffect(() => {
     const getAllUsers = async () => {
       try {
-        const users = (await fetchAllUsers()).filter((u) => u.id !== user?.uid);
-        setUsers(users);
+        const feedItems = await getAllFeedItems();
+        setFeedItems(feedItems);
       } catch (error) {
         console.error("Error fetching user data: ", error);
       }
@@ -83,32 +66,31 @@ export const UsersTable: FC = () => {
     getAllUsers();
   }, []);
 
-  const handleEdit = (user: UserDto) => {
-    setSelectedUser(user);
+  const handleEdit = (feedItem: FeedItemDto) => {
+    setSelectedFeedItem(feedItem);
     setIsEditModalOpen(true);
   };
 
-  const handleDelete = async (uid: string) => {
+  const handleDelete = async (id: string) => {
     try {
-      await deleteDoc(doc(db, "users", uid));
-      setUsers(users.filter((user) => user.id !== uid));
+      await deleteDoc(doc(db, "feedItems", id));
+      setFeedItems(feedItems.filter((feedItem) => feedItem.id !== id));
     } catch (error) {
       console.error("Error deleting user: ", error);
     }
   };
 
   const handleSave = async () => {
-    // Refresh the user list after saving
-    const getAllUsers = async () => {
+    const getAllFeedItemsAsync = async () => {
       try {
-        const users = await fetchAllUsers();
-        setUsers(users);
+        const feedItems = await getAllFeedItems();
+        setFeedItems(feedItems);
       } catch (error) {
         console.error("Error fetching user data: ", error);
       }
     };
 
-    getAllUsers();
+    getAllFeedItemsAsync();
   };
 
   return (
@@ -119,54 +101,48 @@ export const UsersTable: FC = () => {
             <TableRow sx={{ backgroundColor: "primary.main" }}>
               <TableCell
                 sx={{ p: 1, color: "primary.contrastText", fontWeight: "bold" }}
-              ></TableCell>
-              <TableCell
-                sx={{ p: 1, color: "primary.contrastText", fontWeight: "bold" }}
               >
-                Name
+                User ID
               </TableCell>
               <TableCell
                 sx={{ p: 1, color: "primary.contrastText", fontWeight: "bold" }}
               >
-                Email
+                User ID
               </TableCell>
               <TableCell
                 sx={{ p: 1, color: "primary.contrastText", fontWeight: "bold" }}
               >
-                Phone
+                Category
               </TableCell>
+
               <TableCell
                 sx={{ p: 1, color: "primary.contrastText", fontWeight: "bold" }}
               >
-                Country
+                Created at
               </TableCell>
-              <TableCell
-                sx={{ p: 1, color: "primary.contrastText", fontWeight: "bold" }}
-              >
-                City
-              </TableCell>
+
               <TableCell
                 sx={{ p: 1, color: "primary.contrastText", fontWeight: "bold" }}
               ></TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {users.map((user) => (
-              <UserRow
-                key={user.id}
-                user={user}
-                onEdit={() => handleEdit(user)}
-                onDelete={() => handleDelete(user.id)}
+            {feedItems.map((feedItem) => (
+              <FeedItemRow
+                key={feedItem.id}
+                feedItem={feedItem}
+                onEdit={() => handleEdit(feedItem)}
+                onDelete={() => handleDelete(feedItem.id)}
               />
             ))}
           </TableBody>
         </Table>
       </TableContainer>
-      <EditUserModal
-        open={isEditModalOpen}
-        onClose={() => setIsEditModalOpen(false)}
-        user={selectedUser}
+      <EditFeedItemModal
+        modalOpen={isEditModalOpen}
+        feedItem={selectedFeedItem}
         onSave={handleSave}
+        handleClose={() => setIsEditModalOpen(false)}
       />
     </>
   );

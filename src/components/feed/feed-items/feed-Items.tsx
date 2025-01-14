@@ -1,7 +1,7 @@
 "use client";
 
 import { Grid } from "@mui/system";
-import { Alert, Box, CircularProgress, Paper, Typography } from "@mui/material";
+import { Box, CircularProgress, Paper, Typography } from "@mui/material";
 import { FeedItem } from "@/components/feed/feed-item/feed-item";
 import { FC, useCallback, useEffect, useRef, useState } from "react";
 import { FeedItemDto } from "@/types/dto";
@@ -9,18 +9,25 @@ import { DocumentData, QueryDocumentSnapshot } from "firebase/firestore";
 import { UserType } from "@/types/enums";
 import { getFeedItemsData } from "@/services/feedItemsService";
 import { getUsersDataMapInChunks } from "@/services/userServices";
-import { CompanyInformation, IndividualInformation } from "@/types/interfaces";
+import {
+  CompanyInformation,
+  FeedItemsFilters,
+  IndividualInformation,
+} from "@/types/interfaces";
+import { HorizontalSplitOutlined } from "@mui/icons-material";
 
 const FEED_ITEMS_DELAY = 800;
 
 export const FeedItems: FC = ({
   feedItems,
   setFeedItems,
+  filters,
 }: {
   feedItems: FeedItemDto[];
   setFeedItems: (
     value: ((prevState: FeedItemDto[]) => FeedItemDto[]) | FeedItemDto[],
   ) => void;
+  filters: FeedItemsFilters;
 }) => {
   const [lastVisible, setLastVisible] =
     useState<QueryDocumentSnapshot<DocumentData> | null>(null);
@@ -54,8 +61,8 @@ export const FeedItems: FC = ({
 
       const createdBy =
         userType === UserType.Individual
-          ? `${(feedUser as IndividualInformation).firstName} ${(feedUser as IndividualInformation).lastName}`
-          : (feedUser as CompanyInformation).companyName;
+          ? `${feedUser.firstName} ${feedUser.lastName}`
+          : feedUser.companyName;
 
       return {
         ...item,
@@ -73,8 +80,10 @@ export const FeedItems: FC = ({
     try {
       setLoading(true);
 
-      const { items: newFeedItems, lastDoc } =
-        await getFeedItemsData(lastVisible);
+      const { items: newFeedItems, lastDoc } = await getFeedItemsData(
+        lastVisible,
+        filters,
+      );
 
       if (!newFeedItems.length) {
         setHasMore(false);
@@ -159,7 +168,7 @@ export const FeedItems: FC = ({
         clearTimeout(debounceTimeout.current);
       }
     };
-  }, []);
+  }, [filters]);
 
   return (
     <Grid container>
@@ -170,7 +179,9 @@ export const FeedItems: FC = ({
           gap: 3,
           width: "100%",
           p: 3,
-          borderRadius: 5,
+          // TODO: Revert Styles
+          // borderRadius: 5,
+          borderRadius: 0,
         }}
       >
         {feedItems.map((feedItem, index) => (
@@ -198,9 +209,20 @@ export const FeedItems: FC = ({
         )}
 
         {!loading && feedItems.length === 0 && (
-          <Alert severity="info" sx={{ mt: 2 }}>
-            The feed is currently empty.
-          </Alert>
+          <Grid
+            container
+            justifyContent="center"
+            alignItems="center"
+            sx={{ flexDirection: "column" }}
+          >
+            <HorizontalSplitOutlined
+              fontSize="large"
+              sx={{ width: 89, height: 89 }}
+            />
+            <Typography variant="h5" align="center">
+              The feed is currently empty.
+            </Typography>
+          </Grid>
         )}
 
         {/*{!loading && !hasMore && feedItems.length > 0 && (*/}

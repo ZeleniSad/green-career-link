@@ -75,18 +75,18 @@ export const IndividualInformationsForm = ({
               onChange={handleChange}
             />
           </Grid>
-          <Grid size={12}>
+          <Grid size={{ xs: 12 }}>
             <TextField
-              id="motivation"
-              name="motivation"
+              id="about"
+              name="about"
               type="text"
-              label="Motivation"
+              label="About"
               fullWidth
               disabled={!isEditing}
-              value={formikValues?.motivation}
+              value={formikValues?.about}
               onChange={handleChange}
               multiline
-              minRows={3}
+              minRows={10}
             />
           </Grid>
         </Grid>
@@ -128,7 +128,52 @@ export const IndividualInformationsForm = ({
               onChange={handleChange}
             />
           </Grid>
-
+          <Grid size={{ xs: 12, lg: 3 }}>
+            <TextField
+              id="city"
+              name="city"
+              label="City"
+              fullWidth
+              disabled={!isEditing}
+              value={formikValues?.city}
+              onChange={handleChange}
+            />
+          </Grid>
+          <Grid size={{ xs: 12, lg: 3 }}>
+            <TextField
+              id="country"
+              name="country"
+              label="Country"
+              fullWidth
+              disabled={!isEditing}
+              value={formikValues?.country}
+              onChange={handleChange}
+            />
+          </Grid>
+          <Grid size={12}>
+            <TextField
+              id="motivation"
+              name="motivation"
+              type="text"
+              label="Motivation"
+              fullWidth
+              disabled={!isEditing}
+              value={formikValues?.motivation}
+              onChange={handleChange}
+            />
+          </Grid>
+          <Grid size={12}>
+            <TextField
+              id="ambitions"
+              name="ambitions"
+              type="text"
+              label="Ambitions"
+              fullWidth
+              disabled={!isEditing}
+              value={formikValues?.ambitions}
+              onChange={handleChange}
+            />
+          </Grid>
           <Grid size={12}>
             <UploadFile
               disabled={!isEditing}
