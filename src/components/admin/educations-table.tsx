@@ -2,10 +2,7 @@
 
 import { FC, useEffect, useState } from "react";
 import { EducationItemDto } from "@/types/dto";
-import {
-  deleteEducation,
-  getEducationsData,
-} from "@/services/educationService";
+import { deleteEducation, getEducationsData } from "@/services/educationService";
 import {
   Alert,
   Box,
@@ -21,18 +18,14 @@ import {
   TableRow,
   Typography,
 } from "@mui/material";
-import { Delete, Edit, OpenInNew } from "@mui/icons-material";
+import { Add, Delete, Edit, OpenInNew } from "@mui/icons-material";
 import ConfirmDialog from "../confirm-dialog/confirm-dialog";
-import { EditEducationFileModal } from "@/components/modals/edit-education-file-modal";
+import { EducationFileModal } from "@/components/modals/education-file-modal";
 
 const EducationRow: FC<{
   row: EducationItemDto;
   onDelete: (id: string) => void;
-  setSelectedFile: (
-    value:
-      | ((prevState: EducationItemDto) => EducationItemDto)
-      | EducationItemDto,
-  ) => void;
+  setSelectedFile: (value: ((prevState: EducationItemDto | null) => EducationItemDto) | EducationItemDto) => void;
   setModalOpen: (value: ((prevState: boolean) => boolean) | boolean) => void;
 }> = ({ row, onDelete, setSelectedFile, setModalOpen }) => (
   <TableRow
@@ -43,33 +36,35 @@ const EducationRow: FC<{
       "&:hover": {
         backgroundColor: "action.selected",
       },
-    }}
-  >
+    }}>
     <TableCell sx={{ p: 2 }}>{row.title}</TableCell>
     <TableCell sx={{ p: 2 }}>{row.fileName}</TableCell>
     <TableCell sx={{ p: 2 }}>
-      <IconButton
-        href={row.fileUrl}
-        target="_blank"
-        rel="noopener noreferrer"
-        size="small" // Set the size to small
-      >
-        <OpenInNew fontSize="small" />
-      </IconButton>
+      {row.fileUrl ? (
+        <IconButton
+          href={row.fileUrl}
+          target='_blank'
+          rel='noopener noreferrer'
+          size='small' // Set the size to small
+        >
+          <OpenInNew fontSize='small' />
+        </IconButton>
+      ) : (
+        <></>
+      )}
     </TableCell>
     <TableCell sx={{ p: 2, textAlign: "right" }}>
       <IconButton
-        color="primary"
-        size="small"
+        color='primary'
+        size='small'
         onClick={() => {
           setModalOpen(true);
           setSelectedFile(row);
-        }}
-      >
-        <Edit fontSize="medium" />
+        }}>
+        <Edit fontSize='medium' />
       </IconButton>
-      <IconButton color="error" size="small" onClick={() => onDelete(row.id)}>
-        <Delete fontSize="medium" />
+      <IconButton color='error' size='small' onClick={() => onDelete(row.id)}>
+        <Delete fontSize='medium' />
       </IconButton>
     </TableCell>
   </TableRow>
@@ -77,18 +72,14 @@ const EducationRow: FC<{
 
 export const EducationsTable: FC = () => {
   const [modalOpen, setModalOpen] = useState(false);
-  const [selectedFile, setSelectedFile] = useState<EducationItemDto>(null);
+  const [selectedFile, setSelectedFile] = useState<EducationItemDto | null>(null);
   const [educations, setEducations] = useState<EducationItemDto[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
-  const [selectedEducationId, setSelectedEducationId] = useState<string | null>(
-    null,
-  );
-  const [snackbarSeverity, setSnackbarSeverity] = useState<"success" | "error">(
-    "success",
-  );
+  const [selectedEducationId, setSelectedEducationId] = useState<string | null>(null);
+  const [snackbarSeverity, setSnackbarSeverity] = useState<"success" | "error">("success");
 
   const handleCloseSnackbar = () => {
     setSnackbarOpen(false);
@@ -123,12 +114,8 @@ export const EducationsTable: FC = () => {
 
   const handleConfirmDelete = async () => {
     if (selectedEducationId) {
-      const deletedEducation = educations.find(
-        (item) => item.id === selectedEducationId,
-      )!;
-      setEducations((prevEducations) =>
-        prevEducations.filter((item) => item.id !== selectedEducationId),
-      );
+      const deletedEducation = educations.find((item) => item.id === selectedEducationId)!;
+      setEducations((prevEducations) => prevEducations.filter((item) => item.id !== selectedEducationId));
 
       await deleteEducation(deletedEducation.id, deletedEducation.fileUrl);
       setSnackbarMessage("Education item deleted successfully.");
@@ -140,7 +127,7 @@ export const EducationsTable: FC = () => {
 
   return (
     <Box sx={{ width: "100%" }}>
-      <Typography variant="h4" color="primary" gutterBottom>
+      <Typography variant='h4' color='primary' gutterBottom>
         Education Files
       </Typography>
       {loading ? (
@@ -150,15 +137,11 @@ export const EducationsTable: FC = () => {
             justifyContent: "center",
             alignItems: "center",
             minHeight: 200,
-          }}
-        >
+          }}>
           <CircularProgress />
         </Box>
       ) : (
-        <TableContainer
-          component={Paper}
-          sx={{ boxShadow: 3, borderRadius: 2 }}
-        >
+        <TableContainer component={Paper} sx={{ boxShadow: 3, borderRadius: 2 }}>
           <Table>
             <TableHead>
               <TableRow sx={{ backgroundColor: "primary.main" }}>
@@ -167,8 +150,7 @@ export const EducationsTable: FC = () => {
                     p: 2,
                     color: "primary.contrastText",
                     fontWeight: "bold",
-                  }}
-                >
+                  }}>
                   Title
                 </TableCell>
                 <TableCell
@@ -176,8 +158,7 @@ export const EducationsTable: FC = () => {
                     p: 2,
                     color: "primary.contrastText",
                     fontWeight: "bold",
-                  }}
-                >
+                  }}>
                   File Name
                 </TableCell>
                 <TableCell
@@ -185,8 +166,7 @@ export const EducationsTable: FC = () => {
                     p: 2,
                     color: "primary.contrastText",
                     fontWeight: "bold",
-                  }}
-                >
+                  }}>
                   File
                 </TableCell>
                 <TableCell
@@ -194,8 +174,24 @@ export const EducationsTable: FC = () => {
                     p: 2,
                     color: "primary.contrastText",
                     fontWeight: "bold",
-                  }}
-                ></TableCell>
+                    textAlign: "right",
+                  }}>
+                  <IconButton
+                    color='inherit'
+                    onClick={() => {
+                      setSelectedFile(null);
+                      setModalOpen(true);
+                    }}
+                    sx={{
+                      color: "white",
+                      "&:hover": {
+                        backgroundColor: "rgba(255, 255, 255, 0.1)",
+                      },
+                    }}
+                    aria-label='Create new Q&A'>
+                    <Add />
+                  </IconButton>
+                </TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -216,13 +212,8 @@ export const EducationsTable: FC = () => {
         open={snackbarOpen}
         autoHideDuration={6000}
         onClose={handleCloseSnackbar}
-        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
-      >
-        <Alert
-          severity={snackbarSeverity}
-          sx={{ width: "100%" }}
-          onClose={handleCloseSnackbar}
-        >
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}>
+        <Alert severity={snackbarSeverity} sx={{ width: "100%" }} onClose={handleCloseSnackbar}>
           {snackbarMessage}
         </Alert>
       </Snackbar>
@@ -235,11 +226,11 @@ export const EducationsTable: FC = () => {
           onCancel: () => setConfirmDialogOpen(false),
         }}
       />
-      <EditEducationFileModal
+      <EducationFileModal
         open={modalOpen}
-        file={selectedFile}
+        item={selectedFile}
         onClose={() => setModalOpen(false)}
-        onSave={() => alert("Saved")}
+        onSave={fetchEducations}
       />
     </Box>
   );
