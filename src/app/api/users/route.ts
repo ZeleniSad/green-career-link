@@ -2,12 +2,12 @@ import { NextRequest, NextResponse } from "next/server";
 import { ValidationError } from "yup";
 import { RegisterPayload, registrationSchema } from "@/shared/register.schema";
 import {
-  registerUser,
-  createUserDoc,
   checkEmailInUse,
+  createUserDoc,
+  deleteUser,
   generateVerificationLink,
   isAdminToken,
-  deleteUser,
+  registerUser,
 } from "@/lib/firebase-admin";
 import { UserType } from "@/types/enums";
 import { sendEmailVerification } from "@/lib/email-sender";
@@ -18,7 +18,9 @@ export async function DELETE(request: NextRequest) {
     const jwt = request.headers.get("Authorization");
     const userId = request.headers.get("userId");
     if (!userId || !(await isAdminToken(jwt, userId))) {
-      return NextResponse.json({ messsage: "Unauthorized" }, { status: 403 });
+      return NextResponse.json({ messsage: "Unauthorized" }, {
+        status: 403,
+      } as NextResponse);
     }
 
     await deleteUser(userId);
@@ -26,7 +28,11 @@ export async function DELETE(request: NextRequest) {
     return NextResponse.json({ message: "User deleted" });
   } catch (error) {
     logger.error({ err: error, message: "Error deleting user" });
-    return NextResponse.json({ message: "An unexpected error occurred" }, { status: 500 });
+    return NextResponse.json(
+      { message: "An unexpected error occurred" },
+
+      { status: 500 } as NextResponse,
+    );
   }
 }
 
@@ -39,22 +45,32 @@ export async function POST(request: NextRequest) {
     const inuse = await checkEmailInUse(payload.email);
 
     if (inuse) {
-      return NextResponse.json({ errors: { email: "Email is already in use" } }, { status: 400 });
+      return NextResponse.json(
+        { errors: { email: "Email is already in use" } },
+        { status: 400 } as NextResponse,
+      );
     }
 
     await handleRegister(payload as RegisterPayload);
 
     await sendVerificationEmail(
       payload.email,
-      payload.userType === UserType.Individual ? payload.firstName : payload.companyName
+      payload.userType === UserType.Individual
+        ? payload.firstName
+        : payload.companyName,
     );
 
     return NextResponse.json({ message: "Registration successful" });
   } catch (error) {
     if (error instanceof ValidationError) {
-      return NextResponse.json({ errors: error.errors }, { status: 400 });
+      return NextResponse.json({ errors: error.errors }, {
+        status: 400,
+      } as NextResponse);
     }
-    return NextResponse.json({ message: "An unexpected error occurred" }, { status: 500 });
+    console.error(error);
+    return NextResponse.json({ message: "An unexpected error occurred" }, {
+      status: 500,
+    } as NextResponse);
   }
 }
 
@@ -69,10 +85,25 @@ const handleRegister = async ({
   country,
   phone,
 }: RegisterPayload) => {
-  const displayName = userType === UserType.Individual ? `${firstName} ${lastName}` : `${companyName}`;
+  const displayName =
+    userType === UserType.Individual
+      ? `${firstName} ${lastName}`
+      : `${companyName}`;
   const uid = await registerUser({ email, password, displayName });
 
-  await createUserDoc(uid, cleanObject({ email, firstName, lastName, companyName, userType, city, country, phone }));
+  await createUserDoc(
+    uid,
+    cleanObject({
+      email,
+      firstName,
+      lastName,
+      companyName,
+      userType,
+      city,
+      country,
+      phone,
+    }),
+  );
 };
 
 const sendVerificationEmail = async (email: string, name: string) => {
@@ -83,4 +114,6 @@ const sendVerificationEmail = async (email: string, name: string) => {
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
 const cleanObject = (user: Partial<RegisterPayload>): RegisterPayload =>
-  Object.fromEntries(Object.entries(user).filter(([_, value]) => value !== undefined)) as RegisterPayload;
+  Object.fromEntries(
+    Object.entries(user).filter(([_, value]) => value !== undefined),
+  ) as RegisterPayload;
