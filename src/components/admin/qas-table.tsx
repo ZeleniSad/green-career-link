@@ -19,12 +19,15 @@ import {
 } from "@mui/material";
 import { deleteQA, getQAsData } from "@/services/educationService";
 import ConfirmDialog from "../confirm-dialog/confirm-dialog";
-import { Delete, Edit } from "@mui/icons-material";
+import { Add, Delete, Edit } from "@mui/icons-material";
+import { EducationQaModal } from "@/components/modals/education-qa-modal";
 
 const QARow: FC<{
   row: EducationQAItemDto;
   onDelete: (id: string) => void;
-}> = ({ row, onDelete }) => (
+  setSelectedQa: (item: EducationQAItemDto) => void;
+  setModalOpen: (open: boolean) => void;
+}> = ({ row, onDelete, setSelectedQa, setModalOpen }) => (
   <TableRow
     sx={{
       "&:nth-of-type(odd)": {
@@ -33,8 +36,7 @@ const QARow: FC<{
       "&:hover": {
         backgroundColor: "action.selected",
       },
-    }}
-  >
+    }}>
     <TableCell sx={{ p: 1, verticalAlign: "middle" }}>{row.title}</TableCell>
     <TableCell sx={{ p: 1, verticalAlign: "middle" }}>{row.body}</TableCell>
     <TableCell
@@ -43,40 +45,34 @@ const QARow: FC<{
         textAlign: "right",
         verticalAlign: "middle",
         whiteSpace: "nowrap",
-      }}
-    >
+      }}>
       <IconButton
-        color="primary"
-        size="small"
+        color='primary'
+        size='small'
         sx={{ padding: 0, marginRight: 1 }}
         onClick={() => {
-          /* Handle edit action */
-        }}
-      >
-        <Edit fontSize="small" />
+          setSelectedQa(row);
+          setModalOpen(true);
+        }}>
+        <Edit fontSize='small' />
       </IconButton>
-      <IconButton
-        color="error"
-        size="small"
-        sx={{ padding: 0 }}
-        onClick={() => onDelete(row.id)}
-      >
-        <Delete fontSize="small" />
+      <IconButton color='error' size='small' sx={{ padding: 0 }} onClick={() => onDelete(row.id)}>
+        <Delete fontSize='small' />
       </IconButton>
     </TableCell>
   </TableRow>
 );
 
 export const QAsTable: FC = () => {
+  const [modalOpen, setModalOpen] = useState(false);
+  const [selectedQa, setSelectedQa] = useState<EducationQAItemDto | null>(null);
   const [qas, setQAs] = useState<EducationQAItemDto[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
   const [selectedQAId, setSelectedQAId] = useState<string | null>(null);
-  const [snackbarSeverity, setSnackbarSeverity] = useState<"success" | "error">(
-    "success",
-  );
+  const [snackbarSeverity, setSnackbarSeverity] = useState<"success" | "error">("success");
 
   const handleCloseSnackbar = () => {
     setSnackbarOpen(false);
@@ -123,7 +119,7 @@ export const QAsTable: FC = () => {
 
   return (
     <Box sx={{ width: "100%" }}>
-      <Typography variant="h4" color="primary" gutterBottom>
+      <Typography variant='h4' color='primary' gutterBottom>
         Q&A Items
       </Typography>
       {loading ? (
@@ -133,15 +129,11 @@ export const QAsTable: FC = () => {
             justifyContent: "center",
             alignItems: "center",
             minHeight: 200,
-          }}
-        >
+          }}>
           <CircularProgress />
         </Box>
       ) : (
-        <TableContainer
-          component={Paper}
-          sx={{ boxShadow: 3, borderRadius: 2 }}
-        >
+        <TableContainer component={Paper} sx={{ boxShadow: 3, borderRadius: 2 }}>
           <Table>
             <TableHead>
               <TableRow sx={{ backgroundColor: "primary.main" }}>
@@ -150,8 +142,7 @@ export const QAsTable: FC = () => {
                     p: 2,
                     color: "primary.contrastText",
                     fontWeight: "bold",
-                  }}
-                >
+                  }}>
                   Title
                 </TableCell>
                 <TableCell
@@ -159,37 +150,51 @@ export const QAsTable: FC = () => {
                     p: 2,
                     color: "primary.contrastText",
                     fontWeight: "bold",
-                  }}
-                >
+                  }}>
                   Body
                 </TableCell>
+
                 <TableCell
                   sx={{
                     p: 2,
                     color: "primary.contrastText",
                     fontWeight: "bold",
-                  }}
-                ></TableCell>
+                    textAlign: "right",
+                  }}>
+                  <IconButton
+                    color='inherit'
+                    onClick={() => {
+                      setSelectedQa(null);
+                      setModalOpen(true);
+                    }}
+                    sx={{
+                      color: "white",
+                      "&:hover": {
+                        backgroundColor: "rgba(255, 255, 255, 0.1)",
+                      },
+                    }}
+                    aria-label='Create new Q&A'>
+                    <Add />
+                  </IconButton>
+                </TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {qas.map((qa) => (
-                <QARow key={qa.id} row={qa} onDelete={handleDeleteClick} />
+                <QARow
+                  key={qa.id}
+                  row={qa}
+                  onDelete={handleDeleteClick}
+                  setSelectedQa={setSelectedQa}
+                  setModalOpen={setModalOpen}
+                />
               ))}
             </TableBody>
           </Table>
         </TableContainer>
       )}
-      <Snackbar
-        open={snackbarOpen}
-        autoHideDuration={6000}
-        onClose={handleCloseSnackbar}
-      >
-        <Alert
-          severity={snackbarSeverity}
-          sx={{ width: "100%" }}
-          onClose={handleCloseSnackbar}
-        >
+      <Snackbar open={snackbarOpen} autoHideDuration={6000} onClose={handleCloseSnackbar}>
+        <Alert severity={snackbarSeverity} sx={{ width: "100%" }} onClose={handleCloseSnackbar}>
           {snackbarMessage}
         </Alert>
       </Snackbar>
@@ -202,6 +207,7 @@ export const QAsTable: FC = () => {
           onCancel: () => setConfirmDialogOpen(false),
         }}
       />
+      <EducationQaModal open={modalOpen} onClose={() => setModalOpen(false)} item={selectedQa} onSave={fetchQAs} />
     </Box>
   );
 };

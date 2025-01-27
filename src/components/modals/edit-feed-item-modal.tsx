@@ -131,32 +131,27 @@ export const EditFeedItemModal = ({
     <Modal
       open={modalOpen}
       onClose={handleClose}
-      aria-labelledby="modal-modal-title"
-      aria-describedby="modal-modal-description"
-    >
+      aria-labelledby='modal-modal-title'
+      aria-describedby='modal-modal-description'>
       <Paper
         className={classes.modalStyle}
         sx={{
           borderRadius: 6,
-        }}
-      >
+        }}>
         <Grid container sx={{ gap: 3 }}>
           <Grid container sx={{ alignItems: "center", gap: 2 }}>
-            <DescriptionOutlined color="primary" />
-            <Typography variant="h5">{labels.createPostTitle}</Typography>
+            <DescriptionOutlined color='primary' />
+            <Typography variant='h5'>{labels.createPostTitle}</Typography>
           </Grid>
           <FormControl fullWidth error={errors.selectedCategory}>
-            <InputLabel id="demo-simple-select-label">
-              {labels.categoryLabel}
-            </InputLabel>
+            <InputLabel id='demo-simple-select-label'>{labels.categoryLabel}</InputLabel>
             <Select
-              labelId="demo-simple-select-label"
-              id="demo-simple-select"
-              name="selectedCategory"
+              labelId='demo-simple-select-label'
+              id='demo-simple-select'
+              name='selectedCategory'
               value={feedItemData?.category}
               label={labels.categoryLabel}
-              onChange={handleSelectChange}
-            >
+              onChange={handleSelectChange}>
               {categories.map((category) => (
                 <MenuItem key={category.categoryId} value={category.label}>
                   {category.label}
@@ -171,8 +166,7 @@ export const EditFeedItemModal = ({
               "& .ProseMirror": {
                 minHeight: "150px",
               },
-            }}
-          >
+            }}>
             <RichTextEditor
               onUpdate={({ editor }) => {
                 setFeedItemData({
@@ -208,19 +202,12 @@ export const EditFeedItemModal = ({
               "image/jpeg": [".jpg", ".jpeg"],
             }}
           />
-          <Typography variant="body2">{labels.supportedFormats}</Typography>
-          <Grid
-            container
-            sx={{ width: "100%", justifyContent: "flex-end", gap: 2 }}
-          >
-            <Button variant="outlined" onClick={handleClose}>
+          <Typography variant='body2'>{labels.supportedFormats}</Typography>
+          <Grid container sx={{ width: "100%", justifyContent: "flex-end", gap: 2 }}>
+            <Button variant='outlined' onClick={handleClose}>
               {labels.cancel}
             </Button>
-            <Button
-              variant="contained"
-              onClick={handleFormSubmit}
-              disabled={loading}
-            >
+            <Button variant='contained' onClick={handleFormSubmit} disabled={loading}>
               {labels.createPostButton}
             </Button>
           </Grid>

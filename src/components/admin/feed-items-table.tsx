@@ -15,6 +15,7 @@ import { deleteDoc, doc } from "firebase/firestore";
 import { db } from "@/config/firebaseConfig";
 import { getAllFeedItems } from "@/services/feedItemsService";
 import { EditFeedItemModal } from "@/components/modals/edit-feed-item-modal";
+import { Loading } from "@/components/loading/loading";
 
 const FeedItemRow: FC<{
   feedItem: FeedItemDto;
@@ -49,6 +50,7 @@ const FeedItemRow: FC<{
 };
 
 export const FeedItemsTable: FC = () => {
+  const [loading, setLoading] = useState(true);
   const [feedItems, setFeedItems] = useState<FeedItemDto[]>([]);
   const [selectedFeedItem, setSelectedFeedItem] = useState<FeedItemDto>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -64,6 +66,7 @@ export const FeedItemsTable: FC = () => {
     };
 
     getAllUsers();
+    setLoading(false);
   }, []);
 
   const handleEdit = (feedItem: FeedItemDto) => {
@@ -72,15 +75,18 @@ export const FeedItemsTable: FC = () => {
   };
 
   const handleDelete = async (id: string) => {
+    setLoading(true);
     try {
       await deleteDoc(doc(db, "feedItems", id));
       setFeedItems(feedItems.filter((feedItem) => feedItem.id !== id));
     } catch (error) {
       console.error("Error deleting user: ", error);
     }
+    setLoading(false);
   };
 
   const handleSave = async () => {
+    setLoading(true);
     const getAllFeedItemsAsync = async () => {
       try {
         const feedItems = await getAllFeedItems();
@@ -91,7 +97,12 @@ export const FeedItemsTable: FC = () => {
     };
 
     getAllFeedItemsAsync();
+    setLoading(false);
   };
+
+  if (loading) {
+    return <Loading isOpen={loading} />;
+  }
 
   return (
     <>

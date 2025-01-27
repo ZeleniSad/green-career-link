@@ -4,6 +4,8 @@ import {
   Alert,
   Box,
   Button,
+  Checkbox,
+  FormControlLabel,
   Link,
   Snackbar,
   TextField,
@@ -16,6 +18,12 @@ import styles from "./login.module.css";
 import { useRouter } from "next/navigation";
 import { login } from "@/services/authService";
 import { useState } from "react";
+import {
+  browserLocalPersistence,
+  browserSessionPersistence,
+  setPersistence,
+} from "@firebase/auth";
+import { getAuth } from "firebase/auth";
 
 const label = {
   login: "Login",
@@ -30,10 +38,11 @@ const Login = () => {
   const initialValues = {
     email: "",
     password: "",
+    rememberMe: false,
   };
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
-
+  const auth = getAuth();
   const handleCloseSnackbar = () => {
     setSnackbarOpen(false);
   };
@@ -43,6 +52,12 @@ const Login = () => {
     validationSchema: loginValidationSchema,
     onSubmit: async (values) => {
       try {
+        await setPersistence(
+          auth,
+          formik.values.rememberMe
+            ? browserLocalPersistence
+            : browserSessionPersistence,
+        );
         await login(values.email, values.password);
         router.push("/dashboard/feed");
       } catch (error) {
@@ -95,15 +110,24 @@ const Login = () => {
             error={formik.touched.password && Boolean(formik.errors.password)}
             helperText={formik.touched.password && formik.errors.password}
           />
-          <Grid container justifyContent="flex-end" alignItems="center">
-            {/*<Box display="flex" flexDirection="row" alignItems="center">*/}
-            {/*  <FormControlLabel*/}
-            {/*    control={<Checkbox disableRipple />}*/}
-            {/*    label={*/}
-            {/*      <Typography variant="body2">{label.rememberMe}</Typography>*/}
-            {/*    }*/}
-            {/*  />*/}
-            {/*</Box>*/}
+          <Grid container justifyContent="space-between" alignItems="center">
+            <Box display="flex" flexDirection="row" alignItems="center">
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    id="rememberMe"
+                    name="rememberMe"
+                    disableRipple
+                    checked={formik.values.rememberMe}
+                    value={formik.values.rememberMe}
+                    onChange={formik.handleChange}
+                  />
+                }
+                label={
+                  <Typography variant="body2">{label.rememberMe}</Typography>
+                }
+              />
+            </Box>
             <Box>
               <Link
                 onClick={() => router.push("reset-password")}
@@ -122,6 +146,17 @@ const Login = () => {
           >
             {label.login}
           </Button>
+          <Grid
+            container
+            justifyContent="flex-start"
+            alignItems="center"
+            sx={{ gap: 0.5 }}
+          >
+            <Typography variant="body2">Dont have an account,</Typography>
+            <Link href="/register" underline="none" sx={{ cursor: "pointer" }}>
+              <Typography variant="body2">Register</Typography>
+            </Link>
+          </Grid>
           <Grid
             container
             justifyContent="flex-start"
