@@ -204,9 +204,12 @@ export const CreatePostModal = ({
           <Box
             sx={{
               width: "100%",
-              minHeight: 200,
               "& .ProseMirror": {
                 minHeight: "150px",
+              },
+              "& .MuiTiptap-RichTextContent-root": {
+                height: 200,
+                overflow: "auto",
               },
             }}
           >
