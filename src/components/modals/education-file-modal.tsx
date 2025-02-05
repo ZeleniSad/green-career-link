@@ -14,7 +14,7 @@ interface EducationFileModalProps {
 }
 
 export const EducationFileModal: FC<EducationFileModalProps> = ({ open, onClose, item, onSave }) => {
-  const [formData, setFormData] = useState<EducationItemDto | null>(item);
+  const [formData, setFormData] = useState<EducationItemDto | null>({ fileName: "", title: "" } as EducationItemDto);
   const [errors, setErrors] = useState({
     title: false,
     fileName: false,
@@ -26,6 +26,7 @@ export const EducationFileModal: FC<EducationFileModalProps> = ({ open, onClose,
     setSnackbarOpen(false);
   };
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [loading, setLoading] = useState(false);
 
   const handleFileSelect = (file: File | null) => {
     setSelectedFile(file);
@@ -70,6 +71,7 @@ export const EducationFileModal: FC<EducationFileModalProps> = ({ open, onClose,
 
   const handleSave = async () => {
     if (validateForm() && formData) {
+      setLoading(true);
       try {
         const fileUrl = await uploadFile();
 
@@ -89,6 +91,8 @@ export const EducationFileModal: FC<EducationFileModalProps> = ({ open, onClose,
         setSnackbarOpen(true);
         setSnackbarSeverity("error");
         setSnackbarMessage("Failed to save Education file");
+      } finally {
+        setLoading(false);
       }
     }
   };
@@ -140,7 +144,7 @@ export const EducationFileModal: FC<EducationFileModalProps> = ({ open, onClose,
               <Button variant='outlined' onClick={onClose}>
                 Cancel
               </Button>
-              <Button variant='contained' onClick={handleSave} color='primary'>
+              <Button variant='contained' onClick={handleSave} color='primary' disabled={loading}>
                 Save
               </Button>
             </Grid>

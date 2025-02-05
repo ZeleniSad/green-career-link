@@ -229,8 +229,14 @@ export const EducationsTable: FC = () => {
       <EducationFileModal
         open={modalOpen}
         item={selectedFile}
-        onClose={() => setModalOpen(false)}
-        onSave={fetchEducations}
+        onClose={() => {
+          setSelectedFile(null);
+          setModalOpen(false);
+        }}
+        onSave={() => {
+          setSelectedFile(null);
+          fetchEducations();
+        }}
       />
     </Box>
   );

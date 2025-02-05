@@ -1,13 +1,5 @@
 import React, { FC, useEffect, useState } from "react";
-import {
-  Alert,
-  Button,
-  Modal,
-  Paper,
-  Snackbar,
-  TextField,
-  Typography,
-} from "@mui/material";
+import { Alert, Button, Modal, Paper, Snackbar, TextField, Typography } from "@mui/material";
 import { EducationQAItemDto } from "@/types/dto";
 import { Box, Grid } from "@mui/system";
 import { createQA, updateQA } from "@/services/educationService";
@@ -19,12 +11,7 @@ interface EducationQaModalProps {
   onSave: () => void;
 }
 
-export const EducationQaModal: FC<EducationQaModalProps> = ({
-  open,
-  onClose,
-  item,
-  onSave,
-}) => {
+export const EducationQaModal: FC<EducationQaModalProps> = ({ open, onClose, item, onSave }) => {
   const [formData, setFormData] = useState<EducationQAItemDto | null>(item);
   const [errors, setErrors] = useState({
     title: false,
@@ -32,9 +19,8 @@ export const EducationQaModal: FC<EducationQaModalProps> = ({
   });
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
-  const [snackbarSeverity, setSnackbarSeverity] = useState<"success" | "error">(
-    "success",
-  );
+  const [snackbarSeverity, setSnackbarSeverity] = useState<"success" | "error">("success");
+  const [loading, setLoading] = useState(false);
   const handleCloseSnackbar = () => {
     setSnackbarOpen(false);
   };
@@ -49,7 +35,7 @@ export const EducationQaModal: FC<EducationQaModalProps> = ({
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }) as EducationQAItemDto);
+    setFormData((prev) => ({ ...prev, [name]: value } as EducationQAItemDto));
     setErrors((prev) => ({ ...prev, [name]: false }));
   };
 
@@ -64,6 +50,7 @@ export const EducationQaModal: FC<EducationQaModalProps> = ({
 
   const handleSave = async () => {
     if (validateForm() && formData) {
+      setLoading(true);
       try {
         if (item) {
           await updateQA(formData);
@@ -81,6 +68,8 @@ export const EducationQaModal: FC<EducationQaModalProps> = ({
         setSnackbarOpen(true);
         setSnackbarSeverity("error");
         setSnackbarMessage("Failed to save Q&A item");
+      } finally {
+        setLoading(false);
       }
     }
   };
@@ -99,13 +88,12 @@ export const EducationQaModal: FC<EducationQaModalProps> = ({
             width: "40%",
             padding: 5,
             borderRadius: 0,
-          }}
-        >
+          }}>
           <Grid container spacing={2}>
             <Typography>{item ? "Edit Q&A" : "Create Q&A"}</Typography>
             <TextField
-              label="Title"
-              name="title"
+              label='Title'
+              name='title'
               value={formData.title}
               onChange={handleChange}
               fullWidth
@@ -113,8 +101,8 @@ export const EducationQaModal: FC<EducationQaModalProps> = ({
               helperText={errors.title ? "Title is required" : ""}
             />
             <TextField
-              label="Text"
-              name="body"
+              label='Text'
+              name='body'
               value={formData.body}
               onChange={handleChange}
               fullWidth
@@ -125,26 +113,18 @@ export const EducationQaModal: FC<EducationQaModalProps> = ({
             />
 
             <Grid container sx={{ width: "100%", justifyContent: "flex-end" }}>
-              <Button variant="outlined" onClick={onClose}>
+              <Button variant='outlined' onClick={onClose}>
                 Cancel
               </Button>
-              <Button variant="contained" onClick={handleSave} color="primary">
+              <Button variant='contained' onClick={handleSave} color='primary' disabled={loading}>
                 Save
               </Button>
             </Grid>
           </Grid>
         </Paper>
       </Modal>
-      <Snackbar
-        open={snackbarOpen}
-        autoHideDuration={6000}
-        onClose={handleCloseSnackbar}
-      >
-        <Alert
-          severity={snackbarSeverity}
-          sx={{ width: "100%" }}
-          onClose={handleCloseSnackbar}
-        >
+      <Snackbar open={snackbarOpen} autoHideDuration={6000} onClose={handleCloseSnackbar}>
+        <Alert severity={snackbarSeverity} sx={{ width: "100%" }} onClose={handleCloseSnackbar}>
           {snackbarMessage}
         </Alert>
       </Snackbar>

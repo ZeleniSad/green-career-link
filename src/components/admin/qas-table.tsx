@@ -207,7 +207,19 @@ export const QAsTable: FC = () => {
           onCancel: () => setConfirmDialogOpen(false),
         }}
       />
-      <EducationQaModal open={modalOpen} onClose={() => setModalOpen(false)} item={selectedQa} onSave={fetchQAs} />
+
+      <EducationQaModal
+        open={modalOpen}
+        onClose={() => {
+          setSelectedQa(null);
+          setModalOpen(false);
+        }}
+        item={selectedQa}
+        onSave={() => {
+          setSelectedQa(null);
+          fetchQAs();
+        }}
+      />
     </Box>
   );
 };
