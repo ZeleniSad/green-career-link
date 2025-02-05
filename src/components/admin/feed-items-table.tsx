@@ -13,7 +13,6 @@ const FeedItemRow: FC<{
   onEdit: () => void;
   onDelete: () => void;
 }> = ({ feedItem, onEdit, onDelete }) => {
-  console.log(feedItem);
   return (
     <TableRow
       sx={{
