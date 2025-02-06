@@ -4,17 +4,17 @@ import { Avatar, Button, IconButton, Link, Typography } from "@mui/material";
 import { LocalOfferOutlined } from "@mui/icons-material";
 import { useTheme } from "@mui/material/styles";
 import { FC } from "react";
-import { formatDistanceToNow, isToday } from "date-fns";
 import { FeedItemHeaderProps } from "@/types/props";
 import { UserType } from "@/types/enums";
 import { useRouter } from "next/navigation";
+import { formatDistanceToNow, isToday } from "date-fns";
 
 export const FeedItemHeader: FC<FeedItemHeaderProps> = ({
   type,
-  userName,
+  createdBy,
   category,
   email,
-  date,
+  createdAt,
   profileUrl,
   userId,
 }) => {
@@ -42,7 +42,7 @@ export const FeedItemHeader: FC<FeedItemHeaderProps> = ({
                 height: 64,
               }}
             >
-              {userName
+              {createdBy
                 .split(" ")
                 .map((name) => name[0])
                 .join("")
@@ -58,12 +58,13 @@ export const FeedItemHeader: FC<FeedItemHeaderProps> = ({
               cursor: "pointer",
             }}
           >
-            <Typography variant="body1">{userName}</Typography>
+            <Typography variant="body1">{createdBy}</Typography>
           </Link>
+
           <Typography variant="body2">
-            {isToday(new Date(date))
+            {isToday(new Date(createdAt))
               ? "Today"
-              : formatDistanceToNow(new Date(date), { addSuffix: true })}
+              : formatDistanceToNow(new Date(createdAt), { addSuffix: true })}
           </Typography>
         </Grid>
       </Grid>

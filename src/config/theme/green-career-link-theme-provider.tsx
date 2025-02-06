@@ -105,10 +105,18 @@ export const GreenCareerLinkThemeProvider = ({
       MuiSelect: {
         styleOverrides: {
           root: {
-            borderRadius: 24,
-            backgroundColor: useTheme().palette.common.white,
+            // TODO: Revert Styles
+            // borderRadius: 24,
+            backgroundColor: "transparent",
             "& .MuiSelect-root": {
               borderRadius: 24,
+            },
+            "& .MuiOutlinedInput-notchedOutline": {
+              borderColor: "#1A4F4F",
+            },
+            "& .MuiSelect-outlined": {
+              paddingTop: 14,
+              paddingBottom: 14,
             },
           },
         },

@@ -1,17 +1,32 @@
 "use client";
-import { ArrowDownwardOutlined, ArrowUpwardOutlined } from "@mui/icons-material";
-import { Box, Button, FormControl, InputLabel, MenuItem, Select } from "@mui/material";
+import {
+  ArrowDownwardOutlined,
+  ArrowUpwardOutlined,
+} from "@mui/icons-material";
+import {
+  Box,
+  Button,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+  SelectChangeEvent,
+} from "@mui/material";
 import { FC, SetStateAction, useState } from "react";
-import { FeedItemCategory, FeedItemsFilters } from "@/types/interfaces";
+import { FeedItemCategory } from "@/types/interfaces";
+import { FilterState } from "@/components/feed/feed-items";
 
-export const DashboardAppBarFilters: FC<{ setFilters: (value: SetStateAction<FeedItemsFilters>) => void }> = ({
-  setFilters,
-}) => {
+export const DashboardAppBarFilters: FC<{
+  setFilters: (value: SetStateAction<FilterState>) => void;
+}> = ({ setFilters }) => {
   const [category, setCategory] = useState<FeedItemCategory | null>(null);
   const [order, setOrder] = useState("desc");
 
-  const handleCategoryChange = (event: { target: { value: string } }) => {
-    const newCategory = event.target.value === "" ? null : (event.target.value as FeedItemCategory);
+  const handleCategoryChange = (event: SelectChangeEvent<unknown>) => {
+    const newCategory =
+      event.target.value === ""
+        ? null
+        : (event.target.value as FeedItemCategory);
     setCategory(newCategory);
     setFilters((prevFilters) => ({
       ...prevFilters,
@@ -24,26 +39,38 @@ export const DashboardAppBarFilters: FC<{ setFilters: (value: SetStateAction<Fee
     setOrder(newOrder);
     setFilters((prevFilters) => ({
       ...prevFilters,
-      order: newOrder,
+      sortDirection: newOrder,
     }));
   };
 
   return (
-    <Box display='flex' alignItems='center' gap={2}>
+    <Box display="flex" alignItems="center" gap={2}>
       <Button
         onClick={handleSortToggle}
         aria-label={`Sort in ${order === "asc" ? "descending" : "ascending"} order`}
-        startIcon={order === "asc" ? <ArrowUpwardOutlined /> : <ArrowDownwardOutlined />}
-        variant='outlined'
-        size='medium'
-        sx={{ minWidth: 160, minHeight: 50 }}>
+        startIcon={
+          order === "asc" ? <ArrowUpwardOutlined /> : <ArrowDownwardOutlined />
+        }
+        variant="outlined"
+        size="medium"
+        sx={{ minWidth: 160, minHeight: 50 }}
+      >
         {order === "asc" ? "Ascending" : "Descending"}
       </Button>
 
-      <FormControl variant='outlined' size='medium' sx={{ minWidth: 160, minHeight: 50 }}>
-        <InputLabel id='category-label'>Category</InputLabel>
-        <Select labelId='category-label' value={category ?? ""} onChange={handleCategoryChange} label='Category'>
-          <MenuItem value=''>
+      <FormControl
+        variant="outlined"
+        size="medium"
+        sx={{ minWidth: 160, minHeight: 50, borderRadius: 0 }}
+      >
+        <InputLabel id="category-label">Category</InputLabel>
+        <Select
+          labelId="category-label"
+          value={category ?? ""}
+          onChange={handleCategoryChange}
+          label="Category"
+        >
+          <MenuItem value="">
             <em>None</em>
           </MenuItem>
           {Object.values(FeedItemCategory).map((category) => (

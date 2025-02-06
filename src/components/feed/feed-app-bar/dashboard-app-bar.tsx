@@ -8,7 +8,7 @@ import { useModal } from "@/hooks/useModal";
 import { FeedItemDto } from "@/types/dto";
 import { CreatePostButton } from "@/components/feed/feed-app-bar/create-post-button";
 import React, { SetStateAction } from "react";
-import { FeedItemsFilters } from "@/types/interfaces";
+import { FilterState } from "@/components/feed/feed-items";
 
 export const DashboardAppBar = ({
   feedItems,
@@ -16,8 +16,10 @@ export const DashboardAppBar = ({
   setFilters,
 }: {
   feedItems: FeedItemDto[];
-  setFeedItems: (value: ((prevState: FeedItemDto[]) => FeedItemDto[]) | FeedItemDto[]) => void;
-  setFilters: (value: SetStateAction<FeedItemsFilters>) => void;
+  setFeedItems: (
+    value: ((prevState: FeedItemDto[]) => FeedItemDto[]) | FeedItemDto[],
+  ) => void;
+  setFilters: (value: SetStateAction<FilterState>) => void;
 }) => {
   const { modalOpen, handleOpen, handleClose } = useModal();
 
@@ -28,7 +30,8 @@ export const DashboardAppBar = ({
         sx={{
           alignItems: "center",
           justifyContent: "space-between",
-        }}>
+        }}
+      >
         <Grid container sx={{ gap: 3 }}>
           <Welcome />
           <Grid container sx={{ alignItems: "center", gap: 1 }}>

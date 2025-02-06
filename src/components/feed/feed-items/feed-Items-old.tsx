@@ -18,7 +18,7 @@ import { HorizontalSplitOutlined } from "@mui/icons-material";
 
 const FEED_ITEMS_DELAY = 800;
 
-export const FeedItems: FC = ({
+export const FeedItemsOld: FC = ({
   feedItems,
   setFeedItems,
   filters,
@@ -57,20 +57,21 @@ export const FeedItems: FC = ({
 
     return newFeedItems.map((item) => {
       const feedUser = usersCache.current[item.userId];
-      const userType = feedUser.userType;
+      if (feedUser) {
+        const userType = feedUser.userType;
+        const createdBy =
+          userType === UserType.Individual
+            ? `${feedUser.firstName} ${feedUser.lastName}`
+            : feedUser.companyName;
 
-      const createdBy =
-        userType === UserType.Individual
-          ? `${feedUser.firstName} ${feedUser.lastName}`
-          : feedUser.companyName;
-
-      return {
-        ...item,
-        userType,
-        createdBy,
-        applyToEmail: feedUser.email,
-        profileUrl: feedUser.profileUrl,
-      } as FeedItemDto;
+        return {
+          ...item,
+          userType,
+          createdBy,
+          applyToEmail: feedUser.email,
+          profileUrl: feedUser.profileUrl,
+        } as FeedItemDto;
+      }
     });
   };
 

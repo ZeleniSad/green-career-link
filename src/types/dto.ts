@@ -1,9 +1,10 @@
 import { UserType } from "@/types/enums";
+import { Timestamp } from "@firebase/firestore";
 
 export interface FeedItemDto {
   id: string;
   userId: string;
-  createdAt: Date;
+  createdAt: Timestamp;
   category: string;
   body: string;
   image: string;
