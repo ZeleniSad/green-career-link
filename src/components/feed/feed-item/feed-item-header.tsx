@@ -5,9 +5,10 @@ import { LocalOfferOutlined } from "@mui/icons-material";
 import { useTheme } from "@mui/material/styles";
 import { FC } from "react";
 import { FeedItemHeaderProps } from "@/types/props";
-import { UserType } from "@/types/enums";
 import { useRouter } from "next/navigation";
 import { formatDistanceToNow, isToday } from "date-fns";
+import { FeedItemCategory } from "@/types/interfaces";
+import { UserType } from "@/types/enums";
 
 export const FeedItemHeader: FC<FeedItemHeaderProps> = ({
   type,
@@ -73,11 +74,12 @@ export const FeedItemHeader: FC<FeedItemHeaderProps> = ({
           <LocalOfferOutlined fontSize="small" />
           <Typography variant="body2">{category}</Typography>
         </Grid>
-        {type === UserType.Company && (
-          <Button variant="contained" size="small" href={"mailto:" + email}>
-            Apply
-          </Button>
-        )}
+        {type === UserType.Company &&
+          category === FeedItemCategory.JobOffering && (
+            <Button variant="contained" size="small" href={"mailto:" + email}>
+              Apply
+            </Button>
+          )}
       </Grid>
     </Grid>
   );

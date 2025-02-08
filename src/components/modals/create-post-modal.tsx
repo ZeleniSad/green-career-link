@@ -40,6 +40,7 @@ import {
   FeedItemCategory,
   IndividualInformation,
 } from "@/types/interfaces";
+import { UserType } from "@/types/enums";
 
 const labels = {
   createPostTitle: "Create a post",
@@ -151,6 +152,10 @@ export const CreatePostModal: FC<CreatePostModalProps> = ({
         console.error("Error creating feed item: ", error);
       } finally {
         setLoading(false);
+        setFormState({
+          selectedCategory: "",
+          postDescription: "",
+        });
       }
     }
   };
@@ -185,11 +190,21 @@ export const CreatePostModal: FC<CreatePostModalProps> = ({
               label={labels.categoryLabel}
               onChange={handleSelectChange}
             >
-              {Object.values(FeedItemCategory).map((category) => (
-                <MenuItem key={category} value={category}>
-                  {category}
-                </MenuItem>
-              ))}
+              {Object.values(FeedItemCategory)
+                .filter((category) => {
+                  if (userData?.userType === UserType.Individual) {
+                    return category !== FeedItemCategory.JobOffering;
+                  }
+                  if (userData?.userType === UserType.Company) {
+                    return category !== FeedItemCategory.LookingForJob;
+                  }
+                  return true;
+                })
+                .map((category) => (
+                  <MenuItem key={category} value={category}>
+                    {category}
+                  </MenuItem>
+                ))}
             </Select>
           </FormControl>
           <Box
