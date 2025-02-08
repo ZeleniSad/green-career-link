@@ -4,6 +4,7 @@ import { Grid } from "@mui/system";
 import { FeedItemDto } from "@/types/dto";
 import { FeedItem } from "@/components/feed/feed-item/feed-item";
 import { FilterState } from "@/hooks/use-feed-state";
+import { Loading } from "@/components/loading/loading";
 
 interface FeedItemsProps {
   feedItems: FeedItemDto[];
@@ -61,7 +62,7 @@ export default function FeedItems({
       }
     };
   }, [handleObserver]);
-
+  if (loading && feedItems.length === 0) return <Loading isOpen={loading} />;
   return (
     <Grid container sx={{}}>
       <Paper
