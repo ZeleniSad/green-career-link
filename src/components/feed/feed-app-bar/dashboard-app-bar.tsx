@@ -5,22 +5,22 @@ import { Welcome } from "@/components/feed/feed-app-bar/welcome";
 import { FeedAppBarUser } from "@/components/feed/feed-app-bar/feed-app-bar-user";
 import { CreatePostModal } from "@/components/modals/create-post-modal";
 import { useModal } from "@/hooks/useModal";
-import { FeedItemDto } from "@/types/dto";
 import { CreatePostButton } from "@/components/feed/feed-app-bar/create-post-button";
-import React, { SetStateAction } from "react";
-import { FilterState } from "@/components/feed/feed-items";
+import { FeedItemDto } from "@/types/dto";
+import { FilterState } from "@/hooks/use-feed-state";
+import { Dispatch, SetStateAction } from "react";
+
+interface DashboardAppBarProps {
+  filters: FilterState;
+  addFeedItem: (newItem: FeedItemDto) => Promise<FeedItemDto>;
+  setFilters: Dispatch<SetStateAction<FilterState>>;
+}
 
 export const DashboardAppBar = ({
-  feedItems,
-  setFeedItems,
+  filters,
+  addFeedItem,
   setFilters,
-}: {
-  feedItems: FeedItemDto[];
-  setFeedItems: (
-    value: ((prevState: FeedItemDto[]) => FeedItemDto[]) | FeedItemDto[],
-  ) => void;
-  setFilters: (value: SetStateAction<FilterState>) => void;
-}) => {
+}: DashboardAppBarProps) => {
   const { modalOpen, handleOpen, handleClose } = useModal();
 
   return (
@@ -35,7 +35,7 @@ export const DashboardAppBar = ({
         <Grid container sx={{ gap: 3 }}>
           <Welcome />
           <Grid container sx={{ alignItems: "center", gap: 1 }}>
-            <DashboardAppBarFilters setFilters={setFilters} />
+            <DashboardAppBarFilters filters={filters} setFilters={setFilters} />
           </Grid>
         </Grid>
         <Grid container sx={{ alignItems: "center", gap: 3 }}>
@@ -46,8 +46,7 @@ export const DashboardAppBar = ({
       <CreatePostModal
         modalOpen={modalOpen}
         handleClose={handleClose}
-        feedItems={feedItems}
-        setFeedItems={setFeedItems}
+        addFeedItem={addFeedItem}
       />
     </>
   );

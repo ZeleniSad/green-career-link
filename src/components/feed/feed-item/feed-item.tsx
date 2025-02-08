@@ -1,13 +1,12 @@
 import { Grid } from "@mui/system";
 import { Divider } from "@mui/material";
 import { grey } from "@mui/material/colors";
-import { FeedItemHeader } from "@/components/feed/feed-item/feed-item-header";
 import { FeedItemBody } from "@/components/feed/feed-item/feed-item-body";
 import { FC } from "react";
 import { FeedItemProps } from "@/types/props";
+import { FeedItemHeader } from "@/components/feed/feed-item/feed-item-header";
 
 export const FeedItem: FC<FeedItemProps> = ({ item }) => {
-  console.log("item", item.createdAt);
   return (
     <Grid
       container
@@ -19,7 +18,7 @@ export const FeedItem: FC<FeedItemProps> = ({ item }) => {
     >
       <FeedItemHeader
         createdBy={item.createdBy}
-        createdAt={item.createdAt.toDate().toString()}
+        createdAt={item.createdAt}
         email={item.applyToEmail}
         category={item.category}
         type={item.userType}

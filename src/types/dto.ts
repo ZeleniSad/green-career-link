@@ -1,10 +1,15 @@
 import { UserType } from "@/types/enums";
-import { Timestamp } from "@firebase/firestore";
+import { SortDirection } from "@/hooks/use-feed-state";
+
+export interface FilterState {
+  category: string | null;
+  sortDirection: SortDirection;
+}
 
 export interface FeedItemDto {
   id: string;
   userId: string;
-  createdAt: Timestamp;
+  createdAt: string;
   category: string;
   body: string;
   image: string;

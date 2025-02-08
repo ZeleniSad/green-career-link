@@ -12,34 +12,34 @@ import {
   Select,
   SelectChangeEvent,
 } from "@mui/material";
-import { FC, SetStateAction, useState } from "react";
+import { FC } from "react";
 import { FeedItemCategory } from "@/types/interfaces";
-import { FilterState } from "@/components/feed/feed-items";
+import { FilterState } from "@/hooks/use-feed-state";
 
-export const DashboardAppBarFilters: FC<{
-  setFilters: (value: SetStateAction<FilterState>) => void;
-}> = ({ setFilters }) => {
-  const [category, setCategory] = useState<FeedItemCategory | null>(null);
-  const [order, setOrder] = useState("desc");
+interface DashboardAppBarFiltersProps {
+  filters: FilterState;
+  setFilters: React.Dispatch<React.SetStateAction<FilterState>>;
+}
 
+export const DashboardAppBarFilters: FC<DashboardAppBarFiltersProps> = ({
+  filters,
+  setFilters,
+}) => {
   const handleCategoryChange = (event: SelectChangeEvent<unknown>) => {
     const newCategory =
       event.target.value === ""
         ? null
         : (event.target.value as FeedItemCategory);
-    setCategory(newCategory);
-    setFilters((prevFilters) => ({
-      ...prevFilters,
+    setFilters((prev) => ({
+      ...prev,
       category: newCategory,
     }));
   };
 
   const handleSortToggle = () => {
-    const newOrder = order === "asc" ? "desc" : "asc";
-    setOrder(newOrder);
-    setFilters((prevFilters) => ({
-      ...prevFilters,
-      sortDirection: newOrder,
+    setFilters((prev) => ({
+      ...prev,
+      sortDirection: prev.sortDirection === "asc" ? "desc" : "asc",
     }));
   };
 
@@ -47,15 +47,19 @@ export const DashboardAppBarFilters: FC<{
     <Box display="flex" alignItems="center" gap={2}>
       <Button
         onClick={handleSortToggle}
-        aria-label={`Sort in ${order === "asc" ? "descending" : "ascending"} order`}
+        aria-label={`Sort in ${filters?.sortDirection === "asc" ? "descending" : "ascending"} order`}
         startIcon={
-          order === "asc" ? <ArrowUpwardOutlined /> : <ArrowDownwardOutlined />
+          filters?.sortDirection === "asc" ? (
+            <ArrowUpwardOutlined />
+          ) : (
+            <ArrowDownwardOutlined />
+          )
         }
-        variant="outlined"
+        variant="contained"
         size="medium"
         sx={{ minWidth: 160, minHeight: 50 }}
       >
-        {order === "asc" ? "Ascending" : "Descending"}
+        {filters?.sortDirection === "asc" ? "Ascending" : "Descending"}
       </Button>
 
       <FormControl
@@ -66,12 +70,12 @@ export const DashboardAppBarFilters: FC<{
         <InputLabel id="category-label">Category</InputLabel>
         <Select
           labelId="category-label"
-          value={category ?? ""}
+          value={filters?.category ?? ""}
           onChange={handleCategoryChange}
           label="Category"
         >
           <MenuItem value="">
-            <em>None</em>
+            <em>All</em>
           </MenuItem>
           {Object.values(FeedItemCategory).map((category) => (
             <MenuItem key={category} value={category}>

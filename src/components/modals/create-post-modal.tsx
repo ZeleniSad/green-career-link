@@ -12,7 +12,7 @@ import {
 } from "@mui/material";
 import { Grid } from "@mui/system";
 import { DescriptionOutlined } from "@mui/icons-material";
-import { useEffect, useRef, useState } from "react";
+import { FC, useEffect, useRef, useState } from "react";
 import {
   MenuButtonBlockquote,
   MenuButtonBold,
@@ -30,14 +30,11 @@ import {
 import { StarterKit } from "@tiptap/starter-kit";
 import { makeStyles } from "@mui/styles";
 import { UploadFile } from "@/components/upload-file/upload-file";
-import { db } from "@/config/firebaseConfig";
 import { FeedItemDto } from "@/types/dto";
-import { addDoc, collection } from "firebase/firestore";
 import { uploadFile } from "@/services/fileServices";
 import { useAuth } from "@/context/authContext";
 import { fetchUserByUid } from "@/services/userServices";
 import { mapUserData } from "@/util/mappers";
-import { uuidv4 } from "@firebase/util";
 import {
   CompanyInformation,
   FeedItemCategory,
@@ -71,16 +68,16 @@ const useStyles = makeStyles({
   },
 });
 
-export const CreatePostModal = ({
-  modalOpen,
-  handleClose,
-  setFeedItems,
-}: {
+interface CreatePostModalProps {
   modalOpen: boolean;
   handleClose: () => void;
-  setFeedItems: (
-    value: ((prevState: FeedItemDto[]) => FeedItemDto[]) | FeedItemDto[],
-  ) => void;
+  addFeedItem: (newItem: Omit<FeedItemDto, "id">) => Promise<FeedItemDto>;
+}
+
+export const CreatePostModal: FC<CreatePostModalProps> = ({
+  modalOpen,
+  handleClose,
+  addFeedItem,
 }) => {
   const { user } = useAuth();
   const [loading, setLoading] = useState(false);
@@ -129,38 +126,32 @@ export const CreatePostModal = ({
 
     if (!newErrors.selectedCategory) {
       setLoading(true);
-      const userId = user!.uid;
-      let imageUrl = "";
-      if (selectedFile) {
-        imageUrl = await uploadFile(selectedFile, userId);
-      }
-
-      const category = formState.selectedCategory;
-      const body = formState.postDescription;
-
-      const feedItem = {
-        category,
-        body,
-        userId,
-        id: uuidv4(),
-        createdAt: new Date(),
-        image: imageUrl,
-        createdBy: user?.displayName,
-        profileUrl: userData?.profileUrl,
-        userType: userData?.userType,
-        applyToEmail: userData?.email,
-      } as FeedItemDto;
-
-      const feedItemsCollection = collection(db, "feedItems");
       try {
-        await addDoc(feedItemsCollection, feedItem);
-        setFeedItems((prevFeedItems) => [feedItem, ...prevFeedItems]);
+        const userId = user!.uid;
+        let imageUrl = "";
+        if (selectedFile) {
+          imageUrl = await uploadFile(selectedFile, userId);
+        }
+
+        const newFeedItem = {
+          category: formState.selectedCategory,
+          body: formState.postDescription,
+          userId,
+          createdAt: new Date(),
+          image: imageUrl,
+          createdBy: user?.displayName,
+          profileUrl: userData?.profileUrl,
+          userType: userData?.userType,
+          applyToEmail: userData?.email,
+        };
+
+        await addFeedItem(newFeedItem as FeedItemDto);
+        handleClose();
       } catch (error) {
         console.error("Error creating feed item: ", error);
+      } finally {
+        setLoading(false);
       }
-
-      handleClose();
-      setLoading(false);
     }
   };
 

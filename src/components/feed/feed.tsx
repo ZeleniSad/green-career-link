@@ -1,26 +1,36 @@
+// components/feed/feed.tsx
 "use client";
 import { DashboardAppBar } from "@/components/feed/feed-app-bar/dashboard-app-bar";
 import { Box } from "@mui/material";
 import styles from "./feed.module.css";
-import React, { useState } from "react";
-import { FeedItemDto } from "@/types/dto";
-import FeedItems, { FilterState } from "@/components/feed/feed-items";
+import FeedItems from "@/components/feed/feed-items";
+import { useFeedState } from "@/hooks/use-feed-state";
 
 export const Feed = () => {
-  const [feedItems, setFeedItems] = useState<FeedItemDto[]>([]);
-  const [filters, setFilters] = useState<FilterState>({
-    category: null,
-    sortDirection: "desc",
-  });
+  const {
+    feedItems,
+    loading,
+    hasMore,
+    filters,
+    setFilters,
+    loadItems,
+    addFeedItem,
+  } = useFeedState();
 
   return (
     <Box className={styles.wrapper}>
       <DashboardAppBar
-        feedItems={feedItems}
-        setFeedItems={setFeedItems}
+        filters={filters}
+        addFeedItem={addFeedItem}
         setFilters={setFilters}
       />
-      <FeedItems filters={filters} />
+      <FeedItems
+        feedItems={feedItems}
+        loading={loading}
+        hasMore={hasMore}
+        filters={filters}
+        loadItems={loadItems}
+      />
     </Box>
   );
 };
