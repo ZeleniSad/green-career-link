@@ -1,10 +1,11 @@
 import { useCallback, useEffect, useRef } from "react";
-import { Box, Paper } from "@mui/material";
+import { Box, Paper, Typography } from "@mui/material";
 import { Grid } from "@mui/system";
 import { FeedItemDto } from "@/types/dto";
 import { FeedItem } from "@/components/feed/feed-item/feed-item";
 import { FilterState } from "@/hooks/use-feed-state";
 import { Loading } from "@/components/loading/loading";
+import { CalendarViewDayOutlined } from "@mui/icons-material";
 
 interface FeedItemsProps {
   feedItems: FeedItemDto[];
@@ -81,6 +82,17 @@ export default function FeedItems({
             <FeedItem item={feedItem} />
           </Box>
         ))}
+        {!loading && feedItems.length === 0 && (
+          <Box display="flex" flexDirection="column" alignItems="center">
+            <CalendarViewDayOutlined sx={{ fontSize: 100 }} />
+            <Typography variant="h5" align="center">
+              Sorry, there is no feed items to show.
+            </Typography>
+            <Typography variant="body1" align="center">
+              Feel free to add a new item.
+            </Typography>
+          </Box>
+        )}
       </Paper>
       {/* Loading indicator and observer target */}
       {hasMore && <Box ref={loadingRef} />}

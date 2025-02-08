@@ -16,7 +16,7 @@ import {
 import { db } from "@/config/firebaseConfig";
 import { FeedItemDto } from "@/types/dto";
 
-const ITEMS_PER_PAGE = 4;
+const ITEMS_PER_PAGE = 10;
 
 export type SortDirection = "asc" | "desc";
 
