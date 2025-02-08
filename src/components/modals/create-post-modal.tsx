@@ -65,7 +65,7 @@ const useStyles = makeStyles({
     left: "50%",
     transform: "translate(-50%, -50%)",
     width: 600,
-    padding: 24,
+    padding: 16,
   },
 });
 
@@ -170,8 +170,8 @@ export const CreatePostModal: FC<CreatePostModalProps> = ({
           borderRadius: 0,
         }}
       >
-        <Grid container sx={{ gap: 3 }}>
-          <Grid container sx={{ alignItems: "center", gap: 2 }}>
+        <Grid container sx={{ gap: 2 }}>
+          <Grid container sx={{ alignItems: "center", gap: 1 }}>
             <DescriptionOutlined color="primary" />
             <Typography variant="h5">{labels.createPostTitle}</Typography>
           </Grid>
@@ -214,7 +214,7 @@ export const CreatePostModal: FC<CreatePostModalProps> = ({
                 minHeight: "150px",
               },
               "& .MuiTiptap-RichTextContent-root": {
-                height: 200,
+                height: 150,
                 overflow: "auto",
               },
             }}
@@ -258,7 +258,7 @@ export const CreatePostModal: FC<CreatePostModalProps> = ({
           <Typography variant="body2">{labels.supportedFormats}</Typography>
           <Grid
             container
-            sx={{ width: "100%", justifyContent: "flex-end", gap: 2 }}
+            sx={{ width: "100%", justifyContent: "flex-end", gap: 1 }}
           >
             <Button variant="outlined" onClick={handleClose}>
               {labels.cancel}

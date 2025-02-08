@@ -1,10 +1,17 @@
 import React, { FC, useEffect, useState } from "react";
 import { FeedItemDto } from "@/types/dto";
-import { IconButton, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material";
+import {
+  IconButton,
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+} from "@mui/material";
 import { Delete, Edit } from "@mui/icons-material";
-import { deleteDoc, doc } from "firebase/firestore";
-import { db } from "@/config/firebaseConfig";
-import { getAllFeedItems } from "@/services/feedItemsService";
+import { deleteFeedItem, getAllFeedItems } from "@/services/feedItemsService";
 import { EditFeedItemModal } from "@/components/modals/edit-feed-item-modal";
 import { Loading } from "@/components/loading/loading";
 
@@ -22,18 +29,19 @@ const FeedItemRow: FC<{
         "&:hover": {
           backgroundColor: "action.selected",
         },
-      }}>
+      }}
+    >
       <TableCell sx={{ p: 1 }}>{feedItem.id}</TableCell>
       <TableCell sx={{ p: 1 }}>{feedItem.createdBy}</TableCell>
       <TableCell sx={{ p: 1 }}>{feedItem.userId}</TableCell>
       <TableCell sx={{ p: 1 }}>{feedItem.category}</TableCell>
-      <TableCell sx={{ p: 1 }}>{feedItem.createdAt.toDateString()}</TableCell>
+      <TableCell sx={{ p: 1 }}>{feedItem.createdAt}</TableCell>
       <TableCell sx={{ p: 2, textAlign: "right" }}>
-        <IconButton color='primary' size='small' onClick={onEdit}>
-          <Edit fontSize='medium' />
+        <IconButton color="primary" size="small" onClick={onEdit}>
+          <Edit fontSize="medium" />
         </IconButton>
-        <IconButton color='error' size='small' onClick={onDelete}>
-          <Delete fontSize='medium' />
+        <IconButton color="error" size="small" onClick={onDelete}>
+          <Delete fontSize="medium" />
         </IconButton>
       </TableCell>
     </TableRow>
@@ -65,10 +73,10 @@ export const FeedItemsTable: FC = () => {
     setIsEditModalOpen(true);
   };
 
-  const handleDelete = async (id: string) => {
+  const handleDelete = async (id: string, fileUrl: string) => {
     setLoading(true);
     try {
-      await deleteDoc(doc(db, "feedItems", id));
+      await deleteFeedItem(id, fileUrl);
       setFeedItems(feedItems.filter((feedItem) => feedItem.id !== id));
     } catch (error) {
       console.error("Error deleting user: ", error);
@@ -101,14 +109,36 @@ export const FeedItemsTable: FC = () => {
         <Table>
           <TableHead>
             <TableRow sx={{ backgroundColor: "primary.main" }}>
-              <TableCell sx={{ p: 1, color: "primary.contrastText", fontWeight: "bold" }}>Post ID</TableCell>
-              <TableCell sx={{ p: 1, color: "primary.contrastText", fontWeight: "bold" }}>Posted By</TableCell>
-              <TableCell sx={{ p: 1, color: "primary.contrastText", fontWeight: "bold" }}>User ID</TableCell>
-              <TableCell sx={{ p: 1, color: "primary.contrastText", fontWeight: "bold" }}>Category</TableCell>
+              <TableCell
+                sx={{ p: 1, color: "primary.contrastText", fontWeight: "bold" }}
+              >
+                Post ID
+              </TableCell>
+              <TableCell
+                sx={{ p: 1, color: "primary.contrastText", fontWeight: "bold" }}
+              >
+                Posted By
+              </TableCell>
+              <TableCell
+                sx={{ p: 1, color: "primary.contrastText", fontWeight: "bold" }}
+              >
+                User ID
+              </TableCell>
+              <TableCell
+                sx={{ p: 1, color: "primary.contrastText", fontWeight: "bold" }}
+              >
+                Category
+              </TableCell>
 
-              <TableCell sx={{ p: 1, color: "primary.contrastText", fontWeight: "bold" }}>Created at</TableCell>
+              <TableCell
+                sx={{ p: 1, color: "primary.contrastText", fontWeight: "bold" }}
+              >
+                Created at
+              </TableCell>
 
-              <TableCell sx={{ p: 1, color: "primary.contrastText", fontWeight: "bold" }}></TableCell>
+              <TableCell
+                sx={{ p: 1, color: "primary.contrastText", fontWeight: "bold" }}
+              ></TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -117,7 +147,7 @@ export const FeedItemsTable: FC = () => {
                 key={feedItem.id}
                 feedItem={feedItem}
                 onEdit={() => handleEdit(feedItem)}
-                onDelete={() => handleDelete(feedItem.id)}
+                onDelete={() => handleDelete(feedItem.id, feedItem.image)}
               />
             ))}
           </TableBody>
