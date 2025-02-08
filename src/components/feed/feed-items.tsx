@@ -1,4 +1,3 @@
-// components/feed/feed-items.tsx
 import { useCallback, useEffect, useRef } from "react";
 import { Box, Paper } from "@mui/material";
 import { Grid } from "@mui/system";
