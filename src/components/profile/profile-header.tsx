@@ -6,7 +6,11 @@ export const ProfileHeader = () => {
   return (
     <Grid
       container
-      sx={{ justifyContent: "space-between", alignItems: "center" }}
+      sx={{
+        justifyContent: "space-between",
+        alignItems: "center",
+        width: "100%",
+      }}
     >
       <Welcome />
       <Grid container sx={{ gap: 3 }}>
