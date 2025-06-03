@@ -7,6 +7,7 @@ import { HomeHowItWorks } from "@/components/home/home-how-it-works";
 import { HomeGetStarted } from "@/components/home/home-get-started";
 import { HomeFooter } from "@/components/home/home-footer";
 import { ReactNode } from "react";
+import { HomeInfo } from "@/components/home/home-info";
 
 const Home = (): ReactNode => {
   return (
@@ -18,6 +19,7 @@ const Home = (): ReactNode => {
         <HomeWhyJoinsUs />
         <HomeHowItWorks />
         <HomeGetStarted />
+        <HomeInfo />
         <HomeFooter />
       </Grid>
     </Grid>
