@@ -9,6 +9,7 @@ import {
   OpenInNew,
 } from "@mui/icons-material";
 import { ProfileHeader } from "@/components/profile/profile-header";
+import styles from "./tools.module.css";
 
 interface Tool {
   name: string;
@@ -145,10 +146,9 @@ const ToolsPage = () => {
   const rsTools = tools.filter((tool) => tool.country === "RS");
 
   return (
-    <>
+    <Box className={styles.wrapper}>
       <ProfileHeader />
-      <Box sx={{ p: { xs: 2, md: 4 } }}>
-        <Box sx={{ mb: 5 }}>
+      <Box sx={{ mb: 5 }}>
         <Typography variant='h3' color='primary' gutterBottom fontWeight={700}>
           Tools
         </Typography>
@@ -217,7 +217,6 @@ const ToolsPage = () => {
         </Grid>
       </Box>
     </Box>
-    </>
   );
 };
 
