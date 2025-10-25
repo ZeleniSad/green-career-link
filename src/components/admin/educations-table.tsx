@@ -2,12 +2,12 @@
 
 import { FC, useEffect, useState } from "react";
 import { EducationItemDto } from "@/types/dto";
-import { deleteEducation, getEducationsData } from "@/services/educationService";
+import { deleteEducation, getEducationsPaginated } from "@/services/educationService";
 import {
   Alert,
   Box,
-  CircularProgress,
   IconButton,
+  LinearProgress,
   Paper,
   Snackbar,
   Table,
@@ -15,6 +15,7 @@ import {
   TableCell,
   TableContainer,
   TableHead,
+  TablePagination,
   TableRow,
   Typography,
 } from "@mui/material";
@@ -74,38 +75,43 @@ export const EducationsTable: FC = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedFile, setSelectedFile] = useState<EducationItemDto | null>(null);
   const [educations, setEducations] = useState<EducationItemDto[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [tableLoading, setTableLoading] = useState<boolean>(false);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
   const [selectedEducationId, setSelectedEducationId] = useState<string | null>(null);
   const [snackbarSeverity, setSnackbarSeverity] = useState<"success" | "error">("success");
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [totalCount, setTotalCount] = useState(0);
 
   const handleCloseSnackbar = () => {
     setSnackbarOpen(false);
   };
 
   const fetchEducations = async () => {
-    setLoading(true);
+    setTableLoading(true);
     setSnackbarOpen(false);
     setSnackbarMessage("");
 
     try {
-      const data = await getEducationsData();
-      setEducations(data);
-      setLoading(false);
+      const result = await getEducationsPaginated(page, rowsPerPage);
+      setEducations(result.educations);
+      setTotalCount(result.totalCount);
     } catch (error) {
       console.error("Error fetching educations for table data: ", error);
       setSnackbarSeverity("error");
       setSnackbarOpen(true);
-      setLoading(false);
       setSnackbarMessage("Failed to fetch education files.");
+    } finally {
+      setTableLoading(false);
     }
   };
 
   useEffect(() => {
     fetchEducations();
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [page, rowsPerPage]);
 
   const handleDeleteClick = (id: string) => {
     setSelectedEducationId(id);
@@ -115,9 +121,9 @@ export const EducationsTable: FC = () => {
   const handleConfirmDelete = async () => {
     if (selectedEducationId) {
       const deletedEducation = educations.find((item) => item.id === selectedEducationId)!;
-      setEducations((prevEducations) => prevEducations.filter((item) => item.id !== selectedEducationId));
 
       await deleteEducation(deletedEducation.id, deletedEducation.fileUrl);
+      await fetchEducations(); // Refresh the current page
       setSnackbarMessage("Education item deleted successfully.");
       setSnackbarSeverity("success");
       setSnackbarOpen(true);
@@ -125,24 +131,25 @@ export const EducationsTable: FC = () => {
     }
   };
 
+  const handleChangePage = (event: unknown, newPage: number) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
+
   return (
     <Box sx={{ width: "100%" }}>
       <Typography variant='h4' color='primary' gutterBottom>
         Education Files
       </Typography>
-      {loading ? (
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            minHeight: 200,
-          }}>
-          <CircularProgress />
+      <TableContainer component={Paper} sx={{ boxShadow: 3, borderRadius: 2 }}>
+        <Box sx={{ height: 4 }}>
+          {tableLoading && <LinearProgress />}
         </Box>
-      ) : (
-        <TableContainer component={Paper} sx={{ boxShadow: 3, borderRadius: 2 }}>
-          <Table>
+        <Table>
             <TableHead>
               <TableRow sx={{ backgroundColor: "primary.main" }}>
                 <TableCell
@@ -206,8 +213,16 @@ export const EducationsTable: FC = () => {
               ))}
             </TableBody>
           </Table>
+          <TablePagination
+            rowsPerPageOptions={[5, 10, 25, 50]}
+            component='div'
+            count={totalCount}
+            rowsPerPage={rowsPerPage}
+            page={page}
+            onPageChange={handleChangePage}
+            onRowsPerPageChange={handleChangeRowsPerPage}
+          />
         </TableContainer>
-      )}
       <Snackbar
         open={snackbarOpen}
         autoHideDuration={6000}

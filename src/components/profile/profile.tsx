@@ -22,9 +22,12 @@ export const Profile = ({ uid: initialUid }: { uid?: string }) => {
       const auth = getAuth();
       const db = getFirestore();
 
-      if (!uid) {
+      let userId = uid;
+
+      if (!userId) {
         const currentUser = auth.currentUser;
         if (currentUser) {
+          userId = currentUser.uid;
           setUid(currentUser.uid);
         } else {
           // Handle case where no user is authenticated
@@ -32,12 +35,15 @@ export const Profile = ({ uid: initialUid }: { uid?: string }) => {
         }
       }
 
-      const userDoc = await getDoc(doc(db, "users", uid));
-      if (userDoc.exists()) {
-        const userData = mapUserData(userDoc.data());
-        setUserData(userData);
-      } else {
-        // Handle case where user data does not exist
+      // Only fetch if we have a valid uid
+      if (userId) {
+        const userDoc = await getDoc(doc(db, "users", userId));
+        if (userDoc.exists()) {
+          const userData = mapUserData(userDoc.data());
+          setUserData(userData);
+        } else {
+          // Handle case where user data does not exist
+        }
       }
     };
 

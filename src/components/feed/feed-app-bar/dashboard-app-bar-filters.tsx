@@ -65,7 +65,7 @@ export const DashboardAppBarFilters: FC<DashboardAppBarFiltersProps> = ({
       <FormControl
         variant="outlined"
         size="medium"
-        sx={{ minWidth: 160, minHeight: 50, borderRadius: 0 }}
+        sx={{ minWidth: 160, minHeight: 50, borderRadius: 80 }}
       >
         <InputLabel id="category-label">Category</InputLabel>
         <Select
@@ -73,6 +73,12 @@ export const DashboardAppBarFilters: FC<DashboardAppBarFiltersProps> = ({
           value={filters?.category ?? ""}
           onChange={handleCategoryChange}
           label="Category"
+          sx={{
+            borderRadius: 80,
+            "& .MuiOutlinedInput-notchedOutline": {
+              borderRadius: 80,
+            },
+          }}
         >
           <MenuItem value="">
             <em>All</em>

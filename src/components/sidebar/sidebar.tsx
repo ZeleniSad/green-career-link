@@ -13,6 +13,7 @@ import {
 import {
   AccountBoxOutlined,
   AdminPanelSettingsOutlined,
+  BuildOutlined,
   ChevronLeft,
   ChevronRight,
   DynamicFeedOutlined,
@@ -140,6 +141,13 @@ export const Sidebar = ({
               icon={<SchoolOutlined />}
               label="Educations"
               url="/dashboard/educations"
+            />
+            <SidebarButton
+              isOpen={open}
+              title="Tools"
+              icon={<BuildOutlined />}
+              label="Tools"
+              url="/dashboard/tools"
             />
             {userIsAdmin && (
               <SidebarButton

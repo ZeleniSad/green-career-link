@@ -11,13 +11,13 @@ import {
 } from "@mui/material";
 import { doc, UpdateData, updateDoc } from "firebase/firestore";
 import { db } from "@/config/firebaseConfig";
-import { CompanyUserDto, IndividualUserDto, UserDto } from "@/types/dto";
+import { CompanyUserDto, IndividualUserDto } from "@/types/dto";
 import { UserType } from "@/types/enums";
 
 interface EditUserModalProps {
   open: boolean;
   onClose: () => void;
-  user: UserDto;
+  user: IndividualUserDto | CompanyUserDto | null;
   onSave: () => void;
 }
 
@@ -27,20 +27,22 @@ export const EditUserModal: FC<EditUserModalProps> = ({
   user,
   onSave,
 }) => {
-  const [formData, setFormData] = useState<UserDto>(user);
+  const [formData, setFormData] = useState<IndividualUserDto | CompanyUserDto | null>(user);
 
   useEffect(() => {
     setFormData(user);
   }, [user]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value } as UserDto);
+    if (!formData) return;
+    const value = e.target.type === "checkbox" ? e.target.checked : e.target.value;
+    setFormData({ ...formData, [e.target.name]: value } as IndividualUserDto | CompanyUserDto);
   };
 
   const handleSave = async () => {
     if (formData) {
       const userDoc = doc(db, "users", formData.id);
-      await updateDoc(userDoc, formData as UpdateData<UserDto>);
+      await updateDoc(userDoc, formData as UpdateData<IndividualUserDto | CompanyUserDto>);
       onSave();
       onClose();
     }
@@ -154,11 +156,11 @@ export const EditUserModal: FC<EditUserModalProps> = ({
               onChange={handleChange}
             />
             <FormControlLabel
-              id="offeringJob"
-              name="offeringJob"
               label="Offering Job?"
               control={
                 <Checkbox
+                  id="offeringJob"
+                  name="offeringJob"
                   checked={(formData as CompanyUserDto).offeringJob}
                   onChange={handleChange}
                 />
@@ -186,7 +188,7 @@ export const EditUserModal: FC<EditUserModalProps> = ({
           margin="dense"
           label="Country"
           name="country"
-          value={(formData as CompanyUserDto).country}
+          value={formData.country}
           onChange={handleChange}
         />
         <TextField

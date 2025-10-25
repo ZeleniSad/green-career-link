@@ -9,17 +9,11 @@ declare module "@mui/material/Button" {
   }
 }
 
-export const GreenCareerLinkThemeProvider = ({
-  children,
-}: {
-  children: React.ReactNode;
-}) => {
+export const GreenCareerLinkThemeProvider = ({ children }: { children: React.ReactNode }) => {
   const yesDoItTheme = createTheme({
     palette: {
       primary: {
-        // TODO: Revert Styles
-        // main: "#03624C",
-        main: "#1A4F4F",
+        main: "#03624C",
       },
       secondary: {
         main: "#2CC295",
@@ -66,7 +60,7 @@ export const GreenCareerLinkThemeProvider = ({
             textTransform: "none",
             // TODO: Revert Styles
             // borderRadius: 24,
-            borderRadius: 0,
+            borderRadius: 80,
             fontSize: 16,
             paddingLeft: 20,
             paddingRight: 20,

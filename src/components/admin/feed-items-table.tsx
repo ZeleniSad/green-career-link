@@ -1,19 +1,21 @@
 import React, { FC, useEffect, useState } from "react";
 import { FeedItemDto } from "@/types/dto";
 import {
+  Box,
   IconButton,
+  LinearProgress,
   Paper,
   Table,
   TableBody,
   TableCell,
   TableContainer,
   TableHead,
+  TablePagination,
   TableRow,
 } from "@mui/material";
 import { Delete, Edit } from "@mui/icons-material";
-import { deleteFeedItem, getAllFeedItems } from "@/services/feedItemsService";
+import { deleteFeedItem, getFeedItemsPaginated } from "@/services/feedItemsService";
 import { EditFeedItemModal } from "@/components/modals/edit-feed-item-modal";
-import { Loading } from "@/components/loading/loading";
 
 const FeedItemRow: FC<{
   feedItem: FeedItemDto;
@@ -35,7 +37,11 @@ const FeedItemRow: FC<{
       <TableCell sx={{ p: 1 }}>{feedItem.createdBy}</TableCell>
       <TableCell sx={{ p: 1 }}>{feedItem.userId}</TableCell>
       <TableCell sx={{ p: 1 }}>{feedItem.category}</TableCell>
-      <TableCell sx={{ p: 1 }}>{feedItem.createdAt}</TableCell>
+      <TableCell sx={{ p: 1 }}>
+        {feedItem.createdAt instanceof Date
+          ? feedItem.createdAt.toLocaleDateString()
+          : feedItem.createdAt}
+      </TableCell>
       <TableCell sx={{ p: 2, textAlign: "right" }}>
         <IconButton color="primary" size="small" onClick={onEdit}>
           <Edit fontSize="medium" />
@@ -49,24 +55,31 @@ const FeedItemRow: FC<{
 };
 
 export const FeedItemsTable: FC = () => {
-  const [loading, setLoading] = useState(true);
+  const [tableLoading, setTableLoading] = useState(false);
   const [feedItems, setFeedItems] = useState<FeedItemDto[]>([]);
-  const [selectedFeedItem, setSelectedFeedItem] = useState<FeedItemDto>(null);
+  const [selectedFeedItem, setSelectedFeedItem] = useState<FeedItemDto | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [totalCount, setTotalCount] = useState(0);
+
+  const fetchFeedItems = async () => {
+    try {
+      setTableLoading(true);
+      const result = await getFeedItemsPaginated(page, rowsPerPage);
+      setFeedItems(result.feedItems);
+      setTotalCount(result.totalCount);
+    } catch (error) {
+      console.error("Error fetching feed items: ", error);
+    } finally {
+      setTableLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const getAllUsers = async () => {
-      try {
-        const feedItems = await getAllFeedItems();
-        setFeedItems(feedItems);
-      } catch (error) {
-        console.error("Error fetching user data: ", error);
-      }
-    };
-
-    getAllUsers();
-    setLoading(false);
-  }, []);
+    fetchFeedItems();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [page, rowsPerPage]);
 
   const handleEdit = (feedItem: FeedItemDto) => {
     setSelectedFeedItem(feedItem);
@@ -74,38 +87,38 @@ export const FeedItemsTable: FC = () => {
   };
 
   const handleDelete = async (id: string, fileUrl: string) => {
-    setLoading(true);
     try {
+      setTableLoading(true);
       await deleteFeedItem(id, fileUrl);
-      setFeedItems(feedItems.filter((feedItem) => feedItem.id !== id));
+      // Refresh the current page
+      await fetchFeedItems();
     } catch (error) {
-      console.error("Error deleting user: ", error);
+      console.error("Error deleting feed item: ", error);
+    } finally {
+      setTableLoading(false);
     }
-    setLoading(false);
   };
 
   const handleSave = async () => {
-    setLoading(true);
-    const getAllFeedItemsAsync = async () => {
-      try {
-        const feedItems = await getAllFeedItems();
-        setFeedItems(feedItems);
-      } catch (error) {
-        console.error("Error fetching user data: ", error);
-      }
-    };
-
-    getAllFeedItemsAsync();
-    setLoading(false);
+    // Refresh the feed items list after saving
+    await fetchFeedItems();
   };
 
-  if (loading) {
-    return <Loading isOpen={loading} />;
-  }
+  const handleChangePage = (event: unknown, newPage: number) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
 
   return (
     <>
       <TableContainer component={Paper} sx={{ boxShadow: 3, borderRadius: 2 }}>
+        <Box sx={{ height: 4 }}>
+          {tableLoading && <LinearProgress />}
+        </Box>
         <Table>
           <TableHead>
             <TableRow sx={{ backgroundColor: "primary.main" }}>
@@ -152,6 +165,15 @@ export const FeedItemsTable: FC = () => {
             ))}
           </TableBody>
         </Table>
+        <TablePagination
+          rowsPerPageOptions={[5, 10, 25, 50]}
+          component="div"
+          count={totalCount}
+          rowsPerPage={rowsPerPage}
+          page={page}
+          onPageChange={handleChangePage}
+          onRowsPerPageChange={handleChangeRowsPerPage}
+        />
       </TableContainer>
       <EditFeedItemModal
         modalOpen={isEditModalOpen}
