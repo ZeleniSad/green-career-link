@@ -35,11 +35,7 @@ import { uploadFile } from "@/services/fileServices";
 import { useAuth } from "@/context/authContext";
 import { fetchUserByUid } from "@/services/userServices";
 import { mapUserData } from "@/util/mappers";
-import {
-  CompanyInformation,
-  FeedItemCategory,
-  IndividualInformation,
-} from "@/types/interfaces";
+import { CompanyInformation, FeedItemCategory, IndividualInformation } from "@/types/interfaces";
 import { UserType } from "@/types/enums";
 
 const labels = {
@@ -75,11 +71,7 @@ interface CreatePostModalProps {
   addFeedItem: (newItem: Omit<FeedItemDto, "id">) => Promise<FeedItemDto>;
 }
 
-export const CreatePostModal: FC<CreatePostModalProps> = ({
-  modalOpen,
-  handleClose,
-  addFeedItem,
-}) => {
+export const CreatePostModal: FC<CreatePostModalProps> = ({ modalOpen, handleClose, addFeedItem }) => {
   const { user } = useAuth();
   const [loading, setLoading] = useState(false);
   const rteRef = useRef<RichTextEditorRef | null>(null);
@@ -91,9 +83,7 @@ export const CreatePostModal: FC<CreatePostModalProps> = ({
     selectedCategory: false,
   });
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [userData, setUserData] = useState<
-    IndividualInformation | CompanyInformation
-  >(null);
+  const [userData, setUserData] = useState<IndividualInformation | CompanyInformation>(null);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -165,31 +155,23 @@ export const CreatePostModal: FC<CreatePostModalProps> = ({
       <Paper
         className={classes.modalStyle}
         sx={{
-          // TODO: Revert Styles
-          // borderRadius: 6,
-          borderRadius: 0,
-        }}
-      >
+          borderRadius: 6,
+        }}>
         <Grid container sx={{ gap: 2 }}>
           <Grid container sx={{ alignItems: "center", gap: 1 }}>
-            <DescriptionOutlined color="primary" />
-            <Typography variant="h5">{labels.createPostTitle}</Typography>
+            <DescriptionOutlined color='primary' />
+            <Typography variant='h5'>{labels.createPostTitle}</Typography>
           </Grid>
-          <Typography variant="body1">
-            {labels.createPostDescription}
-          </Typography>
+          <Typography variant='body1'>{labels.createPostDescription}</Typography>
           <FormControl fullWidth error={errors.selectedCategory}>
-            <InputLabel id="demo-simple-select-label">
-              {labels.categoryLabel}
-            </InputLabel>
+            <InputLabel id='demo-simple-select-label'>{labels.categoryLabel}</InputLabel>
             <Select
-              labelId="demo-simple-select-label"
-              id="demo-simple-select"
-              name="selectedCategory"
+              labelId='demo-simple-select-label'
+              id='demo-simple-select'
+              name='selectedCategory'
               value={formState.selectedCategory}
               label={labels.categoryLabel}
-              onChange={handleSelectChange}
-            >
+              onChange={handleSelectChange}>
               {Object.values(FeedItemCategory)
                 .filter((category) => {
                   if (userData?.userType === UserType.Individual) {
@@ -217,8 +199,7 @@ export const CreatePostModal: FC<CreatePostModalProps> = ({
                 height: 150,
                 overflow: "auto",
               },
-            }}
-          >
+            }}>
             <RichTextEditor
               onUpdate={({ editor }) => {
                 setFormState({
@@ -255,19 +236,12 @@ export const CreatePostModal: FC<CreatePostModalProps> = ({
               "image/jpeg": [".jpg", ".jpeg"],
             }}
           />
-          <Typography variant="body2">{labels.supportedFormats}</Typography>
-          <Grid
-            container
-            sx={{ width: "100%", justifyContent: "flex-end", gap: 1 }}
-          >
-            <Button variant="outlined" onClick={handleClose}>
+          <Typography variant='body2'>{labels.supportedFormats}</Typography>
+          <Grid container sx={{ width: "100%", justifyContent: "flex-end", gap: 1 }}>
+            <Button variant='outlined' onClick={handleClose}>
               {labels.cancel}
             </Button>
-            <Button
-              variant="contained"
-              onClick={handleFormSubmit}
-              disabled={loading}
-            >
+            <Button variant='contained' onClick={handleFormSubmit} disabled={loading}>
               {labels.createPostButton}
             </Button>
           </Grid>

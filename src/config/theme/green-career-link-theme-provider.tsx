@@ -58,9 +58,7 @@ export const GreenCareerLinkThemeProvider = ({ children }: { children: React.Rea
         styleOverrides: {
           root: {
             textTransform: "none",
-            // TODO: Revert Styles
-            // borderRadius: 24,
-            borderRadius: 80,
+            borderRadius: 24,
             fontSize: 16,
             paddingLeft: 20,
             paddingRight: 20,
@@ -99,8 +97,7 @@ export const GreenCareerLinkThemeProvider = ({ children }: { children: React.Rea
       MuiSelect: {
         styleOverrides: {
           root: {
-            // TODO: Revert Styles
-            // borderRadius: 24,
+            borderRadius: 24,
             backgroundColor: "transparent",
             "& .MuiSelect-root": {
               borderRadius: 24,

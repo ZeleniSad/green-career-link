@@ -9,11 +9,7 @@ import { DocumentData, QueryDocumentSnapshot } from "firebase/firestore";
 import { UserType } from "@/types/enums";
 import { getFeedItemsData } from "@/services/feedItemsService";
 import { getUsersDataMapInChunks } from "@/services/userServices";
-import {
-  CompanyInformation,
-  FeedItemsFilters,
-  IndividualInformation,
-} from "@/types/interfaces";
+import { CompanyInformation, FeedItemsFilters, IndividualInformation } from "@/types/interfaces";
 import { HorizontalSplitOutlined } from "@mui/icons-material";
 
 const FEED_ITEMS_DELAY = 800;
@@ -24,33 +20,22 @@ export const FeedItemsOld: FC = ({
   filters,
 }: {
   feedItems: FeedItemDto[];
-  setFeedItems: (
-    value: ((prevState: FeedItemDto[]) => FeedItemDto[]) | FeedItemDto[],
-  ) => void;
+  setFeedItems: (value: ((prevState: FeedItemDto[]) => FeedItemDto[]) | FeedItemDto[]) => void;
   filters: FeedItemsFilters;
 }) => {
-  const [lastVisible, setLastVisible] =
-    useState<QueryDocumentSnapshot<DocumentData> | null>(null);
+  const [lastVisible, setLastVisible] = useState<QueryDocumentSnapshot<DocumentData> | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [hasMore, setHasMore] = useState<boolean>(true);
   const observer = useRef<IntersectionObserver | null>(null);
-  const usersCache = useRef<
-    Record<string, IndividualInformation | CompanyInformation>
-  >({});
+  const usersCache = useRef<Record<string, IndividualInformation | CompanyInformation>>({});
   const debounceTimeout = useRef<NodeJS.Timeout>();
 
-  const mapCreatorsToFeedItems = async (
-    feedItemCreatorIds: string[],
-    newFeedItems: FeedItemDto[],
-  ) => {
+  const mapCreatorsToFeedItems = async (feedItemCreatorIds: string[], newFeedItems: FeedItemDto[]) => {
     // Filter out already cached user IDs
-    const uncachedUserIds = feedItemCreatorIds.filter(
-      (id) => !usersCache.current[id],
-    );
+    const uncachedUserIds = feedItemCreatorIds.filter((id) => !usersCache.current[id]);
 
     if (uncachedUserIds.length > 0) {
-      const feedItemCreatorsMap =
-        await getUsersDataMapInChunks(uncachedUserIds);
+      const feedItemCreatorsMap = await getUsersDataMapInChunks(uncachedUserIds);
       // Update cache with new user data
       usersCache.current = { ...usersCache.current, ...feedItemCreatorsMap };
     }
@@ -60,9 +45,7 @@ export const FeedItemsOld: FC = ({
       if (feedUser) {
         const userType = feedUser.userType;
         const createdBy =
-          userType === UserType.Individual
-            ? `${feedUser.firstName} ${feedUser.lastName}`
-            : feedUser.companyName;
+          userType === UserType.Individual ? `${feedUser.firstName} ${feedUser.lastName}` : feedUser.companyName;
 
         return {
           ...item,
@@ -81,10 +64,7 @@ export const FeedItemsOld: FC = ({
     try {
       setLoading(true);
 
-      const { items: newFeedItems, lastDoc } = await getFeedItemsData(
-        lastVisible,
-        filters,
-      );
+      const { items: newFeedItems, lastDoc } = await getFeedItemsData(lastVisible, filters);
 
       if (!newFeedItems.length) {
         setHasMore(false);
@@ -93,21 +73,14 @@ export const FeedItemsOld: FC = ({
       }
 
       // Use Set to ensure unique IDs
-      const feedItemCreatorIds = [
-        ...new Set(newFeedItems.map((item) => item.userId)),
-      ];
-      const feedItemsWithUsers = await mapCreatorsToFeedItems(
-        feedItemCreatorIds,
-        newFeedItems,
-      );
+      const feedItemCreatorIds = [...new Set(newFeedItems.map((item) => item.userId))];
+      const feedItemsWithUsers = await mapCreatorsToFeedItems(feedItemCreatorIds, newFeedItems);
 
       // Use Set to ensure unique feed items
       setFeedItems((prevItems) => {
         const uniqueItems = new Map<string, FeedItemDto>([
           ...prevItems.map((item) => [item.id, item] as [string, FeedItemDto]),
-          ...feedItemsWithUsers.map(
-            (item) => [item.id, item] as [string, FeedItemDto],
-          ),
+          ...feedItemsWithUsers.map((item) => [item.id, item] as [string, FeedItemDto]),
         ]);
         return Array.from(uniqueItems.values());
       });
@@ -150,12 +123,12 @@ export const FeedItemsOld: FC = ({
           root: null,
           rootMargin: "100px",
           threshold: 0.1,
-        } as IntersectionObserverInit,
+        } as IntersectionObserverInit
       );
 
       if (node) observer.current?.observe(node);
     },
-    [debouncedFetch, loading, hasMore],
+    [debouncedFetch, loading, hasMore]
   );
 
   useEffect(() => {
@@ -180,47 +153,27 @@ export const FeedItemsOld: FC = ({
           gap: 3,
           width: "100%",
           p: 3,
-          // TODO: Revert Styles
-          // borderRadius: 5,
-          borderRadius: 0,
-        }}
-      >
+          borderRadius: 5,
+        }}>
         {feedItems.map((feedItem, index) => (
-          <Box
-            id={feedItem.id}
-            key={feedItem.id}
-            ref={index === feedItems.length - 1 ? lastItemRef : null}
-          >
+          <Box id={feedItem.id} key={feedItem.id} ref={index === feedItems.length - 1 ? lastItemRef : null}>
             <FeedItem item={feedItem} />
           </Box>
         ))}
 
         {loading && (
-          <Box
-            display="flex"
-            justifyContent="center"
-            alignItems="center"
-            mt={2}
-          >
+          <Box display='flex' justifyContent='center' alignItems='center' mt={2}>
             <CircularProgress />
-            <Typography variant="body1" sx={{ ml: 2 }}>
+            <Typography variant='body1' sx={{ ml: 2 }}>
               Fetching new posts...
             </Typography>
           </Box>
         )}
 
         {!loading && feedItems.length === 0 && (
-          <Grid
-            container
-            justifyContent="center"
-            alignItems="center"
-            sx={{ flexDirection: "column" }}
-          >
-            <HorizontalSplitOutlined
-              fontSize="large"
-              sx={{ width: 89, height: 89 }}
-            />
-            <Typography variant="h5" align="center">
+          <Grid container justifyContent='center' alignItems='center' sx={{ flexDirection: "column" }}>
+            <HorizontalSplitOutlined fontSize='large' sx={{ width: 89, height: 89 }} />
+            <Typography variant='h5' align='center'>
               The feed is currently empty.
             </Typography>
           </Grid>
